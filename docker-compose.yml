@@ -4,9 +4,9 @@ services:
     container_name: moovly_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: moovly
-      POSTGRES_PASSWORD: moovly940
-      POSTGRES_DB: moovly
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
