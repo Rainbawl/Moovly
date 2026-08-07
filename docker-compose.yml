@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: moovly_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: moovly
+      POSTGRES_PASSWORD: moovly940
+      POSTGRES_DB: moovly
+    ports:
+      - "5433:5432"
+    volumes:
+      - moovly_pgdata:/var/lib/postgresql/data
+
+volumes:
+  moovly_pgdata:

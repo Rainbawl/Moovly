@@ -1,0 +1,136 @@
+// Moovly — Schéma Prisma
+// Application de réservation de coachs sportifs
+// Version 1 — 6 tables — PostgreSQL
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── UTILISATEURS ─────────────────────────────────────────────────────
+model Utilisateur {
+  id           Int      @id @default(autoincrement())
+  nom          String   @db.VarChar(100)
+  prenom       String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(255)
+  mot_de_passe String   @db.VarChar(255)
+  role         Role     @default(sportif)
+  date_creation DateTime @default(now())
+
+  // Relations
+  coach        Coach?
+  reservations Reservation[]
+
+  @@map("utilisateurs")
+}
+
+enum Role {
+  sportif
+  coach
+  admin
+}
+
+// ── COACHS ───────────────────────────────────────────────────────────
+model Coach {
+  id             Int      @id @default(autoincrement())
+  utilisateur_id Int      @unique
+  presentation   String?  @db.Text
+  tarif_horaire  Decimal? @db.Decimal(8, 2)
+  est_valide     Boolean  @default(false)
+  note_moyenne   Decimal? @db.Decimal(3, 2)
+  date_creation  DateTime @default(now())
+
+  // Relations
+  utilisateur    Utilisateur    @relation(fields: [utilisateur_id], references: [id], onDelete: Cascade)
+  sports         CoachSport[]
+  creneaux       Creneau[]
+
+  @@map("coachs")
+}
+
+// ── SPORTS ───────────────────────────────────────────────────────────
+model Sport {
+  id   Int    @id @default(autoincrement())
+  nom  String @db.VarChar(100)
+
+  // Relations
+  coachs CoachSport[]
+
+  @@map("sports")
+}
+
+// ── COACHS_SPORTS (jonction many-to-many) ────────────────────────────
+model CoachSport {
+  coach_id Int
+  sport_id Int
+
+  // Relations
+  coach Coach @relation(fields: [coach_id], references: [id], onDelete: Cascade)
+  sport Sport @relation(fields: [sport_id], references: [id], onDelete: Cascade)
+
+  @@id([coach_id, sport_id])
+  @@map("coachs_sports")
+}
+
+// ── CRENEAUX ─────────────────────────────────────────────────────────
+model Creneau {
+  id                Int            @id @default(autoincrement())
+  coach_id          Int
+  date              DateTime       @db.Date
+  periode           Periode
+  statut            StatutCreneau  @default(disponible)
+  verrouille_jusqua DateTime?
+
+  // Relations
+  coach        Coach         @relation(fields: [coach_id], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+
+  // Contrainte unicité : 1 créneau max par coach par date par période
+  @@unique([coach_id, date, periode])
+  @@map("creneaux")
+}
+
+enum Periode {
+  matin       // 8h00 - 12h00
+  apres_midi  // 14h00 - 18h00
+}
+
+enum StatutCreneau {
+  disponible
+  en_attente
+  reserve
+  annule
+}
+
+// ── RESERVATIONS ─────────────────────────────────────────────────────
+model Reservation {
+  id               Int             @id @default(autoincrement())
+  utilisateur_id   Int
+  creneau_id       Int
+  statut           StatutReservation @default(en_attente)
+  date_reservation DateTime        @default(now())
+  date_annulation  DateTime?
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [utilisateur_id], references: [id], onDelete: Cascade)
+  creneau     Creneau     @relation(fields: [creneau_id], references: [id], onDelete: Cascade)
+
+  @@map("reservations")
+}
+
+enum StatutReservation {
+  en_attente
+  confirmee
+  annulee
+  terminee
+}
+
+//table docker
+// route qui fonctionne
+//test route postman
+//test vitest 
+//dev back

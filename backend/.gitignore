@@ -1,0 +1,25 @@
+# Prisma generated client
+generated/
+
+# Dépendances
+node_modules/
+
+# Variables d'environnement
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Éditeur
+.vscode/*
+!.vscode/extensions.json

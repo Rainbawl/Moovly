@@ -1,0 +1,32 @@
+import express from "express";
+import * as controleurReservation from "../controllers/reservation.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import verifyRole from "../middleware/verifyRole.js";
+
+const routeur = express.Router();
+
+// GET /reservations/mine — Historique du sportif connecté (protégée)
+routeur.get(
+  "/mine",
+  verifyToken,
+  verifyRole("sportif", "admin"),
+  controleurReservation.obtenirMesReservations,
+);
+
+// POST /reservations — Créer une réservation (protégée — sportif uniquement)
+routeur.post(
+  "/",
+  verifyToken,
+  verifyRole("sportif"),
+  controleurReservation.creerReservation,
+);
+
+// DELETE /reservations/:id — Annuler une réservation (protégée)
+routeur.delete(
+  "/:id",
+  verifyToken,
+  verifyRole("sportif", "admin"),
+  controleurReservation.annulerReservation,
+);
+
+export default routeur;
