@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { defineConfig } = require("prisma/config");
 
 module.exports = defineConfig({
@@ -6,6 +7,6 @@ module.exports = defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "postgresql://moovly:moovly940@localhost:5433/moovly",
+    url: process.env.DATABASE_URL,
   },
 });

@@ -23,3 +23,6 @@ Thumbs.db
 # Éditeur
 .vscode/*
 !.vscode/extensions.json
+
+# Coverage
+coverage/
