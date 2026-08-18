@@ -9,7 +9,7 @@ const prisma = new PrismaClient({ adapter: adaptateur });
 async function main() {
   console.log("🌱 Début du seed...");
 
-  // ── Utilisateurs ───────────────────────────────────────────────
+  //   Utilisateurs
   const hashSportif = await bcrypt.hash("password123", 10);
   const hashCoach = await bcrypt.hash("password123", 10);
   const hashAdmin = await bcrypt.hash("admin123", 10);
@@ -53,7 +53,7 @@ async function main() {
   });
   console.log("✅ Admin créé :", admin.email);
 
-  // ── Profil coach ───────────────────────────────────────────────
+  //   Profil coach
   const coachProfil = await prisma.coach.upsert({
     where: { utilisateur_id: thomas.id },
     update: {},
@@ -66,7 +66,7 @@ async function main() {
   });
   console.log("✅ Profil coach validé");
 
-  // ── Sports ─────────────────────────────────────────────────────
+  //   Sports
   const sports = ["Tennis", "Running", "Yoga", "Boxe", "Natation", "Football"];
   for (const nom of sports) {
     await prisma.sport.upsert({

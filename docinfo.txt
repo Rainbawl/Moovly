@@ -1,0 +1,38 @@
+Base de données
+
+✅ Schema Prisma — 6 tables (utilisateurs, coachs, sports, coachs_sports, creneaux, reservations)
+✅ Migration init — tables créées dans PostgreSQL
+✅ Docker PostgreSQL — port 5433
+✅ Seed BDD — données de test automatiques
+
+Routes backend
+
+✅ POST /auth/register — inscription
+✅ POST /auth/login — connexion JWT
+✅ POST /auth/logout — déconnexion
+✅ GET /coaches — liste coachs
+✅ GET /coaches/:id — profil coach
+✅ GET /coaches/:id/creneaux — créneaux par date
+✅ POST /coaches/:id/creneaux — créer créneau
+✅ POST /reservations — réserver
+✅ GET /reservations/mine — historique
+✅ DELETE /reservations/:id — annuler
+✅ GET /admin/coaches — coachs en attente
+✅ PUT /admin/coaches/:id/valider — valider coach
+✅ GET /admin/sports — liste sports
+✅ POST /admin/sports — ajouter sport
+✅ GET /admin/stats — statistiques
+✅ GET /dashboard/coach — planning coach
+✅ GET /dashboard/coach/stats — stats coach
+
+Tests
+
+✅ 66 tests — 86% couverture
+✅ 28 tests unitaires Vitest
+✅ 38 tests d'intégration Supertest
+❌ Ce qui reste =>
+❌ Frontend React — 6 pages
+❌ Déploiement Railway
+❌ README.md
+
+

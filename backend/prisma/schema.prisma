@@ -11,7 +11,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ── UTILISATEURS ─────────────────────────────────────────────────────
+//   UTILISATEURS  
 model Utilisateur {
   id           Int      @id @default(autoincrement())
   nom          String   @db.VarChar(100)
@@ -34,7 +34,7 @@ enum Role {
   admin
 }
 
-// ── COACHS ───────────────────────────────────────────────────────────
+//   COACHS  
 model Coach {
   id             Int      @id @default(autoincrement())
   utilisateur_id Int      @unique
@@ -52,7 +52,7 @@ model Coach {
   @@map("coachs")
 }
 
-// ── SPORTS ───────────────────────────────────────────────────────────
+//   SPORTS  
 model Sport {
   id   Int    @id @default(autoincrement())
   nom  String @db.VarChar(100)
@@ -63,7 +63,7 @@ model Sport {
   @@map("sports")
 }
 
-// ── COACHS_SPORTS (jonction many-to-many) ────────────────────────────
+//   COACHS_SPORTS (jonction many-to-many)  
 model CoachSport {
   coach_id Int
   sport_id Int
@@ -106,7 +106,7 @@ enum StatutCreneau {
   annule
 }
 
-// ── RESERVATIONS ─────────────────────────────────────────────────────
+//  RESERVATIONS 
 model Reservation {
   id               Int             @id @default(autoincrement())
   utilisateur_id   Int
