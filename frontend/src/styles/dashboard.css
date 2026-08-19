@@ -1,0 +1,224 @@
+/*  Page dashboard  */
+.page-dashboard {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/*  En-tête  */
+.entete-dashboard {
+  background: #1a3a6e;
+  color: white;
+  padding: 16px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.entete-dashboard h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00b4d8;
+}
+
+.infos-utilisateur {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: #93c5fd;
+}
+
+/*  Bouton déconnexion  */
+.bouton-deconnexion {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.bouton-deconnexion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/*  Contenu principal  */
+.contenu-dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/*  Titres de section  */
+.titre-section {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 20px;
+}
+
+.sous-titre-section {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-top: 30px;
+  margin-bottom: 14px;
+}
+
+/*  Liste des réservations  */
+.liste-reservations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/*  Carte réservation  */
+.carte-reservation {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.infos-reservation h3 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 4px;
+}
+
+.infos-reservation p {
+  font-size: 13px;
+  color: #6c757d;
+  margin-bottom: 2px;
+}
+
+.date-reservation {
+  font-size: 12px;
+  color: #adb5bd;
+}
+
+/*  Badge statut réservation  */
+.badge-statut {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.statut-en_attente {
+  background: #fef3e2;
+  color: #d97706;
+}
+
+.statut-confirmee {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statut-annulee {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.statut-terminee {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/*  Bouton retour accueil  */
+.bouton-retour-accueil {
+  background: #00b4d8;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.bouton-retour-accueil:hover {
+  background: #00789e;
+}
+
+/*  Grille statistiques admin  */
+.grille-statistiques {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+/*  Carte statistique  */
+.carte-statistique {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.chiffre-stat {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 6px;
+}
+
+.libelle-stat {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/*  Liste coachs en attente  */
+.liste-coachs-attente {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/*  Carte coach en attente ─ */
+.carte-coach-attente {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carte-coach-attente h3 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 4px;
+}
+
+.carte-coach-attente p {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+/*  Bouton valider  */
+.bouton-valider {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bouton-valider:hover {
+  background: #15803d;
+}

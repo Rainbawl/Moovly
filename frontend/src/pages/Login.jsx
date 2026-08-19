@@ -22,7 +22,7 @@ function Login() {
       // Si succès alors on stocke le token puis on redirige
       connexion(reponse.data.user, reponse.data.accessToken);
       naviguer("/dashboard");
-    } catch (error) {
+    } catch (err) {
       //Si erreur, on affiche alors le message
       setErreur("Email ou mot de passe incorrect");
     }

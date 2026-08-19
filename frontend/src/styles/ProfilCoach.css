@@ -1,0 +1,204 @@
+/*  Page profil coach  */
+.page-profil-coach {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  min-height: 100vh;
+}
+
+/*  Bouton retour  */
+.bouton-retour {
+  background: none;
+  border: none;
+  color: #00b4d8;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.bouton-retour:hover {
+  color: #00789e;
+}
+
+/*  Carte principale du profil  */
+.carte-profil-coach {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 32px;
+}
+
+/*  En-tête avec avatar et infos  */
+.entete-coach {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/*  Grand avatar avec initiales  */
+.avatar-grand {
+  width: 80px;
+  height: 80px;
+  background: #e6f9fd;
+  color: #00789e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/*  Infos du coach  */
+.infos-coach h1 {
+  font-size: 24px;
+  color: #1a3a6e;
+  margin-bottom: 10px;
+}
+
+/*  Sports du coach  */
+.sports-coach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.badge-sport {
+  background: #e6f9fd;
+  color: #00789e;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/*  Tarif  */
+.tarif-coach {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 4px;
+}
+
+/*  Note  */
+.note-coach {
+  color: #f59e0b;
+  font-size: 14px;
+}
+
+/*  Section présentation  */
+.presentation-coach {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.presentation-coach h2 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 10px;
+}
+
+.presentation-coach p {
+  color: #495057;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/*  Section créneaux  */
+.section-creneaux h2 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1a3a6e;
+  margin-bottom: 16px;
+}
+
+/*  Sélecteur de date  */
+.selecteur-date {
+  margin-bottom: 20px;
+}
+
+/*  Liste des créneaux  */
+.liste-creneaux {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/*  Carte créneau  */
+.carte-creneau {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*  Infos du créneau  */
+.infos-creneau {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/*  Période matin ou après-midi  */
+.periode-creneau {
+  font-size: 14px;
+  font-weight: bold;
+  color: #1a3a6e;
+}
+
+/*  Horaire  */
+.horaire-creneau {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+/*  Statut du créneau  */
+.statut-creneau {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.statut-disponible {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statut-en_attente {
+  background: #fef3e2;
+  color: #d97706;
+}
+
+.statut-reserve {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/*  Bouton réserver  */
+.bouton-reserver {
+  background: #1a3a6e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bouton-reserver:hover {
+  background: #00b4d8;
+}

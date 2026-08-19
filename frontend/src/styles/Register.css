@@ -1,0 +1,100 @@
+/*  Page inscription — centrage du formulaire  */
+.page-register {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/*  Carte formulaire  */
+.formulaire-register {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+}
+
+/*  Titre MOOVLY  */
+.formulaire-register h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00b4d8;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/*  Sous-titre  */
+.formulaire-register h2 {
+  font-size: 20px;
+  color: #1a3a6e;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/*  Description  */
+.formulaire-register p {
+  font-size: 13px;
+  color: #6c757d;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/*  Choix du rôle sportif ou coach  */
+.choix-role {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/*  Carte de rôle  */
+.carte-role {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: #6c757d;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.carte-role:hover {
+  border-color: #00b4d8;
+  color: #00789e;
+}
+
+/*  Carte de rôle sélectionnée  */
+.carte-role.active {
+  border-color: #00b4d8;
+  background: #e6f9fd;
+  color: #00789e;
+}
+
+/*  Groupe de deux champs côte à côte  */
+.groupe-champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/*  Bouton principal — pleine largeur  */
+.formulaire-register .bouton-principal {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/*  Lien vers la connexion  */
+.lien-connexion {
+  text-align: center;
+  font-size: 13px;
+  color: #6c757d;
+  margin-top: 20px;
+}
