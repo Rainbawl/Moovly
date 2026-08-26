@@ -21,7 +21,7 @@ describe("Creneau Service", () => {
     vi.clearAllMocks();
   });
 
-  // ── obtenirCreneauxCoach ──────────────────────────────────────
+  //  obtenirCreneauxCoach
   it("TU-011 — obtenirCreneauxCoach : doit retourner 404 si coach introuvable", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue(null);
 
@@ -49,7 +49,7 @@ describe("Creneau Service", () => {
     expect(creneaux[1].horaire).toBe("14h00 - 18h00");
   });
 
-  // ── creerCreneau ─────────────────────────────────────────────
+  //  creerCreneau ─
   it("TU-013 — creerCreneau : doit rejeter une période invalide", async () => {
     await expect(
       serviceCreneau.creerCreneau(1, "2026-08-10", "soir"),
@@ -92,5 +92,41 @@ describe("Creneau Service", () => {
     await expect(
       serviceCreneau.creerCreneau(1, "2026-08-10", "matin"),
     ).rejects.toThrow("Un créneau existe déjà");
+  });
+  it("TU-017b — creerCreneau : doit rejeter si coach non validé", async () => {
+    // Simule un coach qui existe mais n'est pas encore validé par l'admin
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      est_valide: false, // ← pas encore validé
+    });
+
+    await expect(
+      serviceCreneau.creerCreneau(1, "2026-08-25", "matin"),
+    ).rejects.toThrow(
+      "Votre compte coach n'est pas encore validé par un admin",
+    );
+  });
+
+  it("TU-017c — creerCreneau : doit relancer une erreur inconnue", async () => {
+    // Simule un coach validé
+    depotCoach.trouverCoachParId.mockResolvedValue({ id: 1, est_valide: true });
+
+    // Simule une erreur inconnue (pas P2002) retournée par le repository
+    const erreurInconnue = new Error("Erreur inattendue");
+    erreurInconnue.code = "P9999";
+    depotCreneau.creerCreneau.mockRejectedValue(erreurInconnue);
+
+    // On s'attend à ce que l'erreur soit relancée telle quelle
+    await expect(
+      serviceCreneau.creerCreneau(1, "2026-08-25", "matin"),
+    ).rejects.toThrow("Erreur inattendue");
+  });
+  it("TU-017d — creerCreneau : doit rejeter si coach introuvable", async () => {
+    // Simule que le coach n'existe pas du tout
+    depotCoach.trouverCoachParId.mockResolvedValue(null);
+
+    await expect(
+      serviceCreneau.creerCreneau(999, "2026-08-25", "matin"),
+    ).rejects.toThrow("Coach introuvable");
   });
 });
