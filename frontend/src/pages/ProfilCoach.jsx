@@ -79,108 +79,122 @@ function ProfilCoach() {
   }, [dateSelectionnee]);
   return (
     <div className="page-profil-coach">
-      {/* Bouton retour */}
-      <button onClick={() => naviguer("/")} className="bouton-retour">
-        ← Retour aux coachs
-      </button>
+      {/* Navbar */}
+      <nav className="profil-navbar">
+        <div className="profil-logo" onClick={() => naviguer("/")}>
+          <strong>MOOVLY</strong>
+        </div>
+        <button
+          onClick={() => naviguer("/")}
+          style={{
+            background: "transparent",
+            color: "white",
+            border: "1px solid #08e0ff",
+            padding: "8px 20px",
+            borderRadius: "30px",
+            fontSize: "13px",
+            fontWeight: "700",
+            cursor: "pointer",
+          }}
+        >
+          Retour
+        </button>
+      </nav>
 
-      {/* Messages */}
-      {chargement && <p className="message-chargement">Chargement...</p>}
-      {erreur && <p className="message-erreur">{erreur}</p>}
-      {messageSucces && <p className="message-succes">{messageSucces}</p>}
+      {/* Contenu */}
+      <div className="profil-contenu">
+        <button onClick={() => naviguer("/")} className="bouton-retour">
+          ← Retour aux coachs
+        </button>
 
-      {/* Profil du coach */}
-      {coach && (
-        <div className="carte-profil-coach">
-          {/* En-tête coach */}
-          <div className="entete-coach">
-            <div className="avatar-grand">
-              {coach.prenom[0]}
-              {coach.nom[0]}
-            </div>
-            <div className="infos-coach">
-              <h1>
-                {coach.prenom} {coach.nom}
-              </h1>
-              {coach.sports.length > 0 && (
-                <div className="sports-coach">
-                  {coach.sports.map((sport, index) => (
-                    <span key={index} className="badge-sport">
-                      {sport}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {coach.tarif_horaire && (
-                <p className="tarif-coach">{coach.tarif_horaire}€ / séance</p>
-              )}
-              {coach.note_moyenne && (
-                <p className="note-coach">★ {coach.note_moyenne}</p>
-              )}
-            </div>
-          </div>
+        {chargement && <p className="message-chargement">Chargement...</p>}
+        {erreur && <p className="message-erreur">{erreur}</p>}
+        {messageSucces && <p className="message-succes">{messageSucces}</p>}
 
-          {/* Présentation */}
-          {coach.presentation && (
-            <div className="presentation-coach">
-              <h2>À propos</h2>
-              <p>{coach.presentation}</p>
-            </div>
-          )}
-
-          {/* Sélection de date */}
-          <div className="section-creneaux">
-            <h2>Créneaux disponibles</h2>
-            <div className="selecteur-date">
-              <label className="etiquette">Choisir une date</label>
-              <input
-                type="date"
-                value={dateSelectionnee}
-                onChange={(e) => {
-                  setDateSelectionnee(e.target.value);
-                  chargerCoach();
-                }}
-                className="champ-formulaire"
-                min={new Date().toISOString().split("T")[0]}
-              />
+        {coach && (
+          <div className="carte-profil-coach">
+            <div className="entete-coach">
+              <div className="avatar-grand">
+                {coach.prenom[0]}
+                {coach.nom[0]}
+              </div>
+              <div className="infos-coach">
+                <h1>
+                  {coach.prenom} {coach.nom}
+                </h1>
+                {coach.sports.length > 0 && (
+                  <div className="sports-coach">
+                    {coach.sports.map((sport, index) => (
+                      <span key={index} className="badge-sport">
+                        {sport}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {coach.tarif_horaire && (
+                  <p className="tarif-coach">{coach.tarif_horaire}€ / séance</p>
+                )}
+                {coach.note_moyenne && (
+                  <p className="note-coach">★ {coach.note_moyenne}</p>
+                )}
+              </div>
             </div>
 
-            {/* Liste des créneaux */}
-            {dateSelectionnee && creneaux.length === 0 && (
-              <p className="message-vide">
-                Aucun créneau disponible pour cette date
-              </p>
+            {coach.presentation && (
+              <div className="presentation-coach">
+                <h2>À propos</h2>
+                <p>{coach.presentation}</p>
+              </div>
             )}
 
-            <div className="liste-creneaux">
-              {creneaux.map((creneau) => (
-                <div key={creneau.id} className="carte-creneau">
-                  <div className="infos-creneau">
-                    <span className="periode-creneau">
-                      {creneau.periode === "matin"
-                        ? "🌅 Matin"
-                        : "🌇 Après-midi"}
-                    </span>
-                    <span className="horaire-creneau">{creneau.horaire}</span>
-                    <span className={`statut-creneau statut-${creneau.statut}`}>
-                      {creneau.statut}
-                    </span>
-                  </div>
+            <div className="section-creneaux">
+              <h2>Créneaux disponibles</h2>
+              <div className="selecteur-date">
+                <label className="etiquette">Choisir une date</label>
+                <input
+                  type="date"
+                  value={dateSelectionnee}
+                  onChange={(e) => setDateSelectionnee(e.target.value)}
+                  className="champ-formulaire"
+                  min={new Date().toISOString().split("T")[0]}
+                />
+              </div>
 
-                  {creneau.statut === "disponible" && (
-                    <button
-                      onClick={() => reserverCreneau(creneau.id)}
-                      className="bouton-reserver"
-                    >
-                      Réserver
-                    </button>
-                  )}
-                </div>
-              ))}
+              {dateSelectionnee && creneaux.length === 0 && (
+                <p className="message-vide">
+                  Aucun créneau disponible pour cette date
+                </p>
+              )}
+
+              <div className="liste-creneaux">
+                {creneaux.map((creneau) => (
+                  <div key={creneau.id} className="carte-creneau">
+                    <div className="infos-creneau">
+                      <span className="periode-creneau">
+                        {creneau.periode === "matin" ? "Matin" : "Après-midi"}
+                      </span>
+                      <span className="horaire-creneau">{creneau.horaire}</span>
+                      <span
+                        className={`statut-creneau statut-${creneau.statut}`}
+                      >
+                        {creneau.statut}
+                      </span>
+                    </div>
+                    {creneau.statut === "disponible" && (
+                      <button
+                        onClick={() => reserverCreneau(creneau.id)}
+                        className="bouton-reserver"
+                      >
+                        Réserver
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

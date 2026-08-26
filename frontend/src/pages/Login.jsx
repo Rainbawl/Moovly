@@ -13,60 +13,88 @@ function Login() {
 
   const gererConnexion = async (e) => {
     e.preventDefault();
+    console.log("Dans gerer connexion");
     try {
       //Appel au backend (appel API + redirection)
       const reponse = await api.post("/auth/login", {
         email,
         mot_de_passe: motDePasse,
       });
+      console.log("Apres post", reponse);
+
       // Si succès alors on stocke le token puis on redirige
       connexion(reponse.data.user, reponse.data.accessToken);
       naviguer("/dashboard");
     } catch (err) {
+      console.log(err);
       //Si erreur, on affiche alors le message
       setErreur("Email ou mot de passe incorrect");
     }
   };
   return (
     <div className="page-login">
-      <div className="formulaire-login">
-        <h1>MOOVLY</h1>
-        <h2>Bon retour 👋</h2>
-        <p>Connectez-vous à votre espace</p>
+      {/* Navbar */}
+      <nav className="login-navbar">
+        <div className="login-logo" onClick={() => naviguer("/")}>
+          <strong>MOOVLY</strong>
+        </div>
+        <button
+          onClick={() => naviguer("/register")}
+          style={{
+            background: "transparent",
+            color: "white",
+            border: "1px solid #08e0ff",
+            padding: "8px 20px",
+            borderRadius: "30px",
+            fontSize: "13px",
+            fontWeight: "700",
+            cursor: "pointer",
+          }}
+        >
+          S'inscrire
+        </button>
+      </nav>
 
-        {/* Affiche l'erreur si elle existe */}
-        {erreur && <p className="message-erreur">{erreur}</p>}
+      {/* Formulaire centré */}
+      <div className="login-contenu">
+        <div className="formulaire-login">
+          <h1>MOOVLY</h1>
+          <h2>Bon retour</h2>
+          <p>Connectez-vous à votre espace</p>
 
-        <form onSubmit={gererConnexion}>
-          <label className="etiquette">Email</label>
-          <input
-            type="email"
-            placeholder="vous@email.fr"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="champ-formulaire"
-          />
+          {erreur && <p className="message-erreur">{erreur}</p>}
 
-          <label className="etiquette">Mot de passe</label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            className="champ-formulaire"
-          />
+          <form onSubmit={gererConnexion}>
+            <label className="etiquette">Email</label>
+            <input
+              type="email"
+              placeholder="vous@email.fr"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="champ-formulaire"
+            />
 
-          <button type="submit" className="bouton-principal">
-            Se connecter
-          </button>
-        </form>
+            <label className="etiquette">Mot de passe</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              className="champ-formulaire"
+            />
 
-        <p className="lien-inscription">
-          Pas encore de compte ?{" "}
-          <span onClick={() => naviguer("/register")} className="lien">
-            S'inscrire
-          </span>
-        </p>
+            <button type="submit" className="bouton-connexion">
+              Se connecter
+            </button>
+          </form>
+
+          <p className="lien-inscription">
+            Pas encore de compte ?{" "}
+            <span onClick={() => naviguer("/register")} className="lien">
+              S'inscrire
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

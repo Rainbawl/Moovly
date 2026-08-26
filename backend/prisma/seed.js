@@ -7,45 +7,51 @@ const adaptateur = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: adaptateur });
 
 async function main() {
-  console.log("🌱 Début du seed...");
+  console.log(" Début du seed...");
 
   //   Utilisateurs
-  const hashSportif = await bcrypt.hash("password123", 10);
-  const hashCoach = await bcrypt.hash("password123", 10);
-  const hashAdmin = await bcrypt.hash("admin123", 10);
+  const hashSportif = await bcrypt.hash(process.env.SEED_PASSWORD_SPORTIF, 10);
+  const hashCoach = await bcrypt.hash(process.env.SEED_PASSWORD_COACH, 10);
+  const hashAdmin = await bcrypt.hash(process.env.SEED_PASSWORD_ADMIN, 10);
 
-  const jean = await prisma.utilisateur.upsert({
-    where: { email: "jean@test.fr" },
-    update: {},
+  const bocar = await prisma.utilisateur.upsert({
+    where: { email: "bocar@test.fr" },
+    update: {
+      mot_de_passe: hashSportif,
+    },
     create: {
-      nom: "Dupont",
-      prenom: "Jean",
-      email: "jean@test.fr",
+      nom: "Mané",
+      prenom: "bocar",
+      email: "bocar@test.fr",
       mot_de_passe: hashSportif,
       role: "sportif",
     },
   });
-  console.log("✅ Sportif créé :", jean.email);
+  console.log("✅ Sportif créé :", bocar.email);
 
-  const thomas = await prisma.utilisateur.upsert({
-    where: { email: "thomas@test.fr" },
-    update: {},
+  const camille = await prisma.utilisateur.upsert({
+    where: { email: "camille@test.fr" },
+    update: {
+      mot_de_passe: hashCoach,
+    },
     create: {
-      nom: "Lebrun",
-      prenom: "Thomas",
-      email: "thomas@test.fr",
+      nom: "eponime",
+      prenom: "camille",
+      email: "camille@test.fr",
       mot_de_passe: hashCoach,
       role: "coach",
     },
   });
-  console.log("✅ Coach créé :", thomas.email);
+  console.log("✅ Coach créé :", camille.email);
 
   const admin = await prisma.utilisateur.upsert({
     where: { email: "admin@moovly.fr" },
-    update: {},
+    update: {
+      mot_de_passe: hashAdmin,
+    },
     create: {
-      nom: "Admin",
-      prenom: "Moovly",
+      nom: "admin",
+      prenom: "afif",
       email: "admin@moovly.fr",
       mot_de_passe: hashAdmin,
       role: "admin",
@@ -55,10 +61,10 @@ async function main() {
 
   //   Profil coach
   const coachProfil = await prisma.coach.upsert({
-    where: { utilisateur_id: thomas.id },
+    where: { utilisateur_id: camille.id },
     update: {},
     create: {
-      utilisateur_id: thomas.id,
+      utilisateur_id: camille.id,
       est_valide: true, // Déjà validé par l'admin
       presentation: "Coach running et cardio depuis 8 ans",
       tarif_horaire: 35,
@@ -77,7 +83,7 @@ async function main() {
   }
   console.log("✅ Sports créés :", sports.join(", "));
 
-  console.log("🎉 Seed terminé !");
+  console.log(" Seed terminé !");
 }
 
 main()

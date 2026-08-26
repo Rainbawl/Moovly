@@ -13,7 +13,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
 
-// ── Middlewares globaux ───────────────────────────────────────────
+//  Middlewares globaux
 // Permet de lire le JSON dans le body des requêtes
 app.use(express.json());
 
@@ -25,14 +25,14 @@ app.use(
   }),
 );
 
-// ── Health check ─────────────────────────────────────────────────
+//  Health check
 // Route de vérification que l'API est bien démarrée
 // Utilisée par Railway pour le health check en production
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// ── Routes ───────────────────────────────────────────────────────
+//  Routes
 app.use("/auth", authRoutes); // POST /auth/register, /auth/login, /auth/logout
 app.use("/coaches", coachesRoutes); // GET /coaches, GET /coaches/:id
 app.use("/coaches/:id/creneaux", creneauxRoutes); // GET /coaches/:id/creneaux, POST /coaches/:id/creneaux
@@ -40,7 +40,7 @@ app.use("/reservations", reservationsRoutes); // GET /reservations/mine, POST /r
 app.use("/admin", adminRoutes); // Routes admin protégées
 app.use("/dashboard", dashboardRoutes); // GET /dashboard/coach, GET /dashboard/coach/stats
 
-// ── Gestion des erreurs globale ───────────────────────────────────
+//  Gestion des erreurs globale
 // Intercepte toutes les erreurs passées via next(err) dans les controllers
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ── Démarrage du serveur ──────────────────────────────────────────
+//  Démarrage du serveur
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Moovly API démarrée sur le port ${PORT}`);

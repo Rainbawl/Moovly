@@ -1,68 +1,99 @@
 /*  Page profil coach  */
 .page-profil-coach {
+  min-height: 100vh;
+  background: #031b45;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/*  Navbar  */
+.profil-navbar {
+  background: rgba(3, 27, 69, 0.97);
+  border-bottom: 1px solid rgba(8, 224, 255, 0.22);
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+
+.profil-logo {
+  cursor: pointer;
+}
+
+.profil-logo strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+}
+
+/*  Contenu principal  */
+.profil-contenu {
   max-width: 800px;
   margin: 0 auto;
   padding: 30px 20px;
-  min-height: 100vh;
 }
 
 /*  Bouton retour  */
 .bouton-retour {
   background: none;
   border: none;
-  color: #00b4d8;
+  color: #08e0ff;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   padding: 0;
   margin-bottom: 24px;
+  display: block;
 }
 
 .bouton-retour:hover {
-  color: #00789e;
+  color: white;
 }
 
-/*  Carte principale du profil  */
+/*  Carte principale  */
 .carte-profil-coach {
-  background: white;
-  border: 1px solid #dee2e6;
+  background: #082a5d;
+  border: 1px solid rgba(8, 224, 255, 0.25);
   border-radius: 12px;
   padding: 32px;
 }
 
-/*  En-tête avec avatar et infos  */
+/*  En-tête coach  */
 .entete-coach {
   display: flex;
   gap: 24px;
   align-items: flex-start;
   margin-bottom: 28px;
   padding-bottom: 28px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid rgba(8, 224, 255, 0.15);
 }
 
-/*  Grand avatar avec initiales  */
+/*  Grand avatar  */
 .avatar-grand {
   width: 80px;
   height: 80px;
-  background: #e6f9fd;
-  color: #00789e;
+  background: rgba(8, 224, 255, 0.1);
+  color: #08e0ff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  font-weight: bold;
+  font-weight: 800;
   flex-shrink: 0;
 }
 
-/*  Infos du coach  */
+/*  Infos coach  */
 .infos-coach h1 {
   font-size: 24px;
-  color: #1a3a6e;
+  font-weight: 800;
+  color: white;
   margin-bottom: 10px;
 }
 
-/*  Sports du coach  */
+/*  Sports  */
 .sports-coach {
   display: flex;
   flex-wrap: wrap;
@@ -71,19 +102,19 @@
 }
 
 .badge-sport {
-  background: #e6f9fd;
-  color: #00789e;
+  background: rgba(8, 224, 255, 0.1);
+  color: #08e0ff;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 /*  Tarif  */
 .tarif-coach {
   font-size: 18px;
-  font-weight: bold;
-  color: #1a3a6e;
+  font-weight: 700;
+  color: #08e0ff;
   margin-bottom: 4px;
 }
 
@@ -93,22 +124,22 @@
   font-size: 14px;
 }
 
-/*  Section présentation  */
+/*  Présentation  */
 .presentation-coach {
   margin-bottom: 28px;
   padding-bottom: 28px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid rgba(8, 224, 255, 0.15);
 }
 
 .presentation-coach h2 {
   font-size: 16px;
-  font-weight: bold;
-  color: #1a3a6e;
+  font-weight: 700;
+  color: #08e0ff;
   margin-bottom: 10px;
 }
 
 .presentation-coach p {
-  color: #495057;
+  color: #a9c1df;
   line-height: 1.6;
   font-size: 14px;
 }
@@ -116,14 +147,40 @@
 /*  Section créneaux  */
 .section-creneaux h2 {
   font-size: 16px;
-  font-weight: bold;
-  color: #1a3a6e;
+  font-weight: 700;
+  color: #08e0ff;
   margin-bottom: 16px;
 }
 
 /*  Sélecteur de date  */
 .selecteur-date {
   margin-bottom: 20px;
+}
+
+.etiquette {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #a9c1df;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.champ-formulaire {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(8, 224, 255, 0.2);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background: rgba(8, 224, 255, 0.05);
+  color: white;
+  margin-bottom: 0;
+}
+
+.champ-formulaire:focus {
+  border-color: #08e0ff;
 }
 
 /*  Liste des créneaux  */
@@ -135,8 +192,8 @@
 
 /*  Carte créneau  */
 .carte-creneau {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background: rgba(8, 224, 255, 0.05);
+  border: 1px solid rgba(8, 224, 255, 0.2);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -144,61 +201,93 @@
   justify-content: space-between;
 }
 
-/*  Infos du créneau  */
+/*  Infos créneau  */
 .infos-creneau {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/*  Période matin ou après-midi  */
 .periode-creneau {
   font-size: 14px;
-  font-weight: bold;
-  color: #1a3a6e;
+  font-weight: 700;
+  color: white;
 }
 
-/*  Horaire  */
 .horaire-creneau {
   font-size: 13px;
-  color: #6c757d;
+  color: #a9c1df;
 }
 
-/*  Statut du créneau  */
+/*  Statuts  */
 .statut-creneau {
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700;
   padding: 3px 10px;
   border-radius: 20px;
 }
 
 .statut-disponible {
-  background: #dcfce7;
-  color: #16a34a;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
 }
 
 .statut-en_attente {
-  background: #fef3e2;
-  color: #d97706;
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
 }
 
 .statut-reserve {
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 /*  Bouton réserver  */
 .bouton-reserver {
-  background: #1a3a6e;
-  color: white;
+  background: #08e0ff;
+  color: #002343;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .bouton-reserver:hover {
-  background: #00b4d8;
+  background: #00c4e0;
+}
+
+/*  Messages  */
+.message-chargement {
+  text-align: center;
+  color: #a9c1df;
+  padding: 40px;
+}
+
+.message-erreur {
+  color: #ff6b6b;
+  font-size: 13px;
+  padding: 10px 14px;
+  background: rgba(255, 107, 107, 0.1);
+  border-left: 3px solid #ff6b6b;
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+
+.message-succes {
+  color: #22c55e;
+  font-size: 13px;
+  padding: 10px 14px;
+  background: rgba(34, 197, 94, 0.1);
+  border-left: 3px solid #22c55e;
+  border-radius: 4px;
+  margin-bottom: 14px;
+}
+
+.message-vide {
+  text-align: center;
+  color: #a9c1df;
+  padding: 20px;
 }

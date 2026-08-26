@@ -1,69 +1,155 @@
-/*  Page login — centrage du formulaire  */
+/*  Page login  */
 .page-login {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background:
+    linear-gradient(rgba(3, 27, 69, 0.6), rgba(3, 27, 69, 0.6)),
+    url("/sportsites.png") center/cover no-repeat;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/*  Navbar  */
+.page-login .login-navbar {
+  background: rgba(3, 27, 69, 0.97);
+  border-bottom: 1px solid rgba(8, 224, 255, 0.22);
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+
+.page-login .login-logo {
+  cursor: pointer;
+}
+
+.page-login .login-logo strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+}
+
+/*  Contenu centré  */
+.page-login .login-contenu {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 40px 20px;
 }
 
 /*  Carte formulaire  */
-.formulaire-login {
+.page-login .formulaire-login {
   background: white;
-  border: 1px solid #dee2e6;
+  border: 1px solid rgba(8, 224, 255, 0.25);
   border-radius: 12px;
   padding: 40px;
   width: 100%;
   max-width: 420px;
 }
 
-/*  Titre MOOVLY  */
-.formulaire-login h1 {
-  font-size: 28px;
-  font-weight: bold;
-  color: #00b4d8;
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-/*  Sous-titre  */
-.formulaire-login h2 {
-  font-size: 20px;
-  color: #1a3a6e;
+/*  Titres  */
+.page-login .formulaire-login h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #08e0ff;
   text-align: center;
   margin-bottom: 6px;
 }
 
-/*  Description  */
-.formulaire-login p {
+.page-login .formulaire-login h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.page-login .formulaire-login p {
   font-size: 13px;
-  color: #6c757d;
+  color: #a9c1df;
   text-align: center;
   margin-bottom: 24px;
 }
 
-/*  Bouton principal — pleine largeur  */
-.formulaire-login .bouton-principal {
-  width: 100%;
-  margin-top: 8px;
+/*  Etiquette  */
+.page-login .etiquette {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #a9c1df;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/*  Lien cliquable  */
-.lien {
-  color: #00b4d8;
-  font-weight: bold;
+/*  Champ formulaire  */
+.page-login .champ-formulaire {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(8, 224, 255, 0.2);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 16px;
+  background: rgba(8, 224, 255, 0.05);
+  color: #0a1628;
+}
+
+.page-login .champ-formulaire::placeholder {
+  color: #a9c1df;
+}
+
+.page-login .champ-formulaire:focus {
+  border-color: #08e0ff;
+}
+
+/*  Bouton connexion  */
+.page-login .bouton-connexion {
+  width: 100%;
+  margin-top: 8px;
+  background: #08e0ff;
+  color: #002343;
+  border: none;
+  padding: 12px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.page-login .bouton-connexion:hover {
+  background: #00c4e0;
+}
+
+/*  Lien inscription  */
+.page-login .lien-inscription {
+  text-align: center;
+  font-size: 13px;
+  color: #a9c1df;
+  margin-top: 20px;
+}
+
+.page-login .lien {
+  color: #08e0ff;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.lien:hover {
-  color: #00789e;
-  text-decoration: underline;
+.page-login .lien:hover {
+  color: white;
 }
 
-/*  Texte lien inscription  */
-.lien-inscription {
-  text-align: center;
+/*  Message erreur  */
+.page-login .message-erreur {
+  color: #ff6b6b;
   font-size: 13px;
-  color: #6c757d;
-  margin-top: 20px;
+  padding: 10px 14px;
+  background: rgba(255, 107, 107, 0.1);
+  border-left: 3px solid #ff6b6b;
+  border-radius: 4px;
+  margin-bottom: 14px;
 }

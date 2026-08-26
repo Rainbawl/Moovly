@@ -1,6 +1,5 @@
-// Page d'accueil — première page visible par le visiteur
-// Affiche la liste des coachs disponibles avec filtre par sport
-// Accessible sans connexion (route publique)
+// Page d'accueil Moovly
+// Affiche le hero, les features et la grille de coachs dynamique depuis le backend
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,53 +7,32 @@ import api from "../services/api";
 import "../styles/accueil.css";
 
 function Accueil() {
-  // Liste de tous les coachs récupérés depuis le backend
   const [coachs, setCoachs] = useState([]);
-
-  // Valeur du champ de recherche saisie par l'utilisateur
   const [filtreSport, setFiltreSport] = useState("");
-
-  // true pendant que les données se chargent — affiche "Chargement..."
   const [chargement, setChargement] = useState(true);
-
-  // Message d'erreur si l'appel API échoue
   const [erreur, setErreur] = useState("");
-
-  // Hook de navigation — permet de changer de page sans recharger le navigateur
   const naviguer = useNavigate();
 
-  // Fonction qui appelle le backend pour récupérer la liste des coachs
-  // Paramètre optionnel "sport" pour filtrer par discipline
+  // Charge les coachs au démarrage
   const chargerCoachs = async (sport = "") => {
     try {
       setChargement(true);
       setErreur("");
-
-      // Appel API — si un sport est fourni on ajoute le filtre dans l'URL
-      // Exemple : /coaches ou /coaches?sport=Tennis
       const reponse = await api.get(
         `/coaches${sport ? `?sport=${sport}` : ""}`,
       );
-
-      // Met à jour la liste des coachs avec la réponse du backend
       setCoachs(reponse.data.coachs);
     } catch (err) {
-      // En cas d'erreur réseau ou serveur
-      setErreur("Impossible de charger les coachs. Vérifiez votre connexion.");
+      setErreur("Impossible de charger les coachs");
     } finally {
-      // Dans tous les cas — succès ou erreur — on arrête le chargement
       setChargement(false);
     }
   };
 
-  // useEffect — s'exécute une seule fois au chargement de la page
-  // Le [] vide signifie "ne s'exécute qu'au montage du composant"
   useEffect(() => {
     chargerCoachs();
   }, []);
 
-  // Appelée à chaque frappe dans la barre de recherche
-  // Met à jour le filtre ET relance la recherche côté backend
   const gererRecherche = (e) => {
     const valeur = e.target.value;
     setFiltreSport(valeur);
@@ -63,76 +41,119 @@ function Accueil() {
 
   return (
     <div className="page-accueil">
-      {/*  En-tête de la page  */}
-      <header className="entete-accueil">
-        <h1>MOOVLY</h1>
-        <p>Trouvez votre coach sportif idéal</p>
-
-        {/* Boutons de navigation vers login et inscription */}
-        <div className="groupe-boutons-entete">
+      {/*  Navbar  */}
+      <nav className="navbar">
+        <div className="logo">
+          <div className="logo-icon">M</div>
+          <div>
+            <strong>MOOVLY</strong>
+            <small>Trouve ton coach</small>
+          </div>
+        </div>
+        <div className="nav-actions">
           <button
             onClick={() => naviguer("/login")}
-            className="bouton-secondaire"
+            className="btn btn-outline"
           >
             Se connecter
           </button>
           <button
             onClick={() => naviguer("/register")}
-            className="bouton-principal"
+            className="btn btn-primary"
           >
             S'inscrire
           </button>
         </div>
-      </header>
+      </nav>
 
-      {/*  Barre de recherche  */}
-      <div className="barre-recherche">
-        <input
-          type="text"
-          placeholder="Rechercher par sport (Tennis, Running, Yoga...)"
-          value={filtreSport}
-          onChange={gererRecherche}
-          className="champ-recherche"
-        />
-      </div>
+      {/*  Hero  */}
+      <section className="hero">
+        <div className="hero-content">
+          <div className="hero-text">
+            <p className="eyebrow">SPORT · PERFORMANCE · BIEN-ÊTRE</p>
+            <h1>
+              Trouvez votre
+              <span> coach idéal</span>
+            </h1>
+            <p className="hero-description">
+              Des coachs certifiés disponibles près de chez vous. Réservez votre
+              créneau matin ou après-midi en quelques clics.
+            </p>
+            <button
+              onClick={() =>
+                document
+                  .getElementById("coachs")
+                  .scrollIntoView({ behavior: "smooth" })
+              }
+              className="btn btn-primary btn-large"
+            >
+              Voir les coachs
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {/*  Zone principale  */}
-      <main className="zone-principale">
-        {/* Affiche "Chargement..." pendant la récupération des données */}
+      {/*  Features  */}
+      <section className="features">
+        <div className="features-grid">
+          <div className="feature">
+            <div className="feature-texte">
+              <h3>Coachs certifiés</h3>
+              <p>Professionnels validés par notre équipe</p>
+            </div>
+          </div>
+          <div className="feature">
+            <div className="feature-texte">
+              <h3>Réservation simple</h3>
+              <p>Créneau matin ou après-midi</p>
+            </div>
+          </div>
+          <div className="feature">
+            <div className="feature-texte">
+              <h3>Résultats garantis</h3>
+              <p>Suivi personnalisé et progressif</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/*  Section coachs  */}
+      <section className="section-coachs" id="coachs">
+        <div className="entete-section">
+          <h2>Nos coachs disponibles</h2>
+          <input
+            type="text"
+            placeholder="Filtrer par sport..."
+            value={filtreSport}
+            onChange={gererRecherche}
+            className="champ-recherche"
+          />
+        </div>
+
+        {/* Messages */}
         {chargement && (
           <p className="message-chargement">Chargement des coachs...</p>
         )}
-
-        {/* Affiche le message d'erreur si la requête a échoué */}
         {erreur && <p className="message-erreur">{erreur}</p>}
-
-        {/* Affiche un message si aucun coach n'est trouvé */}
         {!chargement && coachs.length === 0 && (
-          <p className="message-vide">Aucun coach trouvé pour ce sport</p>
+          <p className="message-vide">Aucun coach trouvé</p>
         )}
 
-        {/*  Grille des cartes coachs  */}
+        {/* Grille des coachs */}
         <div className="grille-coachs">
           {coachs.map((coach) => (
-            // key={coach.id} — obligatoire en React pour identifier chaque élément
-            // onClick — navigue vers le profil du coach quand on clique sur la carte
             <div
               key={coach.id}
               className="carte-coach"
               onClick={() => naviguer(`/coaches/${coach.id}`)}
             >
-              {/* Avatar avec les initiales du prénom et du nom */}
               <div className="avatar-coach">
                 {coach.prenom[0]}
                 {coach.nom[0]}
               </div>
-
-              {/* Nom complet du coach */}
               <h3>
                 {coach.prenom} {coach.nom}
               </h3>
-
-              {/* Liste des sports pratiqués par le coach */}
               <div className="sports-coach">
                 {coach.sports.length > 0 ? (
                   coach.sports.map((sport, index) => (
@@ -146,23 +167,23 @@ function Accueil() {
                   </span>
                 )}
               </div>
-
-              {/* Tarif — affiché uniquement s'il est renseigné */}
               {coach.tarif_horaire && (
                 <p className="tarif-coach">{coach.tarif_horaire}€ / séance</p>
               )}
-
-              {/* Note moyenne — affichée uniquement si elle existe */}
-              {coach.note_moyenne && (
-                <p className="note-coach">★ {coach.note_moyenne}</p>
-              )}
-
-              {/* Bouton pour accéder au profil complet */}
               <button className="bouton-voir-profil">Voir le profil →</button>
             </div>
           ))}
         </div>
-      </main>
+      </section>
+
+      {/*  Footer  */}
+      <footer className="footer">
+        <div>
+          <strong>MOOVLY</strong>
+          <p>Votre partenaire sportif</p>
+        </div>
+        <p>© 2026 Moovly. Tous droits réservés.</p>
+      </footer>
     </div>
   );
 }

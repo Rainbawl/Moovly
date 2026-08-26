@@ -68,7 +68,6 @@ export const register = async (data) => {
 export const login = async (email, password) => {
   // Cherche l'utilisateur par email
   const user = await authRepository.findUserByEmail(email);
-
   // Message générique intentionnel — ne révèle pas si l'email existe
   // Protège contre les attaques d'énumération d'emails
   if (!user) {

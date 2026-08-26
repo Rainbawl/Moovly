@@ -9,32 +9,36 @@ describe("Dashboard Routes — Tests d'intégration", () => {
   let tokenAdmin;
 
   beforeAll(async () => {
-    // Connexion coach
     const loginCoach = await request(app)
       .post("/auth/login")
-      .send({ email: "thomas@test.fr", mot_de_passe: "password123" });
+      .send({
+        email: "camille@test.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_COACH,
+      });
     tokenCoach = loginCoach.body.accessToken;
 
-    // Connexion sportif
     const loginSportif = await request(app)
       .post("/auth/login")
-      .send({ email: "jean@test.fr", mot_de_passe: "password123" });
+      .send({
+        email: "bocar@test.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+      });
     tokenSportif = loginSportif.body.accessToken;
 
-    // Connexion admin
     const loginAdmin = await request(app)
       .post("/auth/login")
-      .send({ email: "admin@moovly.fr", mot_de_passe: "admin123" });
+      .send({
+        email: "admin@moovly.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+      });
     tokenAdmin = loginAdmin.body.accessToken;
   });
 
-  // ── GET /dashboard/coach ──────────────────────────────────────
   describe("GET /dashboard/coach", () => {
     it("TI-034 — doit retourner le planning du coach connecté", async () => {
       const reponse = await request(app)
         .get("/dashboard/coach")
         .set("Authorization", `Bearer ${tokenCoach}`);
-
       expect(reponse.status).toBe(200);
       expect(reponse.body.planning).toBeDefined();
       expect(Array.isArray(reponse.body.planning.creneaux)).toBe(true);
@@ -42,7 +46,6 @@ describe("Dashboard Routes — Tests d'intégration", () => {
 
     it("TI-035 — doit rejeter si non connecté", async () => {
       const reponse = await request(app).get("/dashboard/coach");
-
       expect(reponse.status).toBe(401);
     });
 
@@ -50,18 +53,15 @@ describe("Dashboard Routes — Tests d'intégration", () => {
       const reponse = await request(app)
         .get("/dashboard/coach")
         .set("Authorization", `Bearer ${tokenSportif}`);
-
       expect(reponse.status).toBe(403);
     });
   });
 
-  // ── GET /dashboard/coach/stats ────────────────────────────────
   describe("GET /dashboard/coach/stats", () => {
     it("TI-037 — doit retourner les statistiques du coach", async () => {
       const reponse = await request(app)
         .get("/dashboard/coach/stats")
         .set("Authorization", `Bearer ${tokenCoach}`);
-
       expect(reponse.status).toBe(200);
       expect(reponse.body.statistiques.totalCreneaux).toBeDefined();
       expect(reponse.body.statistiques.totalReservations).toBeDefined();
@@ -72,7 +72,6 @@ describe("Dashboard Routes — Tests d'intégration", () => {
       const reponse = await request(app)
         .get("/dashboard/coach/stats")
         .set("Authorization", `Bearer ${tokenAdmin}`);
-
       expect(reponse.status).toBe(403);
     });
   });
