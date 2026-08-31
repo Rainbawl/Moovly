@@ -17,6 +17,22 @@
   min-height: 70px;
 }
 
+.page-profil-coach .bouton-navbar {
+  background: transparent;
+  color: white;
+  border: 1px solid #08e0ff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.page-profil-coach .bouton-navbar:hover {
+  background: rgba(8, 224, 255, 0.1);
+}
+
 .profil-logo {
   cursor: pointer;
 }

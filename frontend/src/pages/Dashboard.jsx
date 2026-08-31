@@ -53,22 +53,25 @@ function Dashboard() {
   // utilisateur?.role — optional chaining
   // Si utilisateur est null → ne plante pas, retourne undefined
   // Si utilisateur existe → retourne utilisateur.role
+
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (utilisateur?.role === "sportif") {
       chargerReservations();
     } else if (utilisateur?.role === "admin") {
       chargerDonneesAdmin();
     } else {
       setChargement(false);
-    }
-  }, []);
+    } /* eslint-enable react-hooks/set-state-in-effect */
+  }, [utilisateur?.role]);
+
   return (
     <div className="page-dashboard">
       {/* En-tête avec nom et bouton déconnexion */}
       <header className="entete-dashboard">
         <h1>MOOVLY</h1>
         <div className="infos-utilisateur">
-          <span>Bonjour {utilisateur?.prenom} 👋</span>
+          <span>Bonjour {utilisateur?.prenom} </span>
           <button onClick={deconnexion} className="bouton-deconnexion">
             Se déconnecter
           </button>
@@ -97,13 +100,13 @@ function Dashboard() {
                     </h3>
                     <p>
                       {reservation.creneau.periode === "matin"
-                        ? "🌅 Matin"
-                        : "🌇 Après-midi"}
+                        ? " Matin"
+                        : " Après-midi"}
                       {" · "}
                       {reservation.creneau.horaire}
                     </p>
                     <p className="date-reservation">
-                      📅{" "}
+                      {" "}
                       {new Date(reservation.creneau.date).toLocaleDateString(
                         "fr-FR",
                       )}

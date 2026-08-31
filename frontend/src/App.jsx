@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { FournisseurAuth, useAuth } from "./context/AuthContext";
 
-// Import des pages (on les créera juste après)
+// Import des pages
 import Accueil from "./pages/Accueil";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -22,6 +22,20 @@ function RouteProtegee({ children }) {
   return children;
 }
 
+// Composant qui redirige si déjà connecté
+// Si l'utilisateur EST connecté et va sur /login ou /register → redirige vers /dashboard
+function RoutePublique({ children }) {
+  const { estConnecte } = useAuth();
+
+  if (estConnecte()) {
+    // Redirige vers dashboard si déjà connecté
+    return <Navigate to="/dashboard" />;
+  }
+
+  // Sinon affiche la page demandée (login ou register)
+  return children;
+}
+
 // Composant principal
 function App() {
   return (
@@ -32,8 +46,25 @@ function App() {
         <Routes>
           {/* Routes publiques — accessibles sans connexion */}
           <Route path="/" element={<Accueil />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+
+          {/* RoutePublique — redirige vers /dashboard si déjà connecté */}
+          <Route
+            path="/login"
+            element={
+              <RoutePublique>
+                <Login />
+              </RoutePublique>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <RoutePublique>
+                <Register />
+              </RoutePublique>
+            }
+          />
+
           <Route path="/coaches/:id" element={<ProfilCoach />} />
 
           {/* Route protégée — nécessite d'être connecté */}

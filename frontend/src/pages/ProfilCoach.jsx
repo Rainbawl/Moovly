@@ -16,8 +16,7 @@ function ProfilCoach() {
   const naviguer = useNavigate();
   const { estConnecte } = useAuth();
 
-  const chargerCoach = async (date) => {
-    console.log("Date envoyée :", date);
+  const chargerCoach = async () => {
     try {
       // appel API pour récupérer le profil du coach
       // hint : api.get(`/coaches/${id}`)
@@ -30,7 +29,7 @@ function ProfilCoach() {
         );
         setCreneaux(reponseCreneaux.data.creneaux);
       }
-    } catch (error) {
+    } catch {
       setErreur("Impossible de charger le profil");
     } finally {
       setChargement(false);
@@ -49,31 +48,21 @@ function ProfilCoach() {
       // 2. appel API
       await api.post("/reservations", { creneau_id: creneauId });
       // 3. si succès
-      setMessageSucces("🎉 Réservation confirmée !");
-    } catch (error) {
+      setMessageSucces(" Réservation confirmée !");
+    } catch {
       // 4. si erreur
       setErreur("Impossible de réserver ce créneau");
     }
   };
 
-  // Fonction séparée pour charger uniquement les créneaux
-  const chargerCreneaux = async (date) => {
-    try {
-      const reponseCreneaux = await api.get(
-        `/coaches/${id}/creneaux?date=${date}`,
-      );
-      setCreneaux(reponseCreneaux.data.creneaux);
-    } catch (error) {
-      console.log("Erreur créneaux", error);
-    }
-  };
-
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     chargerCoach();
   }, []);
   // Deuxième useEffect — recharge les créneaux quand la date change
   useEffect(() => {
     if (dateSelectionnee) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       chargerCoach();
     }
   }, [dateSelectionnee]);
@@ -84,19 +73,7 @@ function ProfilCoach() {
         <div className="profil-logo" onClick={() => naviguer("/")}>
           <strong>MOOVLY</strong>
         </div>
-        <button
-          onClick={() => naviguer("/")}
-          style={{
-            background: "transparent",
-            color: "white",
-            border: "1px solid #08e0ff",
-            padding: "8px 20px",
-            borderRadius: "30px",
-            fontSize: "13px",
-            fontWeight: "700",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => naviguer("/")} className="bouton-navbar">
           Retour
         </button>
       </nav>

@@ -1,4 +1,4 @@
-/* ── Styles globaux — appliqués à toute l'application ────────── */
+/*  Styles globaux — appliqués à toute l'application  */
 
 * {
   margin: 0;
@@ -12,7 +12,7 @@ body {
   color: #0f172a;
 }
 
-/* ── Boutons réutilisables partout ───────────────────────────── */
+/*  Boutons réutilisables partout  */
 .bouton-principal {
   background: #00b4d8;
   color: white;
@@ -58,7 +58,7 @@ body {
   background: #b91c1c;
 }
 
-/* ── Messages réutilisables partout ──────────────────────────── */
+/*  Messages réutilisables partout  */
 .message-chargement {
   text-align: center;
   color: #6c757d;
@@ -93,7 +93,7 @@ body {
   padding: 40px;
 }
 
-/* ── Champs de formulaire réutilisables ──────────────────────── */
+/*  Champs de formulaire réutilisables  */
 .champ-formulaire {
   width: 100%;
   padding: 12px 16px;

@@ -49,6 +49,17 @@
   color: white;
 }
 
+.logo-image {
+  height: 40px;
+  width: auto;
+}
+
+.footer-logo-image {
+  height: 28px;
+  width: auto;
+  margin-bottom: 4px;
+}
+
 .logo small {
   display: block;
   font-size: 10px;

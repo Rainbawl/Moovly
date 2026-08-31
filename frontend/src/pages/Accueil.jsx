@@ -22,7 +22,7 @@ function Accueil() {
         `/coaches${sport ? `?sport=${sport}` : ""}`,
       );
       setCoachs(reponse.data.coachs);
-    } catch (err) {
+    } catch {
       setErreur("Impossible de charger les coachs");
     } finally {
       setChargement(false);
@@ -30,6 +30,7 @@ function Accueil() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     chargerCoachs();
   }, []);
 
@@ -44,11 +45,8 @@ function Accueil() {
       {/*  Navbar  */}
       <nav className="navbar">
         <div className="logo">
-          <div className="logo-icon">M</div>
-          <div>
-            <strong>MOOVLY</strong>
-            <small>Trouve ton coach</small>
-          </div>
+          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
+          <small>Trouve ton coach</small>
         </div>
         <div className="nav-actions">
           <button
@@ -179,7 +177,7 @@ function Accueil() {
       {/*  Footer  */}
       <footer className="footer">
         <div>
-          <strong>MOOVLY</strong>
+          <img src="/Moovly.png" alt="Moovly" className="footer-logo-image" />
           <p>Votre partenaire sportif</p>
         </div>
         <p>© 2026 Moovly. Tous droits réservés.</p>

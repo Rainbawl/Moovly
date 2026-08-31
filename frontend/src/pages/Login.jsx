@@ -36,21 +36,9 @@ function Login() {
       {/* Navbar */}
       <nav className="login-navbar">
         <div className="login-logo" onClick={() => naviguer("/")}>
-          <strong>MOOVLY</strong>
+          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
         </div>
-        <button
-          onClick={() => naviguer("/register")}
-          style={{
-            background: "transparent",
-            color: "white",
-            border: "1px solid #08e0ff",
-            padding: "8px 20px",
-            borderRadius: "30px",
-            fontSize: "13px",
-            fontWeight: "700",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => naviguer("/register")} className="bouton-navbar">
           S'inscrire
         </button>
       </nav>
@@ -58,7 +46,7 @@ function Login() {
       {/* Formulaire centré */}
       <div className="login-contenu">
         <div className="formulaire-login">
-          <h1>MOOVLY</h1>
+          <img src="/Moovly.png" alt="Moovly" className="logo-image-carte" />
           <h2>Bon retour</h2>
           <p>Connectez-vous à votre espace</p>
 

@@ -20,6 +20,22 @@
   min-height: 70px;
 }
 
+.page-login .bouton-navbar {
+  background: transparent;
+  color: white;
+  border: 1px solid #08e0ff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.page-login .bouton-navbar:hover {
+  background: rgba(8, 224, 255, 0.1);
+}
+
 .page-login .login-logo {
   cursor: pointer;
 }
@@ -29,6 +45,18 @@
   font-weight: 800;
   letter-spacing: 1px;
   color: white;
+}
+
+.page-login .logo-image {
+  height: 52px;
+  width: auto;
+}
+
+.page-login .logo-image-carte {
+  height: 60px;
+  width: auto;
+  display: block;
+  margin: 0 auto 6px;
 }
 
 /*  Contenu centré  */

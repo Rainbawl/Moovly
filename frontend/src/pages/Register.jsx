@@ -1,7 +1,6 @@
 import "../styles/Register.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
 function Register() {
@@ -26,7 +25,7 @@ function Register() {
       });
       // Si succès on redirige vers login
       naviguer("/login");
-    } catch (error) {
+    } catch {
       // Si erreur on affiche le message
       setErreur("Une erreur est survenue. Vérifiez vos informations.");
     }
@@ -36,21 +35,9 @@ function Register() {
       {/* Navbar */}
       <nav className="register-navbar">
         <div className="register-logo" onClick={() => naviguer("/")}>
-          <strong>MOOVLY</strong>
+          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
         </div>
-        <button
-          onClick={() => naviguer("/login")}
-          style={{
-            background: "transparent",
-            color: "white",
-            border: "1px solid #08e0ff",
-            padding: "8px 20px",
-            borderRadius: "30px",
-            fontSize: "13px",
-            fontWeight: "700",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => naviguer("/login")} className="bouton-navbar">
           Se connecter
         </button>
       </nav>
@@ -58,7 +45,7 @@ function Register() {
       {/* Formulaire centré */}
       <div className="register-contenu">
         <div className="formulaire-register">
-          <h1>MOOVLY</h1>
+          <img src="/Moovly.png" alt="Moovly" className="logo-image-carte" />
           <h2>Créer un compte</h2>
           <p>Rejoignez la communauté Moovly</p>
 
