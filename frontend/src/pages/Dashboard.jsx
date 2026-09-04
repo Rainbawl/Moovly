@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -9,7 +10,7 @@ function Dashboard() {
   const [statistiques, setStatistiques] = useState(null);
   const [coachsEnAttente, setCoachsEnAttente] = useState([]);
   const [chargement, setChargement] = useState(true);
-  const { utilisateur, deconnexion } = useAuth();
+  const { utilisateur } = useAuth();
   const naviguer = useNavigate();
 
   const chargerReservations = async () => {
@@ -68,16 +69,7 @@ function Dashboard() {
   return (
     <div className="page-dashboard">
       {/* En-tête avec nom et bouton déconnexion */}
-      <header className="entete-dashboard">
-        <h1>MOOVLY</h1>
-        <div className="infos-utilisateur">
-          <span>Bonjour {utilisateur?.prenom} </span>
-          <button onClick={deconnexion} className="bouton-deconnexion">
-            Se déconnecter
-          </button>
-        </div>
-      </header>
-
+      <Navbar cacherDashboard={true} />
       <main className="contenu-dashboard">
         {chargement && <p className="message-chargement">Chargement...</p>}
 

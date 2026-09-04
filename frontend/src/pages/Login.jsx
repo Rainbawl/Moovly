@@ -1,3 +1,5 @@
+import Navbar from "../components/Navbar";
+import "../styles/navbar.css";
 import "../styles/login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,20 +15,17 @@ function Login() {
 
   const gererConnexion = async (e) => {
     e.preventDefault();
-    console.log("Dans gerer connexion");
     try {
       //Appel au backend (appel API + redirection)
       const reponse = await api.post("/auth/login", {
         email,
         mot_de_passe: motDePasse,
       });
-      console.log("Apres post", reponse);
 
       // Si succès alors on stocke le token puis on redirige
       connexion(reponse.data.user, reponse.data.accessToken);
       naviguer("/dashboard");
     } catch (err) {
-      console.log(err);
       //Si erreur, on affiche alors le message
       setErreur("Email ou mot de passe incorrect");
     }
@@ -34,14 +33,7 @@ function Login() {
   return (
     <div className="page-login">
       {/* Navbar */}
-      <nav className="login-navbar">
-        <div className="login-logo" onClick={() => naviguer("/")}>
-          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
-        </div>
-        <button onClick={() => naviguer("/register")} className="bouton-navbar">
-          S'inscrire
-        </button>
-      </nav>
+      <Navbar />
 
       {/* Formulaire centré */}
       <div className="login-contenu">

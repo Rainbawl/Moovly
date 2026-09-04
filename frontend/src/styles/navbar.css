@@ -1,0 +1,94 @@
+/*  Navbar globale réutilisable  */
+.navbar-globale {
+  background: rgba(3, 27, 69, 0.97);
+  border-bottom: 1px solid rgba(8, 224, 255, 0.22);
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/*  Logo  */
+.navbar-logo {
+  cursor: pointer;
+}
+
+.navbar-logo-image {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-logo strong {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+}
+
+/*  Liens de navigation  */
+.navbar-liens {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navbar-lien {
+  color: #a9c1df;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.navbar-lien:hover {
+  color: #08e0ff;
+}
+
+/*  Actions à droite  */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-bonjour {
+  color: #a9c1df;
+  font-size: 14px;
+}
+
+/*  Boutons  */
+.navbar-bouton-outline {
+  background: transparent;
+  color: white;
+  border: 1px solid #08e0ff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.navbar-bouton-outline:hover {
+  background: rgba(8, 224, 255, 0.1);
+}
+
+.navbar-bouton-primary {
+  background: #08e0ff;
+  color: #002343;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.navbar-bouton-primary:hover {
+  background: #00c4e0;
+}

@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../styles/Register.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -33,14 +34,7 @@ function Register() {
   return (
     <div className="page-register">
       {/* Navbar */}
-      <nav className="register-navbar">
-        <div className="register-logo" onClick={() => naviguer("/")}>
-          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
-        </div>
-        <button onClick={() => naviguer("/login")} className="bouton-navbar">
-          Se connecter
-        </button>
-      </nav>
+      <Navbar />
 
       {/* Formulaire centré */}
       <div className="register-contenu">

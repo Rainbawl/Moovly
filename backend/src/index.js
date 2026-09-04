@@ -2,6 +2,9 @@
 // Configure Express avec les middlewares globaux et les routes
 
 import "dotenv/config"; // Charge les variables d'environnement en premier
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../generated/prisma/client.ts";
+import "dotenv/config"; // Charge les variables d'environnement en premier
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
@@ -12,6 +15,8 @@ import adminRoutes from "./routes/admin.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 
 const app = express();
+const adaptateur = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter: adaptateur });
 
 //  Middlewares globaux
 // Permet de lire le JSON dans le body des requêtes
@@ -28,8 +33,25 @@ app.use(
 //  Health check
 // Route de vérification que l'API est bien démarrée
 // Utilisée par Railway pour le health check en production
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+app.get("/health", async (req, res) => {
+  const debut = Date.now();
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    const latence = Date.now() - debut;
+
+    if (latence > 1000) {
+      return res
+        .status(503)
+        .json({ status: "degraded", db: "connected", dbLatencyMs: latence });
+    }
+
+    res
+      .status(200)
+      .json({ status: "ok", db: "connected", dbLatencyMs: latence });
+  } catch (erreur) {
+    res.status(503).json({ status: "degraded", db: "unreachable" });
+  }
 });
 
 //  Routes

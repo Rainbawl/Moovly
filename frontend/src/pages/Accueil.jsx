@@ -1,6 +1,6 @@
 // Page d'accueil Moovly
 // Affiche le hero, les features et la grille de coachs dynamique depuis le backend
-
+import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -43,26 +43,7 @@ function Accueil() {
   return (
     <div className="page-accueil">
       {/*  Navbar  */}
-      <nav className="navbar">
-        <div className="logo">
-          <img src="/Moovly.png" alt="Moovly" className="logo-image" />
-          <small>Trouve ton coach</small>
-        </div>
-        <div className="nav-actions">
-          <button
-            onClick={() => naviguer("/login")}
-            className="btn btn-outline"
-          >
-            Se connecter
-          </button>
-          <button
-            onClick={() => naviguer("/register")}
-            className="btn btn-primary"
-          >
-            S'inscrire
-          </button>
-        </div>
-      </nav>
+      <Navbar cacherAccueil={true} cacherDashboard={true} />
 
       {/*  Hero  */}
       <section className="hero">

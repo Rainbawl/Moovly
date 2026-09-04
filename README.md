@@ -1,4 +1,4 @@
-# Moovly
+# 🏋️ Moovly
 
 Application de réservation de coachs sportifs — Projet CDA Niveau 6
 
@@ -26,9 +26,13 @@ Moovly est une plateforme qui met en relation sportifs et coachs certifiés. Les
 
 - Vitest
 - Supertest
-- 87 tests — 95.53% de couverture
+- 88 tests — 95,18 % de couverture
 
-## Architecture
+## 🏗️ Architecture
+
+```
+Route → Middleware → Controller → Service → Repository → Prisma → PostgreSQL
+```
 
 ## 🚀 Installation
 
@@ -89,7 +93,7 @@ npm run dev
 
 Le serveur démarre sur `http://localhost:3001`
 
-### 6. Configurer le frontend
+### 6. Configurer et lancer le frontend
 
 ```bash
 cd ../frontend
@@ -108,37 +112,47 @@ npm run test:coverage
 
 ## 👤 Comptes de test
 
-| Rôle    | Email           | Description                         |
-| ------- | --------------- | ----------------------------------- |
-| Sportif | bocar@test.fr   | Peut réserver des créneaux          |
-| Coach   | camille@test.fr | Peut créer des créneaux disponibles |
-| Admin   | admin@moovly.fr | Peut valider les coachs             |
+| Rôle    | Email           | Description                                           |
+| ------- | --------------- | ----------------------------------------------------- |
+| Sportif | bocar@test.fr   | Peut réserver des créneaux                            |
+| Coach   | camille@test.fr | Compte déjà validé, peut créer des créneaux           |
+| Admin   | admin@moovly.fr | Peut valider les coachs et consulter les statistiques |
+
+_(mots de passe définis dans le `.env` local, non versionnés)_
 
 ## 📁 Structure du projet
 
+```
 Moovly/
 ├── backend/
-│ ├── prisma/ → schéma et migrations BDD
-│ ├── src/
-│ │ ├── controllers/ → reçoivent les requêtes
-│ │ ├── services/ → logique métier
-│ │ ├── repositories/ → accès base de données
-│ │ ├── routes/ → définition des endpoints
-│ │ └── middleware/ → authentification et rôles
-│ └── tests/
-│ ├── unit/ → tests unitaires
-│ └── integration/ → tests d'intégration
+│   ├── prisma/           → schéma et migrations BDD
+│   ├── src/
+│   │   ├── controllers/  → reçoivent les requêtes
+│   │   ├── services/     → logique métier
+│   │   ├── repositories/ → accès base de données
+│   │   ├── routes/       → définition des endpoints
+│   │   └── middleware/   → authentification et rôles
+│   └── tests/
+│       ├── unit/         → tests unitaires
+│       └── integration/  → tests d'intégration
 ├── frontend/
-│ └── src/
-│ ├── pages/ → pages de l'application
-│ ├── context/ → gestion de l'authentification
-│ └── services/ → appels API
+│   └── src/
+│       ├── pages/        → pages de l'application
+│       ├── context/      → gestion de l'authentification
+│       └── services/     → appels API
+├── docs/
+│   ├── guide-utilisateur.md  → parcours détaillé par rôle
+│   ├── securite.md            → mesures de sécurité mises en place
+│   └── exploitation.md        → variables d'env, /health, diagnostic
 └── docker-compose.yml
+```
 
-## 🔒 Sécurité
+## 📖 Documentation
 
-Voir [SECURITY.md](./SECURITY.md) pour le détail des mesures de sécurité mises en place.
+- [Guide d'utilisation](./docs/Guide_utilisateur.md) — parcours détaillé par rôle (sportif, coach, admin)
+- [Sécurité](./docs/securite.md) — mesures de sécurité mises en place
+- [Exploitation](./docs/Exploitation.md) — variables d'environnement, endpoint `/health`, procédures de diagnostic
 
-## Licence
+## 📄 Licence
 
-Projet réalisé dans le cadre du titre professionnel Concepteur Développeur d'Applications (CDA Niveau 6 ).
+Projet réalisé dans le cadre du titre professionnel Concepteur Développeur d'Applications (CDA Niveau 6 — RNCP TP-01281).

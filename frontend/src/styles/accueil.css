@@ -118,11 +118,11 @@
   background:
     linear-gradient(
       to right,
-      rgba(2, 24, 59, 0.98) 0%,
-      rgba(2, 24, 59, 0.85) 40%,
-      rgba(2, 24, 59, 0.2) 100%
+      rgba(2, 24, 59, 0.55) 0%,
+      rgba(2, 24, 59, 0.35) 40%,
+      rgba(2, 24, 59, 0.05) 100%
     ),
-    url("/coachsport.png") right center/cover no-repeat;
+    url("/imagecoach.png") right center/cover no-repeat;
   padding: 70px 30px;
   min-height: 950px;
   display: flex;

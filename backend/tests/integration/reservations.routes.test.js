@@ -20,7 +20,6 @@ describe("Reservations Routes — Tests d'intégration", () => {
     });
     tokenCoach = loginCoach.body.accessToken;
 
-    // Crée un créneau disponible pour les tests
     await request(app)
       .post("/coaches/1/creneaux")
       .set("Authorization", `Bearer ${tokenCoach}`)
@@ -68,20 +67,17 @@ describe("Reservations Routes — Tests d'intégration", () => {
     });
 
     it("TI-024 — doit créer une réservation avec succès", async () => {
-      // Date unique basée sur timestamp pour éviter les conflits
       const dateFuture = new Date();
       dateFuture.setFullYear(dateFuture.getFullYear() + 5);
-      dateFuture.setMonth(0); // Janvier
+      dateFuture.setMonth(0);
       dateFuture.setDate(1);
       const date = dateFuture.toISOString().split("T")[0];
 
-      // Crée un nouveau créneau
       const creneauCree = await request(app)
         .post("/coaches/1/creneaux")
         .set("Authorization", `Bearer ${tokenCoach}`)
         .send({ date, periode: "apres_midi" });
 
-      // Si le créneau a été créé avec succès
       if (creneauCree.status === 201) {
         const creneauId = creneauCree.body.creneau.id;
 
@@ -93,7 +89,6 @@ describe("Reservations Routes — Tests d'intégration", () => {
         expect(reponse.status).toBe(201);
         expect(reponse.body.reservation).toBeDefined();
       } else {
-        // Créneau déjà existant — on récupère les créneaux disponibles
         const creneaux = await request(app).get(
           `/coaches/1/creneaux?date=${date}`,
         );
@@ -110,6 +105,7 @@ describe("Reservations Routes — Tests d'intégration", () => {
         }
       }
     });
+
     it("TI-025 — doit rejeter si créneau inexistant", async () => {
       const reponse = await request(app)
         .post("/reservations")
@@ -190,6 +186,47 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
       expect(reponse.status).toBe(200);
       expect(reponse.body.message).toBe("Réservation annulée avec succès");
+    });
+
+    it("TI-028 — doit rejeter si le sportif tente d'annuler la réservation d'un autre (IDOR)", async () => {
+      const dateFuture = new Date();
+      dateFuture.setFullYear(dateFuture.getFullYear() + 6);
+      const date = dateFuture.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date, periode: "matin" });
+
+      const creneaux = await request(app).get(
+        `/coaches/1/creneaux?date=${date}`,
+      );
+      const creneauId = creneaux.body.creneaux[0].id;
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+
+      const emailAutre = `autre.sportif.${Date.now()}@test.fr`;
+      await request(app).post("/auth/register").send({
+        nom: "Autre",
+        prenom: "Sportif",
+        email: emailAutre,
+        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+        role: "sportif",
+      });
+      const loginAutre = await request(app).post("/auth/login").send({
+        email: emailAutre,
+        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+      });
+      const tokenAutre = loginAutre.body.accessToken;
+
+      const reponse = await request(app)
+        .delete(`/reservations/${reservation.body.reservation.id}`)
+        .set("Authorization", `Bearer ${tokenAutre}`);
+
+      expect(reponse.status).toBe(403);
     });
   });
 });

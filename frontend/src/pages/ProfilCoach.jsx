@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../styles/ProfilCoach.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -69,14 +70,7 @@ function ProfilCoach() {
   return (
     <div className="page-profil-coach">
       {/* Navbar */}
-      <nav className="profil-navbar">
-        <div className="profil-logo" onClick={() => naviguer("/")}>
-          <strong>MOOVLY</strong>
-        </div>
-        <button onClick={() => naviguer("/")} className="bouton-navbar">
-          Retour
-        </button>
-      </nav>
+      <Navbar />
 
       {/* Contenu */}
       <div className="profil-contenu">
