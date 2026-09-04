@@ -6,7 +6,7 @@
   font-family: Arial, sans-serif;
 }
 
-/*  En-tête  */
+/*  En-tête ─ */
 .entete-dashboard {
   background: rgba(3, 27, 69, 0.97);
   border-bottom: 1px solid rgba(8, 224, 255, 0.22);
@@ -32,7 +32,7 @@
   color: #a9c1df;
 }
 
-/*  Bouton déconnexion  */
+/*  Bouton déconnexion ──── */
 .bouton-deconnexion {
   background: transparent;
   color: white;
@@ -49,14 +49,14 @@
   background: rgba(8, 224, 255, 0.1);
 }
 
-/*  Contenu principal  */
+/*  Contenu principal ───── */
 .contenu-dashboard {
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-/*  Titres de section  */
+/*  Titres de section ───── */
 .titre-section {
   font-size: 22px;
   font-weight: 800;
@@ -65,4 +65,199 @@
 }
 
 .sous-titre-section {
-  font-size:
+  font-size: 16px;
+  font-weight: 700;
+  color: #08e0ff;
+  margin-top: 30px;
+  margin-bottom: 14px;
+}
+
+/*  Liste des réservations  */
+.liste-reservations {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/*  Carte réservation ───── */
+.carte-reservation {
+  background: #082a5d;
+  border: 1px solid rgba(8, 224, 255, 0.25);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.infos-reservation h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.infos-reservation p {
+  font-size: 13px;
+  color: #a9c1df;
+  margin-bottom: 2px;
+}
+
+.date-reservation {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/*  Badge statut ── */
+.badge-statut {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.statut-en_attente {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+}
+
+.statut-confirmee {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.statut-annulee {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.statut-terminee {
+  background: rgba(100, 116, 139, 0.15);
+  color: #64748b;
+}
+
+/*  Bouton retour accueil ─ */
+.bouton-retour-accueil {
+  background: #08e0ff;
+  color: #002343;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.bouton-retour-accueil:hover {
+  background: #00c4e0;
+}
+
+/*  Grille statistiques admin ───────────────────────────────── */
+.grille-statistiques {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+/*  Carte statistique ───── */
+.carte-statistique {
+  background: #082a5d;
+  border: 1px solid rgba(8, 224, 255, 0.25);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.chiffre-stat {
+  font-size: 32px;
+  font-weight: 800;
+  color: #08e0ff;
+  margin-bottom: 6px;
+}
+
+.libelle-stat {
+  font-size: 12px;
+  color: #a9c1df;
+}
+
+/*  Liste coachs en attente  */
+.liste-coachs-attente {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/*  Carte coach en attente  */
+.carte-coach-attente {
+  background: #082a5d;
+  border: 1px solid rgba(8, 224, 255, 0.25);
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carte-coach-attente h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.carte-coach-attente p {
+  font-size: 13px;
+  color: #a9c1df;
+}
+
+/*  Bouton valider  */
+.bouton-valider {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bouton-valider:hover {
+  background: #16a34a;
+}
+
+/*  Bouton annuler  */
+.bouton-annuler {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.bouton-annuler:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/*  Messages  */
+.message-chargement {
+  text-align: center;
+  color: #a9c1df;
+  padding: 40px;
+}
+
+.message-vide {
+  text-align: center;
+  color: #a9c1df;
+  padding: 40px;
+}

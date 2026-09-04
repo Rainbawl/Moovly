@@ -24,6 +24,16 @@ function Dashboard() {
       setChargement(false);
     }
   };
+
+  const annulerReservation = async (reservationId) => {
+    try {
+      await api.delete(`/reservations/${reservationId}`);
+      chargerReservations(); //recharge la liste apres annultation
+    } catch (erreur) {
+      console.error("Erreur lors de l'annulation :", erreur);
+    }
+  };
+
   const chargerDonneesAdmin = async () => {
     // appel API : GET /admin/coaches (coachs en attente)
     // appel API : GET /admin/stats (statistiques)
@@ -103,9 +113,17 @@ function Dashboard() {
                         "fr-FR",
                       )}
                     </p>
+                    {reservation.statut !== "annulee" && (
+                      <button
+                        onClick={() => annulerReservation(reservation.id)}
+                        className="bouton-annuler"
+                      >
+                        Annuler
+                      </button>
+                    )}
                   </div>
                   <span className={`badge-statut statut-${reservation.statut}`}>
-                    {reservation.statut}
+                    {reservation.statut.replace("_", " ")}
                   </span>
                 </div>
               ))}
