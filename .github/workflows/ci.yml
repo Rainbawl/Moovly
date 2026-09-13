@@ -1,0 +1,117 @@
+name: CI
+
+# Se déclenche sur chaque Pull Request vers main, et à chaque push sur main
+# (permet de garder une trace verte sur la branche principale aussi)
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # JOB 1 — Backend : lint + tests unitaires + tests d'intégration
+  # ──────────────────────────────────────────────────────────────
+  backend:
+    name: Backend - Lint & Tests
+    runs-on: ubuntu-latest
+
+    # Toutes les commandes du job s'exécutent depuis le dossier backend/
+    defaults:
+      run:
+        working-directory: backend
+
+    # Conteneur PostgreSQL démarré en service à côté du job, le temps du job.
+    # Nécessaire car les tests d'intégration (supertest) tapent une vraie BDD
+    # et dépendent des comptes créés par le seed.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: moovly
+          POSTGRES_PASSWORD: moovly_test750
+          POSTGRES_DB: moovly_test940
+        ports:
+          - 5432:5432
+        # Attend que Postgres soit prêt à accepter des connexions avant
+        # de laisser les étapes suivantes démarrer (évite les tests flaky)
+        options: >-
+          --health-cmd "pg_isready -U moovly"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://moovly:moovly_test750@localhost:5432/moovly_test940
+      NODE_ENV: test
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:5173
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      # Secrets réels : jamais en clair dans le workflow, gérés dans
+      # Settings > Secrets and variables > Actions du repo GitHub
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+      SEED_PASSWORD_SPORTIF: ${{ secrets.SEED_PASSWORD_SPORTIF }}
+      SEED_PASSWORD_COACH: ${{ secrets.SEED_PASSWORD_COACH }}
+      SEED_PASSWORD_ADMIN: ${{ secrets.SEED_PASSWORD_ADMIN }}
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Installer les dépendances (installation reproductible)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Générer le client Prisma
+        run: npx prisma generate
+
+      - name: Appliquer les migrations sur la base de test
+        run: npx prisma migrate deploy
+
+      - name: Charger le jeu de données de seed
+        run: npx prisma db seed
+
+      - name: Tests (unitaires + intégration) avec couverture
+        run: npm run test:coverage
+
+  # ──────────────────────────────────────────────────────────────
+  # JOB 2 — Frontend : lint + build
+  # ──────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend - Lint & Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Installer les dépendances (installation reproductible)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (vérifie que le projet compile sans erreur)
+        run: npm run build
