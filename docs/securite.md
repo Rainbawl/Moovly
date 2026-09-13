@@ -32,7 +32,7 @@
 
 - **PostgreSQL** — Base de données isolée dans Docker
 - **Variables d'environnement** — `.env` dans `.gitignore`
-- **Dépendances** — Maintenues à jour
+- - **Dépendances** — Auditées avec `npm audit` (backend + frontend). Frontend : 0 vulnérabilité. Backend : 4 vulnérabilités restantes, toutes liées à des dépendances optionnelles de Prisma pour MySQL (non utilisé dans ce projet, qui fonctionne exclusivement en PostgreSQL) — corriger nécessiterait un downgrade cassant de Prisma pour un risque non exploitable dans notre contexte. Voir le rapport d'audit de sécurité complet pour le détail.
 
 ## Signalement de vulnérabilités
 
