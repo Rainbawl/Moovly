@@ -23,6 +23,7 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
+    console.error("[verifyToken] Echec de verification :", err.message);
     return res.status(401).json({ error: "Token invalide ou expiré" });
   }
 };

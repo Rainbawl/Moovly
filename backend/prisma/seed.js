@@ -60,7 +60,7 @@ async function main() {
   console.log("✅ Admin créé :", admin.email);
 
   //   Profil coach
-  const coachProfil = await prisma.coach.upsert({
+  await prisma.coach.upsert({
     where: { utilisateur_id: camille.id },
     update: {},
     create: {

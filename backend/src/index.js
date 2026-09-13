@@ -50,6 +50,10 @@ app.get("/health", async (req, res) => {
       .status(200)
       .json({ status: "ok", db: "connected", dbLatencyMs: latence });
   } catch (erreur) {
+    console.error(
+      "[health-check] Base de données injoignable :",
+      erreur.message,
+    );
     res.status(503).json({ status: "degraded", db: "unreachable" });
   }
 });
@@ -64,6 +68,7 @@ app.use("/dashboard", dashboardRoutes); // GET /dashboard/coach, GET /dashboard/
 
 //  Gestion des erreurs globale
 // Intercepte toutes les erreurs passées via next(err) dans les controllers
+// eslint-disable-next-line no-unused-vars -- Express exige 4 paramètres pour reconnaître un error-handler
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     error: err.message || "Erreur interne du serveur",

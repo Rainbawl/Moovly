@@ -19,6 +19,11 @@ export const trouverTousLesCoachs = async ({ sport, ville } = {}) => {
           },
         },
       }),
+      ...(ville && {
+        utilisateur: {
+          ville: { contains: ville, mode: "insensitive" },
+        },
+      }),
     },
     include: {
       utilisateur: {
