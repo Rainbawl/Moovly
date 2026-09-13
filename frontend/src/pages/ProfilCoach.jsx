@@ -57,13 +57,11 @@ function ProfilCoach() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     chargerCoach();
   }, []);
   // Deuxième useEffect — recharge les créneaux quand la date change
   useEffect(() => {
     if (dateSelectionnee) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       chargerCoach();
     }
   }, [dateSelectionnee]);

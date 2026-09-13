@@ -26,6 +26,7 @@ function Login() {
       connexion(reponse.data.user, reponse.data.accessToken);
       naviguer("/dashboard");
     } catch (err) {
+      console.error("[Login] Echec de connexion :", err);
       //Si erreur, on affiche alors le message
       setErreur("Email ou mot de passe incorrect");
     }

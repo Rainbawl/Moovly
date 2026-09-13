@@ -43,4 +43,5 @@ export function FournisseurAuth({ children }) {
 
 // 4. Hook personnalisé — permet d'utiliser le context facilement
 // Dans n'importe quelle page on écrit juste : const { utilisateur } = useAuth()
+// eslint-disable-next-line react-refresh/only-export-components -- Context + hook colocalisés intentionnellement
 export const useAuth = () => useContext(ContexteAuth);
