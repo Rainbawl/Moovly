@@ -64,3 +64,33 @@ export const annulerReservation = async (requete, reponse, suite) => {
     suite(erreur);
   }
 };
+
+// PUT /reservations/:id — Modifier une réservation (changer de créneau) =>
+
+// PUT /reservations/:id — Modifier une réservation (changer de créneau)
+export const modifierReservation = async (requete, reponse, suite) => {
+  try {
+    const { id } = requete.params;
+    const utilisateurId = requete.user.id;
+    const { nouveau_creneau_id } = requete.body;
+
+    if (!nouveau_creneau_id) {
+      return reponse.status(400).json({
+        error: "L'identifiant du nouveau créneau est obligatoire",
+      });
+    }
+
+    const nouvelleReservation = await serviceReservation.modifierReservation(
+      id,
+      utilisateurId,
+      nouveau_creneau_id,
+    );
+
+    reponse.status(200).json({
+      message: "Réservation modifiée avec succès",
+      reservation: nouvelleReservation,
+    });
+  } catch (erreur) {
+    suite(erreur);
+  }
+};

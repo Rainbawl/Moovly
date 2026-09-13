@@ -29,8 +29,8 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_USER: moovly
-          POSTGRES_PASSWORD: moovly_test750
-          POSTGRES_DB: moovly_test940
+          POSTGRES_PASSWORD: moovly_test_750
+          POSTGRES_DB: moovly_test_940
         ports:
           - 5432:5432
         # Attend que Postgres soit prêt à accepter des connexions avant
@@ -42,7 +42,7 @@ jobs:
           --health-retries 10
 
     env:
-      DATABASE_URL: postgresql://moovly:moovly_test750@localhost:5432/moovly_test940
+      DATABASE_URL: postgresql://moovly:moovly_test_750@localhost:5432/moovly_test_940
       NODE_ENV: test
       PORT: 3001
       CORS_ORIGIN: http://localhost:5173
@@ -63,7 +63,7 @@ jobs:
       - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
@@ -103,7 +103,7 @@ jobs:
       - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 

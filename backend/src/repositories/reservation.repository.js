@@ -9,9 +9,6 @@ const prisma = new PrismaClient({ adapter: adaptateur });
 // Empêche les doubles réservations simultanées
 export const creerReservation = async (utilisateurId, creneauId) => {
   return prisma.$transaction(async (transaction) => {
-    // SELECT FOR UPDATE — verrouille la ligne en BDD
-    // Si une autre requête essaie d'accéder à ce créneau en même temps
-    // elle devra attendre que cette transaction soit terminée
     const creneaux = await transaction.$queryRaw`
       SELECT * FROM creneaux
       WHERE id = ${parseInt(creneauId)}
@@ -19,21 +16,18 @@ export const creerReservation = async (utilisateurId, creneauId) => {
     `;
     const creneau = creneaux[0];
 
-    // Vérifie que le créneau existe
     if (!creneau) {
       const erreur = new Error("Créneau introuvable");
       erreur.status = 404;
       throw erreur;
     }
 
-    // Vérifie que le créneau est disponible
     if (creneau.statut !== "disponible") {
       const erreur = new Error("Ce créneau n'est plus disponible");
       erreur.status = 409;
       throw erreur;
     }
 
-    // Vérifie que le verrou de 10 minutes n'est pas actif
     if (
       creneau.verrouille_jusqua &&
       new Date(creneau.verrouille_jusqua) > new Date()
@@ -45,7 +39,6 @@ export const creerReservation = async (utilisateurId, creneauId) => {
       throw erreur;
     }
 
-    // Verrouille le créneau pendant 10 minutes
     await transaction.creneau.update({
       where: { id: parseInt(creneauId) },
       data: {
@@ -54,7 +47,6 @@ export const creerReservation = async (utilisateurId, creneauId) => {
       },
     });
 
-    // Crée la réservation
     const reservation = await transaction.reservation.create({
       data: {
         utilisateur_id: parseInt(utilisateurId),
@@ -96,7 +88,7 @@ export const trouverReservationParId = async (identifiant) => {
   });
 };
 
-// Annule une réservation et libère le créneau
+// Annule une réservation, libère le créneau
 export const annulerReservation = async (identifiant) => {
   return prisma.$transaction(async (transaction) => {
     const reservation = await transaction.reservation.update({
@@ -107,7 +99,6 @@ export const annulerReservation = async (identifiant) => {
       },
     });
 
-    // Remet le créneau disponible
     await transaction.creneau.update({
       where: { id: reservation.creneau_id },
       data: {
@@ -117,5 +108,73 @@ export const annulerReservation = async (identifiant) => {
     });
 
     return reservation;
+  });
+};
+
+// Modifie une réservation vers un nouveau créneau du même coach
+export const modifierReservation = async (identifiant, nouveauCreneauId) => {
+  return prisma.$transaction(async (transaction) => {
+    const reservation = await transaction.reservation.findUnique({
+      where: { id: parseInt(identifiant) },
+      include: { creneau: true },
+    });
+
+    if (!reservation) {
+      const erreur = new Error("Réservation introuvable");
+      erreur.status = 404;
+      throw erreur;
+    }
+
+    const nouveauxCreneaux = await transaction.$queryRaw`
+      SELECT * FROM creneaux
+      WHERE id = ${parseInt(nouveauCreneauId)}
+      FOR UPDATE
+    `;
+    const nouveauCreneau = nouveauxCreneaux[0];
+
+    if (!nouveauCreneau) {
+      const erreur = new Error("Nouveau créneau introuvable");
+      erreur.status = 404;
+      throw erreur;
+    }
+
+    if (nouveauCreneau.coach_id !== reservation.creneau.coach_id) {
+      const erreur = new Error(
+        "Le nouveau créneau doit appartenir au même coach",
+      );
+      erreur.status = 400;
+      throw erreur;
+    }
+
+    if (nouveauCreneau.statut !== "disponible") {
+      const erreur = new Error("Ce créneau n'est plus disponible");
+      erreur.status = 409;
+      throw erreur;
+    }
+
+    await transaction.creneau.update({
+      where: { id: reservation.creneau_id },
+      data: { statut: "disponible", verrouille_jusqua: null },
+    });
+
+    await transaction.creneau.update({
+      where: { id: parseInt(nouveauCreneauId) },
+      data: {
+        statut: "en_attente",
+        verrouille_jusqua: new Date(Date.now() + 10 * 60 * 1000),
+      },
+    });
+
+    return transaction.reservation.update({
+      where: { id: parseInt(identifiant) },
+      data: { creneau_id: parseInt(nouveauCreneauId) },
+    });
+  });
+};
+
+// Supprime définitivement une réservation
+export const supprimerReservation = async (identifiant) => {
+  return prisma.reservation.delete({
+    where: { id: parseInt(identifiant) },
   });
 };

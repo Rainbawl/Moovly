@@ -10,6 +10,7 @@ function Dashboard() {
   const [statistiques, setStatistiques] = useState(null);
   const [coachsEnAttente, setCoachsEnAttente] = useState([]);
   const [chargement, setChargement] = useState(true);
+  const [erreur, setErreur] = useState("");
   const { utilisateur } = useAuth();
   const naviguer = useNavigate();
 
@@ -29,8 +30,8 @@ function Dashboard() {
     try {
       await api.delete(`/reservations/${reservationId}`);
       chargerReservations(); //recharge la liste apres annultation
-    } catch (erreur) {
-      console.error("Erreur lors de l'annulation :", erreur);
+    } catch {
+      setErreur("Impossible d'annuler cette réservation");
     }
   };
 
@@ -42,7 +43,7 @@ function Dashboard() {
       setCoachsEnAttente(reponseCoachs.data.coachs);
       const reponseStats = await api.get("/admin/stats");
       setStatistiques(reponseStats.data.statistiques);
-    } catch (erreur) {
+    } catch {
       console.error(
         "Erreur lors du chargement des données administratives :",
         erreur,
@@ -57,7 +58,7 @@ function Dashboard() {
         est_valide: estValide,
       });
       chargerDonneesAdmin(); // recharger la liste apres validation
-    } catch (erreur) {
+    } catch {
       console.error("Erreur lors de la validation du coach :", erreur);
     }
   };
@@ -66,14 +67,13 @@ function Dashboard() {
   // Si utilisateur existe → retourne utilisateur.role
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
     if (utilisateur?.role === "sportif") {
       chargerReservations();
     } else if (utilisateur?.role === "admin") {
       chargerDonneesAdmin();
     } else {
       setChargement(false);
-    } /* eslint-enable react-hooks/set-state-in-effect */
+    }
   }, [utilisateur?.role]);
 
   return (

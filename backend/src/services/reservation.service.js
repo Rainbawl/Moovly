@@ -1,5 +1,4 @@
 import * as depotReservation from "../repositories/reservation.repository.js";
-import * as depotCreneau from "../repositories/creneau.repository.js";
 
 // Crée une réservation pour un sportif
 export const creerReservation = async (utilisateurId, creneauId) => {
@@ -66,7 +65,8 @@ export const annulerReservation = async (reservationId, utilisateurId) => {
   const maintenant = new Date();
   const differenceHeures = (dateCreneau - maintenant) / (1000 * 60 * 60);
 
-  if (differenceHeures < 24) {
+  //Cas 1 : La séance est dans moins de 24h => la séance n'est pas encore passée, mais elle arrive dans moins de 24h"
+  if (differenceHeures >= 0 && differenceHeures < 24) {
     const erreur = new Error(
       "Impossible d'annuler moins de 24h avant la séance",
     );
@@ -74,5 +74,28 @@ export const annulerReservation = async (reservationId, utilisateurId) => {
     throw erreur;
   }
 
+  //Cas 2 : La séance est passée depuis plus de 24h => "la séance est passée, et ça fait plus de 24h (donc plus d'1 jour)"
+  if (differenceHeures < -24) {
+    const erreur = new Error(
+      "Impossible d'annuler plus de 24h après la séance",
+    );
+    erreur.status = 400;
+    throw erreur;
+  }
+
   return depotReservation.annulerReservation(reservationId);
+};
+
+// Modifie une réservation en la remplaçant par une nouvelle sur un autre créneau
+export const modifierReservation = async (
+  reservationId,
+  utilisateurId,
+  nouveauCreneauId,
+) => {
+  await annulerReservation(reservationId, utilisateurId);
+  const nouvelleReservation = await creerReservation(
+    utilisateurId,
+    nouveauCreneauId,
+  );
+  return nouvelleReservation;
 };

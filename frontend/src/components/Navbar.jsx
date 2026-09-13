@@ -26,7 +26,10 @@ function Navbar({ cacherAccueil, cacherDashboard }) {
       <div className="navbar-actions">
         {estConnecte() ? (
           <>
-            <span className="navbar-bonjour">
+            <span
+              className="navbar-bonjour"
+              onClick={() => naviguer("/dashboard")}
+            >
               Bonjour {utilisateur?.prenom}
             </span>
             <button onClick={deconnexion} className="navbar-bouton-outline">
