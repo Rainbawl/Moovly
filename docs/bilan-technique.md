@@ -49,9 +49,9 @@
 
 La mise en place de la CI a pris beaucoup plus de temps que prévu. Plusieurs blocages successifs se sont enchaînés : un `package-lock.json` désynchronisé (côté backend puis côté frontend), des erreurs de lint non corrigées avant le premier push, une confusion sur la gestion des secrets JWT, puis la découverte tardive que la protection de branche configurée ne s'appliquait pas réellement (limite de GitHub sur un dépôt privé en compte gratuit).
 
-Chaque blocage a été traité un par un : lecture précise des messages d'erreur, correction ciblée, nouveau test. Le dépôt a finalement été rendu public pour lever la dernière limite technique.
+Sur le moment, ça a généré beaucoup de frustration et de découragement — le sentiment de ne jamais y arriver, à chaque fois qu'un problème semblait résolu, un autre apparaissait juste derrière.
 
-_(Cette section est à personnaliser avec ce que tu as toi-même ressenti pendant ce processus — frustration, moment où tu t'es sentie perdue, ce qui t'a aidée à continuer.)_
+Ce qui a permis de ne pas lâcher, c'est une méthode plutôt qu'une motivation abstraite : à chaque blocage, revenir au tout début du problème, l'analyser calmement, chercher (documentation, web, IA), puis noter sur un bloc-notes l'avancée et ce qui n'était pas encore compris, pour y revenir plus tard si besoin. Cette façon de faire a permis d'avancer plus vite dans le code, et surtout de mieux comprendre chaque correction plutôt que de la subir.
 
 ## 5. Ce qui a été appris sur la phase de livraison
 
@@ -61,4 +61,4 @@ _(Cette section est à personnaliser avec ce que tu as toi-même ressenti pendan
 
 ## 6. Ce qui reste fragile, personnellement
 
-_(À compléter par toi — exemples possibles à adapter : l'autonomie sur les commandes Git en dehors d'un scénario déjà écrit, la compréhension fine de la différence entre hachage et chiffrement avant cet arc, la lecture des logs d'erreur CI sans accompagnement.)_
+Si tout était à refaire seule, sans accompagnement, ce qui resterait le plus difficile serait le code en lui-même, plus que la compréhension de ce à quoi il sert. Les étapes techniques mises en place pour la CI durant cet arc restent encore floues dans le détail de leur écriture, même si leur rôle et leur utilité sont bien compris. Il en va de même pour des notions comme le hachage, le CRUD, le JWT ou l'authentification : le principe et l'intérêt sont acquis, mais la capacité à les réécrire seule, sans support, reste à consolider.
