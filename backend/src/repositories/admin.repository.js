@@ -9,7 +9,7 @@ const prisma = new PrismaClient({ adapter: adaptateur });
 // Récupère tous les coachs en attente de validation
 export const trouverCoachsEnAttente = async () => {
   return prisma.coach.findMany({
-    where: { est_valide: false },
+    where: { statut_validation: "en_attente" },
     include: {
       utilisateur: {
         select: {
@@ -30,7 +30,7 @@ export const trouverCoachsEnAttente = async () => {
 export const validerCoach = async (coachId, estValide) => {
   return prisma.coach.update({
     where: { id: parseInt(coachId) },
-    data: { est_valide: estValide },
+    data: { statut_validation: estValide ? "valide" : "rejete" },
   });
 };
 
@@ -51,10 +51,12 @@ export const creerSport = async (nom) => {
 // Récupère les statistiques globales
 export const obtenirStatistiques = async () => {
   const totalUtilisateurs = await prisma.utilisateur.count();
-  const totalCoachs = await prisma.coach.count({ where: { est_valide: true } });
+  const totalCoachs = await prisma.coach.count({
+    where: { statut_validation: "valide" },
+  });
   const totalReservations = await prisma.reservation.count();
   const coachsEnAttente = await prisma.coach.count({
-    where: { est_valide: false },
+    where: { statut_validation: "en_attente" },
   });
 
   return {

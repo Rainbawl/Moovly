@@ -18,6 +18,7 @@ async function main() {
     where: { email: "bocar@test.fr" },
     update: {
       mot_de_passe: hashSportif,
+      ville: "Paris",
     },
     create: {
       nom: "Mané",
@@ -25,6 +26,7 @@ async function main() {
       email: "bocar@test.fr",
       mot_de_passe: hashSportif,
       role: "sportif",
+      ville: "Paris",
     },
   });
   console.log("✅ Sportif créé :", bocar.email);
@@ -33,6 +35,7 @@ async function main() {
     where: { email: "camille@test.fr" },
     update: {
       mot_de_passe: hashCoach,
+      ville: "Lyon",
     },
     create: {
       nom: "eponime",
@@ -40,6 +43,7 @@ async function main() {
       email: "camille@test.fr",
       mot_de_passe: hashCoach,
       role: "coach",
+      ville: "Lyon",
     },
   });
   console.log("✅ Coach créé :", camille.email);
@@ -48,6 +52,7 @@ async function main() {
     where: { email: "admin@moovly.fr" },
     update: {
       mot_de_passe: hashAdmin,
+      ville: "Créteil",
     },
     create: {
       nom: "admin",
@@ -55,6 +60,7 @@ async function main() {
       email: "admin@moovly.fr",
       mot_de_passe: hashAdmin,
       role: "admin",
+      ville: "Créteil",
     },
   });
   console.log("✅ Admin créé :", admin.email);
@@ -62,10 +68,12 @@ async function main() {
   //   Profil coach
   await prisma.coach.upsert({
     where: { utilisateur_id: camille.id },
-    update: {},
+    update: {
+      statut_validation: "valide",
+    },
     create: {
       utilisateur_id: camille.id,
-      est_valide: true, // Déjà validé par l'admin
+      statut_validation: "valide", // Déjà validé par l'admin
       presentation: "Coach running et cardio depuis 8 ans",
       tarif_horaire: 35,
     },

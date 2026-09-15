@@ -31,7 +31,10 @@ describe("Creneau Service", () => {
   });
 
   it("TU-012 — obtenirCreneauxCoach : doit retourner les créneaux avec horaires", async () => {
-    depotCoach.trouverCoachParId.mockResolvedValue({ id: 1, est_valide: true });
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      statut_validation: "valide",
+    });
     depotCreneau.trouverCreneauxParCoachEtDate.mockResolvedValue([
       { id: 1, date: "2026-08-10", periode: "matin", statut: "disponible" },
       {
@@ -59,7 +62,7 @@ describe("Creneau Service", () => {
   it("TU-014 — creerCreneau : doit rejeter si coach non validé", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
-      est_valide: false,
+      statut_validation: "en_attente",
     });
 
     await expect(
@@ -68,7 +71,10 @@ describe("Creneau Service", () => {
   });
 
   it("TU-015 — creerCreneau : doit créer un créneau matin avec succès", async () => {
-    depotCoach.trouverCoachParId.mockResolvedValue({ id: 1, est_valide: true });
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      statut_validation: "valide",
+    });
     depotCreneau.creerCreneau.mockResolvedValue({
       id: 1,
       date: "2026-08-10",
@@ -84,7 +90,10 @@ describe("Creneau Service", () => {
   });
 
   it("TU-016 — creerCreneau : doit rejeter un doublon (même date + période)", async () => {
-    depotCoach.trouverCoachParId.mockResolvedValue({ id: 1, est_valide: true });
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      statut_validation: "valide",
+    });
     const erreurDoublon = new Error("Unique constraint failed");
     erreurDoublon.code = "P2002";
     depotCreneau.creerCreneau.mockRejectedValue(erreurDoublon);
@@ -97,7 +106,7 @@ describe("Creneau Service", () => {
     // Simule un coach qui existe mais n'est pas encore validé par l'admin
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
-      est_valide: false, // ← pas encore validé
+      statut_validation: "en_attente", // ← pas encore validé
     });
 
     await expect(
@@ -109,7 +118,10 @@ describe("Creneau Service", () => {
 
   it("TU-017c — creerCreneau : doit relancer une erreur inconnue", async () => {
     // Simule un coach validé
-    depotCoach.trouverCoachParId.mockResolvedValue({ id: 1, est_valide: true });
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      statut_validation: "valide",
+    });
 
     // Simule une erreur inconnue (pas P2002) retournée par le repository
     const erreurInconnue = new Error("Erreur inattendue");

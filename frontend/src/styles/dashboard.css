@@ -191,27 +191,70 @@
   gap: 10px;
 }
 
-/*  Carte coach en attente  */
+/*  Carte coach en attente (enrichie)  */
 .carte-coach-attente {
   background: #082a5d;
   border: 1px solid rgba(8, 224, 255, 0.25);
   border-radius: 8px;
   padding: 16px 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 16px;
 }
 
-.carte-coach-attente h3 {
+.infos-coach-attente h3 {
   font-size: 15px;
   font-weight: 700;
   color: white;
   margin-bottom: 4px;
 }
 
-.carte-coach-attente p {
+.infos-coach-attente p {
   font-size: 13px;
   color: #a9c1df;
+  margin-bottom: 6px;
+}
+
+.presentation-coach-attente {
+  font-style: italic;
+  color: #c7d5f0;
+  max-width: 500px;
+}
+
+.sports-coach-attente {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.tarif-coach-attente {
+  font-weight: 700;
+  color: #08e0ff;
+}
+
+.actions-coach-attente {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.bouton-rejeter {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bouton-rejeter:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /*  Bouton valider  */

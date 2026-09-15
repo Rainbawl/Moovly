@@ -30,7 +30,7 @@ describe("Admin Service", () => {
     depotAdmin.trouverCoachsEnAttente.mockResolvedValue([
       {
         id: 1,
-        est_valide: false,
+        statut_validation: "en_attente",
         presentation: null,
         tarif_horaire: null,
         utilisateur: {
@@ -64,24 +64,30 @@ describe("Admin Service", () => {
 
   it("TU-036 — validerCoach : doit valider un coach avec succès", async () => {
     // Simule un coach validé
-    depotAdmin.validerCoach.mockResolvedValue({ id: 1, est_valide: true });
+    depotAdmin.validerCoach.mockResolvedValue({
+      id: 1,
+      statut_validation: "valide",
+    });
 
     const resultat = await serviceAdmin.validerCoach(1, true);
 
     // Vérifie le message de validation
     expect(resultat.message).toBe("Coach validé avec succès");
-    expect(resultat.est_valide).toBe(true);
+    expect(resultat.statut_validation).toBe("valide");
   });
 
   it("TU-037 — validerCoach : doit rejeter un coach avec le bon message", async () => {
-    // Simule un coach rejeté (est_valide = false)
-    depotAdmin.validerCoach.mockResolvedValue({ id: 1, est_valide: false });
+    // Simule un coach rejeté (satut_validation = false)
+    depotAdmin.validerCoach.mockResolvedValue({
+      id: 1,
+      statut_validation: "rejete",
+    });
 
     const resultat = await serviceAdmin.validerCoach(1, false);
 
     // Vérifie que le message de rejet est correct
     expect(resultat.message).toBe("Coach rejeté");
-    expect(resultat.est_valide).toBe(false);
+    expect(resultat.statut_validation).toBe("rejete");
   });
 
   //  creerSport ─
