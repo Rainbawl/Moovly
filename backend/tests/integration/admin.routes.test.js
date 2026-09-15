@@ -8,20 +8,16 @@ describe("Admin Routes — Tests d'intégration", () => {
   let tokenSportif;
 
   beforeAll(async () => {
-    const loginAdmin = await request(app)
-      .post("/auth/login")
-      .send({
-        email: "admin@moovly.fr",
-        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
-      });
+    const loginAdmin = await request(app).post("/auth/login").send({
+      email: "admin@moovly.fr",
+      mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+    });
     tokenAdmin = loginAdmin.body.accessToken;
 
-    const loginSportif = await request(app)
-      .post("/auth/login")
-      .send({
-        email: "bocar@test.fr",
-        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
-      });
+    const loginSportif = await request(app).post("/auth/login").send({
+      email: "bocar@test.fr",
+      mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+    });
     tokenSportif = loginSportif.body.accessToken;
   });
 
@@ -123,7 +119,7 @@ describe("Admin Routes — Tests d'intégration", () => {
         .send({ est_valide: true });
 
       expect(reponse.status).toBe(200);
-      expect(reponse.body.est_valide).toBe(true);
+      expect(reponse.body.statut_validation).toBe("valide");
     });
 
     it("TI-043 — doit rejeter si est_valide manquant", async () => {

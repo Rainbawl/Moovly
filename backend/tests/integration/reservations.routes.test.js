@@ -190,13 +190,21 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
     it("TI-028 — doit rejeter si le sportif tente d'annuler la réservation d'un autre (IDOR)", async () => {
       const dateFuture = new Date();
-      dateFuture.setFullYear(dateFuture.getFullYear() + 6);
+      dateFuture.setFullYear(dateFuture.getFullYear() + 7);
+      dateFuture.setMonth(Math.floor(Math.random() * 12));
+      dateFuture.setDate(Math.floor(Math.random() * 28) + 1);
       const date = dateFuture.toISOString().split("T")[0];
 
-      await request(app)
+      const creneauCree = await request(app)
         .post("/coaches/1/creneaux")
         .set("Authorization", `Bearer ${tokenCoach}`)
         .send({ date, periode: "matin" });
+
+      if (creneauCree.status !== 201) {
+        throw new Error(
+          `Échec création créneau: ${JSON.stringify(creneauCree.body)}`,
+        );
+      }
 
       const creneaux = await request(app).get(
         `/coaches/1/creneaux?date=${date}`,
@@ -207,6 +215,12 @@ describe("Reservations Routes — Tests d'intégration", () => {
         .post("/reservations")
         .set("Authorization", `Bearer ${tokenSportif}`)
         .send({ creneau_id: creneauId });
+
+      console.log(
+        "Résultat réservation:",
+        reservation.status,
+        reservation.body,
+      );
 
       const emailAutre = `autre.sportif.${Date.now()}@test.fr`;
       await request(app).post("/auth/register").send({

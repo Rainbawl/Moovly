@@ -17,6 +17,7 @@ model Utilisateur {
   nom          String   @db.VarChar(100)
   prenom       String   @db.VarChar(100)
   email        String   @unique @db.VarChar(255)
+  ville        String?  @db.VarChar(100)    
   mot_de_passe String   @db.VarChar(255)
   role         Role     @default(sportif)
   date_creation DateTime @default(now())
@@ -34,13 +35,19 @@ enum Role {
   admin
 }
 
+enum StatutValidation {
+  en_attente
+  valide
+  rejete
+}
+
 //   COACHS  
 model Coach {
   id             Int      @id @default(autoincrement())
   utilisateur_id Int      @unique
   presentation   String?  @db.Text
   tarif_horaire  Decimal? @db.Decimal(8, 2)
-  est_valide     Boolean  @default(false)
+  statut_validation StatutValidation @default(en_attente)
   note_moyenne   Decimal? @db.Decimal(3, 2)
   date_creation  DateTime @default(now())
 

@@ -9,7 +9,7 @@ const prisma = new PrismaClient({ adapter: adaptateur });
 export const trouverTousLesCoachs = async ({ sport, ville } = {}) => {
   return prisma.coach.findMany({
     where: {
-      est_valide: true,
+      statut_validation: "valide",
       ...(sport && {
         sports: {
           some: {

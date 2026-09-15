@@ -43,7 +43,7 @@ function Dashboard() {
       setCoachsEnAttente(reponseCoachs.data.coachs);
       const reponseStats = await api.get("/admin/stats");
       setStatistiques(reponseStats.data.statistiques);
-    } catch {
+    } catch (erreur) {
       console.error(
         "Erreur lors du chargement des données administratives :",
         erreur,
@@ -58,7 +58,7 @@ function Dashboard() {
         est_valide: estValide,
       });
       chargerDonneesAdmin(); // recharger la liste apres validation
-    } catch {
+    } catch (erreur) {
       console.error("Erreur lors de la validation du coach :", erreur);
     }
   };
@@ -82,7 +82,7 @@ function Dashboard() {
       <Navbar cacherDashboard={true} />
       <main className="contenu-dashboard">
         {chargement && <p className="message-chargement">Chargement...</p>}
-
+        {erreur && <p className="message-erreur">{erreur}</p>}
         {/*  Dashboard Sportif  */}
         {utilisateur?.role === "sportif" && (
           <div>
@@ -181,18 +181,49 @@ function Dashboard() {
             <div className="liste-coachs-attente">
               {coachsEnAttente.map((coach) => (
                 <div key={coach.id} className="carte-coach-attente">
-                  <div>
+                  <div className="infos-coach-attente">
                     <h3>
                       {coach.prenom} {coach.nom}
                     </h3>
                     <p>{coach.email}</p>
+
+                    {coach.presentation && (
+                      <p className="presentation-coach-attente">
+                        {coach.presentation}
+                      </p>
+                    )}
+
+                    {coach.sports.length > 0 && (
+                      <div className="sports-coach-attente">
+                        {coach.sports.map((sport, index) => (
+                          <span key={index} className="badge-sport">
+                            {sport}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {coach.tarif_horaire && (
+                      <p className="tarif-coach-attente">
+                        {coach.tarif_horaire}€ / séance
+                      </p>
+                    )}
                   </div>
-                  <button
-                    onClick={() => validerCoach(coach.id, true)}
-                    className="bouton-valider"
-                  >
-                    ✓ Valider
-                  </button>
+
+                  <div className="actions-coach-attente">
+                    <button
+                      onClick={() => validerCoach(coach.id, true)}
+                      className="bouton-valider"
+                    >
+                      ✓ Valider
+                    </button>
+                    <button
+                      onClick={() => validerCoach(coach.id, false)}
+                      className="bouton-rejeter"
+                    >
+                      ✗ Rejeter
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -6,7 +6,7 @@ export const obtenirCoachsEnAttente = async () => {
 
   return coachs.map((coach) => ({
     id: coach.id,
-    est_valide: coach.est_valide,
+    statut_validation: coach.statut_validation,
     presentation: coach.presentation,
     tarif_horaire: coach.tarif_horaire,
     nom: coach.utilisateur.nom,
@@ -29,7 +29,7 @@ export const validerCoach = async (coachId, estValide) => {
 
   return {
     id: coach.id,
-    est_valide: coach.est_valide,
+    statut_validation: coach.statut_validation,
     message: estValide ? "Coach validé avec succès" : "Coach rejeté",
   };
 };

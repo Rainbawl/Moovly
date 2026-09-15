@@ -28,7 +28,7 @@ export const createCoach = async (utilisateurId) => {
   return prisma.coach.create({
     data: {
       utilisateur_id: utilisateurId,
-      est_valide: false,
+      statut_validation: "en_attente",
     },
   });
 };

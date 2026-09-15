@@ -43,7 +43,7 @@ export const creerCreneau = async (coachId, date, periode) => {
     erreur.status = 404;
     throw erreur;
   }
-  if (!coach.est_valide) {
+  if (coach.statut_validation !== "valide") {
     const erreur = new Error(
       "Votre compte coach n'est pas encore validé par un admin",
     );
