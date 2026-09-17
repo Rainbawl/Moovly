@@ -62,7 +62,7 @@ describe("Coach Service", () => {
       presentation: "Coach running",
       tarif_horaire: 35,
       note_moyenne: 4.9,
-      est_valide: true,
+      statut_validation: "valide",
       utilisateur: {
         nom: "Lebrun",
         prenom: "Thomas",
@@ -75,7 +75,7 @@ describe("Coach Service", () => {
 
     expect(coach.id).toBe(1);
     expect(coach.nom).toBe("Lebrun");
-    expect(coach.est_valide).toBe(true);
+    expect(coach.statut_validation).toBe("valide");
     expect(coach.sports).toContain("Running");
   });
 });
