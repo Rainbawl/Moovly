@@ -384,3 +384,15 @@
   color: white;
   margin-bottom: 4px;
 }
+
+/*  Groupe de filtres (sport + ville) */
+.groupe-filtres {
+  display: flex;
+  gap: 10px;
+}
+
+.ville-coach {
+  font-size: 12px;
+  color: #a9c1df;
+  margin-bottom: 8px;
+}

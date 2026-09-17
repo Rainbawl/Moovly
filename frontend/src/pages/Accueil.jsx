@@ -9,18 +9,21 @@ import "../styles/accueil.css";
 function Accueil() {
   const [coachs, setCoachs] = useState([]);
   const [filtreSport, setFiltreSport] = useState("");
+  const [filtreVille, setFiltreVille] = useState("");
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
   const naviguer = useNavigate();
 
-  // Charge les coachs au démarrage
-  const chargerCoachs = async (sport = "") => {
+  // Construit l'URL avec les filtres actifs (sport et/ou ville)
+  const chargerCoachs = async (sport = filtreSport, ville = filtreVille) => {
     try {
       setChargement(true);
       setErreur("");
-      const reponse = await api.get(
-        `/coaches${sport ? `?sport=${sport}` : ""}`,
-      );
+      const parametres = new URLSearchParams();
+      if (sport) parametres.append("sport", sport);
+      if (ville) parametres.append("ville", ville);
+      const requete = parametres.toString();
+      const reponse = await api.get(`/coaches${requete ? `?${requete}` : ""}`);
       setCoachs(reponse.data.coachs);
     } catch {
       setErreur("Impossible de charger les coachs");
@@ -33,10 +36,16 @@ function Accueil() {
     chargerCoachs();
   }, []);
 
-  const gererRecherche = (e) => {
+  const gererRechercheSport = (e) => {
     const valeur = e.target.value;
     setFiltreSport(valeur);
-    chargerCoachs(valeur);
+    chargerCoachs(valeur, filtreVille);
+  };
+
+  const gererRechercheVille = (e) => {
+    const valeur = e.target.value;
+    setFiltreVille(valeur);
+    chargerCoachs(filtreSport, valeur);
   };
 
   return (
@@ -99,13 +108,22 @@ function Accueil() {
       <section className="section-coachs" id="coachs">
         <div className="entete-section">
           <h2>Nos coachs disponibles</h2>
-          <input
-            type="text"
-            placeholder="Filtrer par sport..."
-            value={filtreSport}
-            onChange={gererRecherche}
-            className="champ-recherche"
-          />
+          <div className="groupe-filtres">
+            <input
+              type="text"
+              placeholder="Filtrer par sport..."
+              value={filtreSport}
+              onChange={gererRechercheSport}
+              className="champ-recherche"
+            />
+            <input
+              type="text"
+              placeholder="Filtrer par ville..."
+              value={filtreVille}
+              onChange={gererRechercheVille}
+              className="champ-recherche"
+            />
+          </div>
         </div>
 
         {/* Messages */}
@@ -132,6 +150,7 @@ function Accueil() {
               <h3>
                 {coach.prenom} {coach.nom}
               </h3>
+              {coach.ville && <p className="ville-coach">📍 {coach.ville}</p>}
               <div className="sports-coach">
                 {coach.sports.length > 0 ? (
                   coach.sports.map((sport, index) => (

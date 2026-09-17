@@ -16,6 +16,7 @@ export const obtenirTousLesCoachs = async (filtres) => {
     note_moyenne: coach.note_moyenne,
     nom: coach.utilisateur.nom,
     prenom: coach.utilisateur.prenom,
+    ville: coach.utilisateur.ville,
     sports: coach.sports.map((s) => s.sport.nom),
   }));
 };
@@ -35,7 +36,7 @@ export const obtenirCoachParId = async (identifiant) => {
     presentation: coach.presentation,
     tarif_horaire: coach.tarif_horaire,
     note_moyenne: coach.note_moyenne,
-    est_valide: coach.est_valide,
+    statut_validation: coach.est_valide,
     nom: coach.utilisateur.nom,
     prenom: coach.utilisateur.prenom,
     email: coach.utilisateur.email,

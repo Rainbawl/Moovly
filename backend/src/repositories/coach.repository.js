@@ -31,6 +31,7 @@ export const trouverTousLesCoachs = async ({ sport, ville } = {}) => {
           nom: true,
           prenom: true,
           email: true,
+          ville: true,
         },
       },
       sports: {
@@ -52,6 +53,7 @@ export const trouverCoachParId = async (identifiant) => {
           nom: true,
           prenom: true,
           email: true,
+          ville: true,
         },
       },
       sports: {
