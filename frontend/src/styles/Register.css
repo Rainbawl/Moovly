@@ -3,7 +3,7 @@
   min-height: 100vh;
   background:
     linear-gradient(rgba(3, 27, 69, 0.6), rgba(3, 27, 69, 0.6)),
-    url("./register2.png") top center/cover no-repeat;
+    url("./imagere.png") center bottom / contain no-repeat #031b45;
   color: white;
   display: flex;
   flex-direction: column;
