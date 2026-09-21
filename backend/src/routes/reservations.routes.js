@@ -5,7 +5,7 @@ import verifyRole from "../middleware/verifyRole.js";
 
 const routeur = express.Router();
 
-// GET /reservations/mine — Historique du sportif connecté (protégée)
+// GET /reservations/mine : Historique du sportif connecté (protégée)
 routeur.get(
   "/mine",
   verifyToken,
@@ -13,7 +13,7 @@ routeur.get(
   controleurReservation.obtenirMesReservations,
 );
 
-// POST /reservations — Créer une réservation (protégée — sportif uniquement)
+// POST /reservations : Créer une réservation (protégée pour le sportif uniquement)
 routeur.post(
   "/",
   verifyToken,
@@ -21,7 +21,15 @@ routeur.post(
   controleurReservation.creerReservation,
 );
 
-// DELETE /reservations/:id — Annuler une réservation (protégée)
+// PUT /reservations/:id : Modifier une réservation
+routeur.put(
+  "/:id",
+  verifyToken,
+  verifyRole("sportif"),
+  controleurReservation.modifierReservation,
+);
+
+// DELETE /reservations/:id : Annuler une réservation (protégée)
 routeur.delete(
   "/:id",
   verifyToken,

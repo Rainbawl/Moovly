@@ -10,6 +10,11 @@ export const findUserByEmail = async (email) => {
   return prisma.utilisateur.findUnique({ where: { email } });
 };
 
+// Cherche un utilisateur par son id (utilisé pour le refresh token)
+export const findUserById = async (id) => {
+  return prisma.utilisateur.findUnique({ where: { id: parseInt(id) } });
+};
+
 // Crée un nouvel utilisateur en BDD
 export const createUser = async (data) => {
   return prisma.utilisateur.create({

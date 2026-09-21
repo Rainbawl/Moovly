@@ -11,6 +11,7 @@ function Dashboard() {
   const [coachsEnAttente, setCoachsEnAttente] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
+  const [afficherHistorique, setAfficherHistorique] = useState(false);
   const { utilisateur } = useAuth();
   const naviguer = useNavigate();
 
@@ -76,6 +77,11 @@ function Dashboard() {
     }
   }, [utilisateur?.role]);
 
+  const reservationsAffichees = afficherHistorique
+    ? reservations
+    : reservations.filter((r) => r.statut !== "annulee");
+
+  const estPassee = (dateCreneau) => new Date(dateCreneau) < new Date();
   return (
     <div className="page-dashboard">
       {/* En-tête avec nom et bouton déconnexion */}
@@ -87,14 +93,16 @@ function Dashboard() {
         {utilisateur?.role === "sportif" && (
           <div>
             <h2 className="titre-section">Mes réservations</h2>
-
             {reservations.length === 0 && !chargement && (
               <p className="message-vide">Aucune réservation pour le moment</p>
             )}
 
             <div className="liste-reservations">
-              {reservations.map((reservation) => (
-                <div key={reservation.id} className="carte-reservation">
+              {reservationsAffichees.map((reservation) => (
+                <div
+                  key={reservation.id}
+                  className={`carte-reservation ${estPassee(reservation.creneau.date) ? "carte-passee" : ""}`}
+                >
                   <div className="infos-reservation">
                     <h3>
                       {reservation.creneau.coach.prenom}{" "}
@@ -113,14 +121,27 @@ function Dashboard() {
                         "fr-FR",
                       )}
                     </p>
-                    {reservation.statut !== "annulee" && (
-                      <button
-                        onClick={() => annulerReservation(reservation.id)}
-                        className="bouton-annuler"
-                      >
-                        Annuler
-                      </button>
-                    )}
+                    {reservation.statut !== "annulee" &&
+                      !estPassee(reservation.creneau.date) && (
+                        <>
+                          <button
+                            onClick={() =>
+                              naviguer(
+                                `/coaches/${reservation.creneau.coach.id}?modifier=${reservation.id}`,
+                              )
+                            }
+                            className="bouton-modifier"
+                          >
+                            Modifier
+                          </button>
+                          <button
+                            onClick={() => annulerReservation(reservation.id)}
+                            className="bouton-annuler"
+                          >
+                            Annuler
+                          </button>
+                        </>
+                      )}
                   </div>
                   <span className={`badge-statut statut-${reservation.statut}`}>
                     {reservation.statut.replace("_", " ")}
@@ -134,6 +155,14 @@ function Dashboard() {
               className="bouton-retour-accueil"
             >
               Trouver un coach →
+            </button>
+            <button
+              onClick={() => setAfficherHistorique(!afficherHistorique)}
+              className="lien-historique"
+            >
+              {afficherHistorique
+                ? "Masquer l'historique"
+                : "Voir l'historique"}
             </button>
           </div>
         )}

@@ -17,4 +17,7 @@ router.post("/login", authController.login);
 // POST /auth/logout — Déconnexion (protégée — JWT requis)
 router.post("/logout", verifyToken, authController.logout);
 
+// POST /auth/refresh — Régénère un access token à partir du refresh token (cookie)
+router.post("/refresh", authController.refresh);
+
 export default router;

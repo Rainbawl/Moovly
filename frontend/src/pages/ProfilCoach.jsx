@@ -1,13 +1,15 @@
 import Navbar from "../components/Navbar";
 import "../styles/ProfilCoach.css";
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
 function ProfilCoach() {
-  const { id } = useParams();
   // Récupère l'id depuis l'URL — ex: /coaches/1 → id = "1"
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const reservationAModifier = searchParams.get("modifier");
   const [coach, setCoach] = useState(null); // coach = null car on n'a pas encore chargé le profil, Après l'appel API → coach = { id:1, nom:'Lebrun', ... }
   const [creneaux, setCreneaux] = useState([]); //creneaux = [] car la liste est vide au départ, Après l'appel API → creneaux = [{ id:1, periode:'matin' }, ...]
   const [dateSelectionnee, setDateSelectionnee] = useState("");
@@ -44,15 +46,28 @@ function ProfilCoach() {
       return;
     }
     setErreur("");
+    setMessageSucces(""); // nettoie un ancien message avant un nouvel essai
 
     try {
-      // 2. appel API
-      await api.post("/reservations", { creneau_id: creneauId });
-      // 3. si succès
-      setMessageSucces(" Réservation confirmée !");
-    } catch {
+      if (reservationAModifier) {
+        await api.put(`/reservations/${reservationAModifier}`, {
+          nouveau_creneau_id: creneauId,
+        });
+        setMessageSucces("Réservation modifiée avec succès !");
+        setTimeout(() => naviguer("/dashboard"), 1500);
+      } else {
+        // Cas NOUVELLE RÉSERVATION — comportement habituel
+        // 2. appel API
+        await api.post("/reservations", { creneau_id: creneauId });
+        // 3. si succès
+        setMessageSucces("Réservation confirmée !");
+      }
+      chargerCoach(); // recharge les créneaux pour refléter le changement
+    } catch (err) {
       // 4. si erreur
-      setErreur("Impossible de réserver ce créneau");
+      setErreur(
+        err.response?.data?.error || "Impossible de réserver ce créneau",
+      );
     }
   };
 
@@ -117,7 +132,11 @@ function ProfilCoach() {
             )}
 
             <div className="section-creneaux">
-              <h2>Créneaux disponibles</h2>
+              <h2>
+                {reservationAModifier
+                  ? "Choisir un nouveau créneau"
+                  : "Créneaux disponibles"}
+              </h2>
               <div className="selecteur-date">
                 <label className="etiquette">Choisir une date</label>
                 <input

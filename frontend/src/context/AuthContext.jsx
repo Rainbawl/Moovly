@@ -7,7 +7,11 @@ const ContexteAuth = createContext();
 // "children" représente tout ce qui est à l'intérieur
 export function FournisseurAuth({ children }) {
   // L'utilisateur connecté — null si personne n'est connecté
-  const [utilisateur, setUtilisateur] = useState(null);
+  // Au démarrage, on essaie de relire l'utilisateur déjà sauvegardé (survit à un rechargement de page)
+  const [utilisateur, setUtilisateur] = useState(() => {
+    const utilisateurSauvegarde = localStorage.getItem("utilisateur");
+    return utilisateurSauvegarde ? JSON.parse(utilisateurSauvegarde) : null;
+  });
 
   // Appelée quand l'utilisateur se connecte avec succès
   // userData = { id, nom, prenom, email, role }
@@ -15,12 +19,14 @@ export function FournisseurAuth({ children }) {
   const connexion = (userData, token) => {
     setUtilisateur(userData);
     localStorage.setItem("accessToken", token);
+    localStorage.setItem("utilisateur", JSON.stringify(userData)); // sauvegarde aussi l'utilisateur
   };
 
   // Appelée quand l'utilisateur clique sur "Se déconnecter"
   const deconnexion = () => {
     setUtilisateur(null);
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("utilisateur"); // nettoie aussi l'utilisateur sauvegardé
   };
 
   // Retourne true si quelqu'un est connecté, false sinon

@@ -49,14 +49,14 @@
   background: rgba(8, 224, 255, 0.1);
 }
 
-/*  Contenu principal ───── */
+/*  Contenu principal  */
 .contenu-dashboard {
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-/*  Titres de section ───── */
+/*  Titres de section  */
 .titre-section {
   font-size: 22px;
   font-weight: 800;
@@ -80,7 +80,7 @@
   margin-bottom: 24px;
 }
 
-/*  Carte réservation ───── */
+/*  Carte réservation  */
 .carte-reservation {
   background: #082a5d;
   border: 1px solid rgba(8, 224, 255, 0.25);
@@ -155,7 +155,7 @@
   background: #00c4e0;
 }
 
-/*  Grille statistiques admin ───────────────────────────────── */
+/*  Grille statistiques admin  */
 .grille-statistiques {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -163,7 +163,7 @@
   margin-bottom: 30px;
 }
 
-/*  Carte statistique ───── */
+/*  Carte statistique  */
 .carte-statistique {
   background: #082a5d;
   border: 1px solid rgba(8, 224, 255, 0.25);
@@ -191,7 +191,7 @@
   gap: 10px;
 }
 
-/*  Carte coach en attente (enrichie)  */
+/*  Carte coach en attente (enrichie) */
 .carte-coach-attente {
   background: #082a5d;
   border: 1px solid rgba(8, 224, 255, 0.25);
@@ -274,6 +274,25 @@
   background: #16a34a;
 }
 
+/*  Bouton modifier  */
+.bouton-modifier {
+  background: transparent;
+  color: #08e0ff;
+  border: 1px solid #08e0ff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+  margin-right: 8px;
+}
+
+.bouton-modifier:hover {
+  background: rgba(8, 224, 255, 0.1);
+}
+
 /*  Bouton annuler  */
 .bouton-annuler {
   background: transparent;
@@ -303,4 +322,32 @@
   text-align: center;
   color: #a9c1df;
   padding: 40px;
+}
+
+/*  Lien afficher/masquer l'historique  */
+.lien-historique {
+  background: transparent;
+  color: #a9c1df;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.lien-historique:hover {
+  color: #08e0ff;
+}
+
+/* Réservation passée (grisée) */
+.carte-passee {
+  opacity: 0.5;
+}
+
+.carte-passee h3,
+.carte-passee p {
+  color: #6b7a99;
 }

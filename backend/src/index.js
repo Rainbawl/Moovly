@@ -7,6 +7,7 @@ import { PrismaClient } from "../generated/prisma/client.ts";
 import "dotenv/config"; // Charge les variables d'environnement en premier
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import coachesRoutes from "./routes/coaches.routes.js";
 import creneauxRoutes from "./routes/creneaux.routes.js";
@@ -21,6 +22,10 @@ const prisma = new PrismaClient({ adapter: adaptateur });
 //  Middlewares globaux
 // Permet de lire le JSON dans le body des requêtes
 app.use(express.json());
+
+// Permet de lire les cookies envoyés par le navigateur (req.cookies)
+// Nécessaire pour récupérer le refresh token stocké en cookie httpOnly
+app.use(cookieParser());
 
 // Autorise les requêtes cross-origin depuis le frontend React
 app.use(

@@ -3,6 +3,8 @@
 // Ne contient aucune logique métier — uniquement req/res
 
 import * as authService from "../services/auth.service.js";
+import * as authRepository from "../repositories/auth.repository.js";
+import jwt from "jsonwebtoken";
 
 // POST /auth/register
 export const register = async (req, res, next) => {
@@ -62,6 +64,43 @@ export const login = async (req, res, next) => {
         role: user.role,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//Post /auth/refresh
+export const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return res.status(401).json({ error: "Refresh token manquant" });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    } catch {
+      return res
+        .status(401)
+        .json({ error: "Refresh token invalide ou expiré" });
+    }
+
+    // Va chercher l'utilisateur en BDD pour récupérer son rôle actuel
+    const utilisateur = await authRepository.findUserById(decoded.id);
+
+    if (!utilisateur) {
+      return res.status(401).json({ error: "Utilisateur introuvable" });
+    }
+
+    const nouvelAccessToken = jwt.sign(
+      { id: utilisateur.id, role: utilisateur.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN },
+    );
+
+    res.status(200).json({ accessToken: nouvelAccessToken });
   } catch (err) {
     next(err);
   }
