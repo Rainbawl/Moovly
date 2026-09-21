@@ -9,13 +9,25 @@ import jwt from "jsonwebtoken";
 // POST /auth/register
 export const register = async (req, res, next) => {
   try {
-    const { nom, prenom, email, mot_de_passe, role } = req.body;
+    const {
+      nom,
+      prenom,
+      email,
+      mot_de_passe,
+      role,
+      presentation,
+      diplome,
+      tarif_horaire,
+    } = req.body;
     const user = await authService.register({
       nom,
       prenom,
       email,
       mot_de_passe,
       role: role || "sportif", // sportif par défaut si rôle non précisé
+      presentation,
+      diplome,
+      tarif_horaire,
     });
 
     res.status(201).json({

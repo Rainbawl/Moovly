@@ -55,12 +55,15 @@ export const register = async (data) => {
     mot_de_passe: hashedPassword,
   });
 
-  // Si c'est un coach, crée aussi le profil coach (est_valide=false par défaut)
+  // Si c'est un coach, crée aussi le profil coach (statut_validation="en_attente" par défaut)
   // Le coach devra être validé par un admin avant de pouvoir créer des créneaux
   if (data.role === "coach") {
-    await authRepository.createCoach(user.id);
+    await authRepository.createCoach(user.id, {
+      presentation: data.presentation,
+      diplome: data.diplome,
+      tarif_horaire: data.tarif_horaire,
+    });
   }
-
   return user;
 };
 

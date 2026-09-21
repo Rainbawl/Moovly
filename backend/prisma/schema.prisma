@@ -46,6 +46,7 @@ model Coach {
   id             Int      @id @default(autoincrement())
   utilisateur_id Int      @unique
   presentation   String?  @db.Text
+  diplome        String?  @db.VarChar(255)
   tarif_horaire  Decimal? @db.Decimal(8, 2)
   statut_validation StatutValidation @default(en_attente)
   note_moyenne   Decimal? @db.Decimal(3, 2)

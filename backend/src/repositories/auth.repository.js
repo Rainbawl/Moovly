@@ -29,11 +29,15 @@ export const createUser = async (data) => {
 };
 
 // Crée le profil coach lié à un utilisateur
-export const createCoach = async (utilisateurId) => {
+
+export const createCoach = async (utilisateurId, infosCoach = {}) => {
   return prisma.coach.create({
     data: {
       utilisateur_id: utilisateurId,
       statut_validation: "en_attente",
+      presentation: infosCoach.presentation || null,
+      diplome: infosCoach.diplome || null,
+      tarif_horaire: infosCoach.tarif_horaire || null,
     },
   });
 };
