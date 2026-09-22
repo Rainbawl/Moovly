@@ -94,12 +94,23 @@ describe("Reservation Service", () => {
   });
 
   it("TU-022 — annulerReservation : doit rejeter si moins de 24h avant la séance", async () => {
+    // On construit une date de créneau qui sera fixée à 8h (matin) par le service
+    const maintenant = new Date();
+    const dateCreneauTest = new Date(maintenant);
+    dateCreneauTest.setHours(8, 0, 0, 0);
+
+    // Si 8h ce matin est déjà passé, on vise demain matin à la place
+    if (dateCreneauTest <= maintenant) {
+      dateCreneauTest.setDate(dateCreneauTest.getDate() + 1);
+    }
+
     depotReservation.trouverReservationParId.mockResolvedValue({
       id: 1,
       utilisateur_id: 1,
       statut: "en_attente",
       creneau: {
-        date: new Date(Date.now() + 2 * 60 * 60 * 1000), // dans 2h seulement
+        date: dateCreneauTest,
+        periode: "matin",
       },
     });
 
@@ -107,7 +118,6 @@ describe("Reservation Service", () => {
       "Impossible d'annuler moins de 24h avant la séance",
     );
   });
-
   it("TU-023 — annulerReservation : doit annuler si plus de 24h avant", async () => {
     depotReservation.trouverReservationParId.mockResolvedValue({
       id: 1,

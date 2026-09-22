@@ -16,7 +16,7 @@ describe("Auth Service", () => {
     vi.clearAllMocks(); // Réinitialise les mocks avant chaque test
   });
 
-  // ── hashPassword ──────────────────────────────────────────────
+  //  hashPassword
   it("TU-001 — hashPassword : doit hasher le mot de passe", async () => {
     const motDePasse = "pass320";
     const hash = await authService.hashPassword(motDePasse);
@@ -42,7 +42,7 @@ describe("Auth Service", () => {
     expect(resultat).toBe(false);
   });
 
-  // ── generateAccessToken ───────────────────────────────────────
+  //  generateAccessToken ─
   it("TU-004 — generateAccessToken : doit générer un token JWT valide", async () => {
     const utilisateur = { id: 1, role: "sportif" };
     const token = authService.generateAccessToken(utilisateur);
@@ -51,7 +51,7 @@ describe("Auth Service", () => {
     expect(token.split(".")).toHaveLength(3);
   });
 
-  // ── register ─────────────────────────────────────────────────
+  //  register ─
   it("TU-005 — register : doit rejeter un email déjà utilisé", async () => {
     // Simule qu'un utilisateur existe déjà avec cet email
     authRepository.findUserByEmail.mockResolvedValue({
@@ -113,10 +113,14 @@ describe("Auth Service", () => {
     });
 
     // Vérifie que createCoach A été appelé pour un coach
-    expect(authRepository.createCoach).toHaveBeenCalledWith(2);
+    expect(authRepository.createCoach).toHaveBeenCalledWith(2, {
+      presentation: undefined,
+      diplome: undefined,
+      tarif_horaire: undefined,
+    });
   });
 
-  // ── login ─────────────────────────────────────────────────────
+  //  login
   it("TU-008 — login : doit rejeter un email inexistant", async () => {
     authRepository.findUserByEmail.mockResolvedValue(null);
 

@@ -84,7 +84,13 @@ export const trouverReservationsParUtilisateur = async (utilisateurId) => {
 export const trouverReservationParId = async (identifiant) => {
   return prisma.reservation.findUnique({
     where: { id: parseInt(identifiant) },
-    include: { creneau: true },
+    include: {
+      creneau: {
+        include: {
+          coach: true,
+        },
+      },
+    },
   });
 };
 
@@ -106,6 +112,34 @@ export const annulerReservation = async (identifiant) => {
         verrouille_jusqua: null,
       },
     });
+
+    return reservation;
+  });
+};
+
+// Change le statut d'une réservation (utilisé par le coach : accepter/refuser)
+export const changerStatutReservation = async (
+  reservationId,
+  nouveauStatut,
+) => {
+  return prisma.$transaction(async (transaction) => {
+    const reservation = await transaction.reservation.update({
+      where: { id: parseInt(reservationId) },
+      data: { statut: nouveauStatut },
+    });
+
+    // Si refusée, on libère le créneau pour qu'il redevienne disponible
+    if (nouveauStatut === "annulee") {
+      await transaction.creneau.update({
+        where: { id: reservation.creneau_id },
+        data: { statut: "disponible", verrouille_jusqua: null },
+      });
+    } else if (nouveauStatut === "confirmee") {
+      await transaction.creneau.update({
+        where: { id: reservation.creneau_id },
+        data: { statut: "reserve" },
+      });
+    }
 
     return reservation;
   });

@@ -124,3 +124,40 @@ export const modifierReservation = async (
 
   return nouvelleReservation;
 };
+
+// Le coach accepte ou refuse une réservation en attente
+export const repondreReservation = async (
+  reservationId,
+  coachUtilisateurId,
+  accepter,
+) => {
+  const reservation =
+    await depotReservation.trouverReservationParId(reservationId);
+
+  if (!reservation) {
+    const erreur = new Error("Réservation introuvable");
+    erreur.status = 404;
+    throw erreur;
+  }
+
+  // Vérifie que le créneau appartient bien au coach connecté
+  if (
+    reservation.creneau.coach.utilisateur_id !== parseInt(coachUtilisateurId)
+  ) {
+    const erreur = new Error("Vous ne pouvez pas répondre à cette réservation");
+    erreur.status = 403;
+    throw erreur;
+  }
+
+  if (reservation.statut !== "en_attente") {
+    const erreur = new Error("Cette réservation a déjà été traitée");
+    erreur.status = 400;
+    throw erreur;
+  }
+
+  const nouveauStatut = accepter ? "confirmee" : "annulee";
+  return depotReservation.changerStatutReservation(
+    reservationId,
+    nouveauStatut,
+  );
+};

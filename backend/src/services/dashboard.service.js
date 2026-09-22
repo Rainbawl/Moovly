@@ -30,7 +30,7 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
 
   return {
     id: coach.id,
-    est_valide: coach.est_valide,
+    statut_validation: coach.est_valide,
     presentation: coach.presentation,
     tarif_horaire: coach.tarif_horaire,
     note_moyenne: coach.note_moyenne,

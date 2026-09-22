@@ -351,3 +351,47 @@
 .carte-passee p {
   color: #6b7a99;
 }
+
+/*  Planning coach */
+.liste-planning-coach {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.carte-creneau-planning {
+  background: #082a5d;
+  border: 1px solid rgba(8, 224, 255, 0.25);
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.infos-creneau-planning {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.periode-creneau {
+  font-weight: 700;
+  color: white;
+  font-size: 14px;
+}
+
+.date-creneau-planning {
+  color: #a9c1df;
+  font-size: 13px;
+}
+
+.sportif-creneau {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(8, 224, 255, 0.15);
+}
+
+.sportif-creneau p {
+  color: #08e0ff;
+  font-size: 13px;
+  margin: 2px 0;
+}

@@ -4,6 +4,7 @@
   background:
     linear-gradient(rgba(3, 27, 69, 0.6), rgba(3, 27, 69, 0.6)),
     url("./imagere.png") center bottom / contain no-repeat #031b45;
+  background-attachment: fixed;
   color: white;
   display: flex;
   flex-direction: column;

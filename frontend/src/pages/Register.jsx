@@ -10,6 +10,9 @@ function Register() {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [role, setRole] = useState("sportif"); // sportif par défaut
+  const [presentation, setPresentation] = useState("");
+  const [diplome, setDiplome] = useState("");
+  const [tarifHoraire, setTarifHoraire] = useState("");
   const [erreur, setErreur] = useState("");
   const naviguer = useNavigate();
 
@@ -23,6 +26,11 @@ function Register() {
         email,
         mot_de_passe: motDePasse,
         role,
+        ...(role === "coach" && {
+          presentation,
+          diplome,
+          tarif_Horaire: tarifHoraire,
+        }),
       });
       // Si succès on redirige vers login
       naviguer("/login");
@@ -105,7 +113,36 @@ function Register() {
               className="champ-formulaire"
               required
             />
+            {role === "coach" && (
+              <>
+                <label className="etiquette">Diplôme / Certification</label>
+                <input
+                  type="text"
+                  value={diplome}
+                  onChange={(e) => setDiplome(e.target.value)}
+                  className="champ-formulaire"
+                  placeholder="Ex : BPJEPS Activités de la forme"
+                />
 
+                <label className="etiquette">Présentation</label>
+                <textarea
+                  value={presentation}
+                  onChange={(e) => setPresentation(e.target.value)}
+                  className="champ-formulaire"
+                  placeholder="Décrivez votre expérience en quelques mots"
+                  rows={3}
+                />
+
+                <label className="etiquette">Tarif horaire (€)</label>
+                <input
+                  type="number"
+                  value={tarifHoraire}
+                  onChange={(e) => setTarifHoraire(e.target.value)}
+                  className="champ-formulaire"
+                  placeholder="35"
+                />
+              </>
+            )}
             <button type="submit" className="bouton-inscription">
               Créer mon compte
             </button>

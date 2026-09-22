@@ -12,6 +12,8 @@ function Dashboard() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
   const [afficherHistorique, setAfficherHistorique] = useState(false);
+  const [planningCoach, setPlanningCoach] = useState(null);
+  const [statistiquesCoach, setStatistiquesCoach] = useState(null);
   const { utilisateur } = useAuth();
   const naviguer = useNavigate();
 
@@ -53,6 +55,29 @@ function Dashboard() {
       setChargement(false);
     }
   };
+
+  const chargerPlanningCoach = async () => {
+    // appel API : GET /dashboard/coach
+    try {
+      const reponse = await api.get("/dashboard/coach");
+      setPlanningCoach(reponse.data.planning);
+    } catch (erreur) {
+      console.error("Erreur lors du chargement du planning :", erreur);
+    } finally {
+      setChargement(false);
+    }
+  };
+
+  const chargerStatistiquesCoach = async () => {
+    // appel API : GET /dashboard/coach/stats
+    try {
+      const reponse = await api.get("/dashboard/coach/stats");
+      setStatistiquesCoach(reponse.data.statistiques);
+    } catch (erreur) {
+      console.error("Erreur lors du chargement des statistiques :", erreur);
+    }
+  };
+
   const validerCoach = async (coachId, estValide) => {
     try {
       await api.put(`/admin/coaches/${coachId}/valider`, {
@@ -72,6 +97,9 @@ function Dashboard() {
       chargerReservations();
     } else if (utilisateur?.role === "admin") {
       chargerDonneesAdmin();
+    } else if (utilisateur?.role === "coach") {
+      chargerPlanningCoach();
+      chargerStatistiquesCoach();
     } else {
       setChargement(false);
     }
@@ -253,6 +281,75 @@ function Dashboard() {
                       ✗ Rejeter
                     </button>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/*  Dashboard Coach  */}
+        {utilisateur?.role === "coach" && (
+          <div>
+            <h2 className="titre-section">Mon espace coach</h2>
+
+            {/* Statistiques */}
+            {statistiquesCoach && (
+              <div className="grille-statistiques">
+                <div className="carte-statistique">
+                  <div className="chiffre-stat">
+                    {statistiquesCoach.totalCreneaux}
+                  </div>
+                  <div className="libelle-stat">Créneaux créés</div>
+                </div>
+                <div className="carte-statistique">
+                  <div className="chiffre-stat">
+                    {statistiquesCoach.totalReservations}
+                  </div>
+                  <div className="libelle-stat">Réservations</div>
+                </div>
+                <div className="carte-statistique">
+                  <div className="chiffre-stat">
+                    {statistiquesCoach.creneauxDisponibles}
+                  </div>
+                  <div className="libelle-stat">Disponibles</div>
+                </div>
+              </div>
+            )}
+
+            {/* Planning */}
+            <h3 className="sous-titre-section">Mon planning</h3>
+
+            {planningCoach?.creneaux.length === 0 && (
+              <p className="message-vide">Aucun créneau créé pour le moment</p>
+            )}
+
+            <div className="liste-planning-coach">
+              {planningCoach?.creneaux.map((creneau) => (
+                <div key={creneau.id} className="carte-creneau-planning">
+                  <div className="infos-creneau-planning">
+                    <span className="periode-creneau">
+                      {creneau.periode === "matin" ? "Matin" : "Après-midi"}
+                    </span>
+                    <span className="horaire-creneau">{creneau.horaire}</span>
+                    <span className="date-creneau-planning">
+                      {new Date(creneau.date).toLocaleDateString("fr-FR")}
+                    </span>
+                    <span className={`statut-creneau statut-${creneau.statut}`}>
+                      {creneau.statut.replace("_", " ")}
+                    </span>
+                  </div>
+                  {creneau.reservations.filter((r) => r.statut !== "annulee")
+                    .length > 0 && (
+                    <div className="sportif-creneau">
+                      {creneau.reservations
+                        .filter((r) => r.statut !== "annulee")
+                        .map((reservation) => (
+                          <p key={reservation.id}>
+                            {reservation.sportif.prenom}{" "}
+                            {reservation.sportif.nom}
+                          </p>
+                        ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
