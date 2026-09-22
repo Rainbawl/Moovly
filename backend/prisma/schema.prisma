@@ -134,6 +134,7 @@ enum StatutReservation {
   en_attente
   confirmee
   annulee
+  refusee
   terminee
 }
 

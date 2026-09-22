@@ -129,7 +129,7 @@ export const changerStatutReservation = async (
     });
 
     // Si refusée, on libère le créneau pour qu'il redevienne disponible
-    if (nouveauStatut === "annulee") {
+    if (nouveauStatut === "refusee") {
       await transaction.creneau.update({
         where: { id: reservation.creneau_id },
         data: { statut: "disponible", verrouille_jusqua: null },

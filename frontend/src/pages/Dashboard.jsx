@@ -78,6 +78,16 @@ function Dashboard() {
     }
   };
 
+  const repondreReservation = async (reservationId, accepter) => {
+    try {
+      await api.put(`/reservations/${reservationId}/repondre`, { accepter });
+      chargerPlanningCoach(); // recharge le planning pour refléter le changement
+      chargerStatistiquesCoach();
+    } catch (erreur) {
+      console.error("Erreur lors de la réponse à la réservation :", erreur);
+    }
+  };
+
   const validerCoach = async (coachId, estValide) => {
     try {
       await api.put(`/admin/coaches/${coachId}/valider`, {
@@ -107,7 +117,9 @@ function Dashboard() {
 
   const reservationsAffichees = afficherHistorique
     ? reservations
-    : reservations.filter((r) => r.statut !== "annulee");
+    : reservations.filter(
+        (r) => r.statut !== "annulee" && r.statut !== "refusee",
+      );
 
   const estPassee = (dateCreneau) => new Date(dateCreneau) < new Date();
   return (
@@ -150,6 +162,7 @@ function Dashboard() {
                       )}
                     </p>
                     {reservation.statut !== "annulee" &&
+                      reservation.statut !== "refusee" &&
                       !estPassee(reservation.creneau.date) && (
                         <>
                           <button
@@ -321,7 +334,6 @@ function Dashboard() {
             {planningCoach?.creneaux.length === 0 && (
               <p className="message-vide">Aucun créneau créé pour le moment</p>
             )}
-
             <div className="liste-planning-coach">
               {planningCoach?.creneaux.map((creneau) => (
                 <div key={creneau.id} className="carte-creneau-planning">
@@ -343,10 +355,35 @@ function Dashboard() {
                       {creneau.reservations
                         .filter((r) => r.statut !== "annulee")
                         .map((reservation) => (
-                          <p key={reservation.id}>
-                            {reservation.sportif.prenom}{" "}
-                            {reservation.sportif.nom}
-                          </p>
+                          <div
+                            key={reservation.id}
+                            className="ligne-sportif-creneau"
+                          >
+                            <p>
+                              {reservation.sportif.prenom}{" "}
+                              {reservation.sportif.nom}
+                            </p>
+                            {reservation.statut === "en_attente" && (
+                              <div className="actions-reservation-coach">
+                                <button
+                                  onClick={() =>
+                                    repondreReservation(reservation.id, true)
+                                  }
+                                  className="bouton-valider"
+                                >
+                                  Accepter
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    repondreReservation(reservation.id, false)
+                                  }
+                                  className="bouton-rejeter"
+                                >
+                                  Refuser
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         ))}
                     </div>
                   )}
@@ -359,4 +396,5 @@ function Dashboard() {
     </div>
   );
 }
+
 export default Dashboard;

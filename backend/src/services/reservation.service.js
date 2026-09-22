@@ -155,7 +155,7 @@ export const repondreReservation = async (
     throw erreur;
   }
 
-  const nouveauStatut = accepter ? "confirmee" : "annulee";
+  const nouveauStatut = accepter ? "confirmee" : "refusee";
   return depotReservation.changerStatutReservation(
     reservationId,
     nouveauStatut,
