@@ -37,4 +37,11 @@ routeur.delete(
   controleurReservation.annulerReservation,
 );
 
+// PUT /reservations/:id/repondre : Le coach accepte ou refuse une réservation (protégée — coach uniquement)
+routeur.put(
+  "/:id/repondre",
+  verifyToken,
+  verifyRole("coach"),
+  controleurReservation.repondreReservation,
+);
 export default routeur;

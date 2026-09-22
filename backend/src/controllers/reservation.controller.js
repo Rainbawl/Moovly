@@ -66,8 +66,6 @@ export const annulerReservation = async (requete, reponse, suite) => {
 };
 
 // PUT /reservations/:id — Modifier une réservation (changer de créneau) =>
-
-// PUT /reservations/:id — Modifier une réservation (changer de créneau)
 export const modifierReservation = async (requete, reponse, suite) => {
   try {
     const { id } = requete.params;
@@ -89,6 +87,33 @@ export const modifierReservation = async (requete, reponse, suite) => {
     reponse.status(200).json({
       message: "Réservation modifiée avec succès",
       reservation: nouvelleReservation,
+    });
+  } catch (erreur) {
+    suite(erreur);
+  }
+};
+
+// PUT /reservations/:id/repondre — Le coach accepte ou refuse une réservation
+export const repondreReservation = async (requete, reponse, suite) => {
+  try {
+    const { id } = requete.params;
+    const coachUtilisateurId = requete.user.id;
+    const { accepter } = requete.body;
+
+    if (accepter === undefined) {
+      return reponse.status(400).json({
+        error: "Le champ accepter est obligatoire (true ou false)",
+      });
+    }
+    const reservation = await serviceReservation.repondreReservation(
+      id,
+      coachUtilisateurId,
+      accepter,
+    );
+
+    reponse.status(200).json({
+      message: accepter ? "Réservation acceptée" : "Réservation refusée",
+      reservation,
     });
   } catch (erreur) {
     suite(erreur);
