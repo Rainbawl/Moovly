@@ -29,10 +29,3 @@ export const creerCreneau = async (coachId, date, periode) => {
     },
   });
 };
-
-// Récupère un créneau par son identifiant (utilisé pour la réservation)
-export const trouverCreneauParId = async (identifiant) => {
-  return prisma.creneau.findUnique({
-    where: { id: parseInt(identifiant) },
-  });
-};

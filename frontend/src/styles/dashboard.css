@@ -396,7 +396,37 @@
   margin: 2px 0;
 }
 
+.ligne-sportif-creneau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.actions-reservation-coach {
+  display: flex;
+  gap: 8px;
+}
+
 .statut-refusee {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
+}
+
+/*  Ligne d'info structurée (fiche coach) */
+.ligne-info-coach {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #c7d5f0;
+}
+
+.label-info-coach {
+  font-weight: 700;
+  color: #08e0ff;
+  min-width: 90px;
+  flex-shrink: 0;
 }

@@ -8,6 +8,7 @@ export const obtenirCoachsEnAttente = async () => {
     id: coach.id,
     statut_validation: coach.statut_validation,
     presentation: coach.presentation,
+    diplome: coach.diplome,
     tarif_horaire: coach.tarif_horaire,
     nom: coach.utilisateur.nom,
     prenom: coach.utilisateur.prenom,

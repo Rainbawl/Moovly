@@ -98,4 +98,57 @@ describe("Auth Routes — Tests d'intégration", () => {
       expect(reponse.body.status).toBe("ok");
     });
   });
+
+  // groupe de tests — déconnexion
+  describe("POST /auth/logout", () => {
+    it("TI-008 — doit déconnecter un utilisateur connecté", async () => {
+      const login = await request(app)
+        .post("/auth/login")
+        .send({ email: "bocar@test.fr", mot_de_passe: MOT_DE_PASSE_TEST });
+      const token = login.body.accessToken;
+
+      const reponse = await request(app)
+        .post("/auth/logout")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.message).toBe("Déconnexion réussie");
+    });
+
+    it("TI-009 — doit rejeter si non connecté", async () => {
+      const reponse = await request(app).post("/auth/logout");
+      expect(reponse.status).toBe(401);
+    });
+  });
+
+  // groupe de tests — renouvellement du token
+  describe("POST /auth/refresh", () => {
+    it("TI-010 — doit rejeter si aucun refresh token fourni", async () => {
+      const reponse = await request(app).post("/auth/refresh");
+      expect(reponse.status).toBe(401);
+      expect(reponse.body.error).toBe("Refresh token manquant");
+    });
+
+    it("TI-011 — doit rejeter si le refresh token est invalide", async () => {
+      const reponse = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", ["refreshToken=token.invalide.faux"]);
+      expect(reponse.status).toBe(401);
+      expect(reponse.body.error).toBe("Refresh token invalide ou expiré");
+    });
+
+    it("TI-012 — doit renvoyer un nouvel access token avec un refresh token valide", async () => {
+      const login = await request(app)
+        .post("/auth/login")
+        .send({ email: "bocar@test.fr", mot_de_passe: MOT_DE_PASSE_TEST });
+      const cookies = login.headers["set-cookie"];
+
+      const reponse = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", cookies);
+
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.accessToken).toBeDefined();
+    });
+  });
 });

@@ -28,6 +28,14 @@ export const trouverCoachsEnAttente = async () => {
 
 // Valide ou rejette un coach
 export const validerCoach = async (coachId, estValide) => {
+  const coach = await prisma.coach.findUnique({
+    where: { id: parseInt(coachId) },
+  });
+
+  if (!coach) {
+    return null;
+  }
+
   return prisma.coach.update({
     where: { id: parseInt(coachId) },
     data: { statut_validation: estValide ? "valide" : "rejete" },

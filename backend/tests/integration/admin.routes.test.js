@@ -130,4 +130,14 @@ describe("Admin Routes — Tests d'intégration", () => {
       expect(reponse.status).toBe(400);
     });
   });
+
+  it("TI-044 — doit retourner 404 si le coach à valider est introuvable", async () => {
+    const reponse = await request(app)
+      .put("/admin/coaches/999999/valider")
+      .set("Authorization", `Bearer ${tokenAdmin}`)
+      .send({ est_valide: true });
+
+    expect(reponse.status).toBe(404);
+    expect(reponse.body.error).toBe("Coach introuvable");
+  });
 });

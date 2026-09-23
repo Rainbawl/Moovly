@@ -1,0 +1,221 @@
+/* ============================================
+   RESPONSIVE — Tablette large / iPad (769px – 1112px)
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1112px) {
+  .hero {
+    min-height: 750px;
+    padding: 60px 24px;
+  }
+
+  .contenu-dashboard {
+    padding: 32px 24px;
+  }
+
+  .grille-statistiques {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE — Image de fond Register (≤ 1112px)
+   ============================================ */
+@media (max-width: 1112px) {
+  .page-register {
+    background-image:
+      linear-gradient(rgba(3, 27, 69, 0.6), rgba(3, 27, 69, 0.6)),
+      url("/imaregister.png") !important;
+    background-size: cover !important;
+    background-position: center top !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE — Tablette / mobile paysage (≤ 768px)
+   ============================================ */
+@media (max-width: 768px) {
+  /*  Navbar */
+  .navbar-globale {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .navbar-liens {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 16px;
+  }
+  .navbar-actions {
+    gap: 8px;
+  }
+  .navbar-bonjour {
+    display: none;
+  }
+
+  .page-register,
+  .page-login {
+    background-attachment: scroll;
+  }
+
+  /*  Accueil : hero */
+  .hero {
+    min-height: auto;
+    padding: 50px 16px;
+  }
+  .hero-content {
+    padding: 0 16px;
+  }
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  /*  Accueil : features */
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .feature {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .feature:last-child {
+    border-bottom: none;
+  }
+
+  /*  Accueil : filtres  */
+  .groupe-filtres {
+    flex-direction: column;
+    width: 100%;
+  }
+  .champ-recherche {
+    width: 100%;
+  }
+  .entete-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /*  Accueil : footer  */
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+  }
+
+  /*  Accueil : grille coachs */
+  .grille-coachs {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /*  Login / Register */
+  .formulaire-login,
+  .formulaire-register {
+    max-width: 90%;
+    padding: 28px 20px;
+  }
+  .groupe-champs {
+    grid-template-columns: 1fr;
+  }
+
+  /*  Dashboard : statistiques  */
+  .grille-statistiques {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /*  Dashboard : cartes réservation/coach  */
+  .carte-reservation,
+  .carte-coach-attente,
+  .carte-creneau-planning {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .actions-coach-attente {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .ligne-sportif-creneau {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .actions-reservation-coach {
+    width: 100%;
+  }
+  .actions-reservation-coach .bouton-valider,
+  .actions-reservation-coach .bouton-rejeter {
+    flex: 1;
+  }
+
+  /*  Profil coach  */
+  .entete-coach {
+    flex-direction: column;
+    text-align: center;
+  }
+  .carte-profil-coach {
+    padding: 20px;
+  }
+  .carte-creneau {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .infos-creneau {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .bouton-reserver {
+    width: 100%;
+  }
+}
+
+/* Simplifie les images de fond sur petit écran — évite les coupures mal placées */
+.hero {
+  background-position: center center !important;
+  background-size: cover !important;
+}
+
+.page-register,
+.page-login {
+  background-position: center center !important;
+  background-size: cover !important;
+}
+
+/* ============================================
+   RESPONSIVE — Mobile (≤ 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .grille-coachs {
+    grid-template-columns: 1fr;
+  }
+
+  .grille-statistiques {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar-logo-image {
+    height: 32px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .formulaire-login,
+  .formulaire-register {
+    max-width: 100%;
+    padding: 24px 16px;
+  }
+
+  .bouton-modifier,
+  .bouton-annuler,
+  .bouton-valider,
+  .bouton-rejeter {
+    width: 100%;
+    margin-right: 0;
+  }
+}

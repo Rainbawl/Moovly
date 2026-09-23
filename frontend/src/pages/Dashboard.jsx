@@ -122,6 +122,7 @@ function Dashboard() {
       );
 
   const estPassee = (dateCreneau) => new Date(dateCreneau) < new Date();
+
   return (
     <div className="page-dashboard">
       {/* En-tête avec nom et bouton déconnexion */}
@@ -129,6 +130,7 @@ function Dashboard() {
       <main className="contenu-dashboard">
         {chargement && <p className="message-chargement">Chargement...</p>}
         {erreur && <p className="message-erreur">{erreur}</p>}
+
         {/*  Dashboard Sportif  */}
         {utilisateur?.role === "sportif" && (
           <div>
@@ -255,28 +257,44 @@ function Dashboard() {
                     <h3>
                       {coach.prenom} {coach.nom}
                     </h3>
-                    <p>{coach.email}</p>
 
-                    {coach.presentation && (
-                      <p className="presentation-coach-attente">
-                        {coach.presentation}
-                      </p>
+                    <div className="ligne-info-coach">
+                      <span className="label-info-coach">Email</span>
+                      <span>{coach.email}</span>
+                    </div>
+
+                    {coach.diplome && (
+                      <div className="ligne-info-coach">
+                        <span className="label-info-coach">Diplôme</span>
+                        <span>{coach.diplome}</span>
+                      </div>
                     )}
 
-                    {coach.sports.length > 0 && (
-                      <div className="sports-coach-attente">
-                        {coach.sports.map((sport, index) => (
-                          <span key={index} className="badge-sport">
-                            {sport}
-                          </span>
-                        ))}
+                    {coach.presentation && (
+                      <div className="ligne-info-coach">
+                        <span className="label-info-coach">Présentation</span>
+                        <span>{coach.presentation}</span>
                       </div>
                     )}
 
                     {coach.tarif_horaire && (
-                      <p className="tarif-coach-attente">
-                        {coach.tarif_horaire}€ / séance
-                      </p>
+                      <div className="ligne-info-coach">
+                        <span className="label-info-coach">Tarif</span>
+                        <span>{coach.tarif_horaire}€ / séance</span>
+                      </div>
+                    )}
+
+                    {coach.sports.length > 0 && (
+                      <div className="ligne-info-coach">
+                        <span className="label-info-coach">Sports</span>
+                        <div className="sports-coach-attente">
+                          {coach.sports.map((sport, index) => (
+                            <span key={index} className="badge-sport">
+                              {sport}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
 
@@ -299,6 +317,7 @@ function Dashboard() {
             </div>
           </div>
         )}
+
         {/*  Dashboard Coach  */}
         {utilisateur?.role === "coach" && (
           <div>

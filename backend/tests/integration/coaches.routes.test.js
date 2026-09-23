@@ -99,5 +99,40 @@ describe("Coaches Routes — Tests d'intégration", () => {
         .send({ date: "2026-09-02", periode: "matin" });
       expect(reponse.status).toBe(403);
     });
+
+    it("TI-017 — doit retourner 404 si coach introuvable (liste créneaux)", async () => {
+      const reponse = await request(app).get(
+        "/coaches/999999/creneaux?date=2026-08-10",
+      );
+      expect(reponse.status).toBe(404);
+      expect(reponse.body.error).toBe("Coach introuvable");
+    });
+
+    it("TI-018 — doit retourner 404 si coach introuvable (création créneau)", async () => {
+      const reponse = await request(app)
+        .post("/coaches/999999/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date: "2026-09-02", periode: "matin" });
+      expect(reponse.status).toBe(404);
+      expect(reponse.body.error).toBe("Coach introuvable");
+    });
+
+    it("TI-019 — doit rejeter si le token est invalide", async () => {
+      const reponse = await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", "Bearer un.faux.token")
+        .send({ date: "2026-09-02", periode: "matin" });
+      expect(reponse.status).toBe(401);
+      expect(reponse.body.error).toBe("Token invalide ou expiré");
+    });
+  });
+
+  it("TI-020 — doit rejeter si date ou période manquante", async () => {
+    const reponse = await request(app)
+      .post("/coaches/1/creneaux")
+      .set("Authorization", `Bearer ${tokenCoach}`)
+      .send({ date: "2026-09-02" }); // période manquante
+    expect(reponse.status).toBe(400);
+    expect(reponse.body.error).toBe("La date et la période sont obligatoires");
   });
 });

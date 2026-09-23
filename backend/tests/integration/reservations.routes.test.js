@@ -191,8 +191,7 @@ describe("Reservations Routes — Tests d'intégration", () => {
     it("TI-028 — doit rejeter si le sportif tente d'annuler la réservation d'un autre (IDOR)", async () => {
       const dateFuture = new Date();
       dateFuture.setFullYear(dateFuture.getFullYear() + 7);
-      dateFuture.setMonth(Math.floor(Math.random() * 12));
-      dateFuture.setDate(Math.floor(Math.random() * 28) + 1);
+      dateFuture.setDate(dateFuture.getDate() + (Date.now() % 3650));
       const date = dateFuture.toISOString().split("T")[0];
 
       const creneauCree = await request(app)
@@ -239,6 +238,292 @@ describe("Reservations Routes — Tests d'intégration", () => {
       const reponse = await request(app)
         .delete(`/reservations/${reservation.body.reservation.id}`)
         .set("Authorization", `Bearer ${tokenAutre}`);
+
+      expect(reponse.status).toBe(403);
+    });
+  });
+
+  describe("PUT /reservations/:id/repondre", () => {
+    it("TI-044 — doit rejeter si non connecté", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1/repondre")
+        .send({ accepter: true });
+      expect(reponse.status).toBe(401);
+    });
+
+    it("TI-045 — doit rejeter si un sportif tente de répondre", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1/repondre")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ accepter: true });
+      expect(reponse.status).toBe(403);
+    });
+
+    it("TI-046 — doit rejeter si le champ accepter est manquant", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1/repondre")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({});
+      expect(reponse.status).toBe(400);
+      expect(reponse.body.error).toBeDefined();
+    });
+
+    it("TI-047 — doit rejeter si la réservation est introuvable", async () => {
+      const reponse = await request(app)
+        .put("/reservations/999999/repondre")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ accepter: true });
+      expect(reponse.status).toBe(404);
+    });
+
+    it("TI-048 — doit accepter une réservation en attente avec succès", async () => {
+      const dateFuture = new Date();
+      dateFuture.setFullYear(dateFuture.getFullYear() + 6);
+      dateFuture.setDate(dateFuture.getDate() + (Date.now() % 3650));
+      const date = dateFuture.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date, periode: "matin" });
+
+      const creneaux = await request(app).get(
+        `/coaches/1/creneaux?date=${date}`,
+      );
+      const disponible = creneaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+      const creneauId = disponible.id;
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+
+      const reservationId = reservation.body.reservation.id;
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}/repondre`)
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ accepter: true });
+
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.reservation.statut).toBe("confirmee");
+    });
+
+    it("TI-049 — doit refuser une réservation en attente avec succès", async () => {
+      const dateFuture = new Date();
+      dateFuture.setFullYear(dateFuture.getFullYear() + 6);
+      dateFuture.setDate(dateFuture.getDate() + (Date.now() % 3650));
+      const date = dateFuture.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date, periode: "apres_midi" });
+
+      const creneaux = await request(app).get(
+        `/coaches/1/creneaux?date=${date}`,
+      );
+      const disponible = creneaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+      const creneauId = disponible.id;
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+
+      const reservationId = reservation.body.reservation.id;
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}/repondre`)
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ accepter: false });
+
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.reservation.statut).toBe("refusee");
+    });
+
+    it("TI-050 — doit rejeter si un autre coach tente de répondre (IDOR)", async () => {
+      // Crée un deuxième coach, distinct de celui utilisé pour créer le créneau
+      const emailAutreCoach = `autre.coach.${Date.now()}@test.fr`;
+      await request(app)
+        .post("/auth/register")
+        .send({
+          nom: `AutreCoach${Date.now()}`,
+          prenom: "Test",
+          email: emailAutreCoach,
+          mot_de_passe: process.env.SEED_PASSWORD_COACH,
+          role: "coach",
+        });
+      const loginAutreCoach = await request(app).post("/auth/login").send({
+        email: emailAutreCoach,
+        mot_de_passe: process.env.SEED_PASSWORD_COACH,
+      });
+      const tokenAutreCoach = loginAutreCoach.body.accessToken;
+
+      const dateFuture = new Date();
+      dateFuture.setFullYear(dateFuture.getFullYear() + 6);
+      dateFuture.setDate(dateFuture.getDate() + (Date.now() % 3650));
+      const date = dateFuture.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date, periode: "matin" });
+
+      const creneaux = await request(app).get(
+        `/coaches/1/creneaux?date=${date}`,
+      );
+      const disponible = creneaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+      const creneauId = disponible.id;
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+
+      const reservationId = reservation.body.reservation.id;
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}/repondre`)
+        .set("Authorization", `Bearer ${tokenAutreCoach}`)
+        .send({ accepter: true });
+
+      expect(reponse.status).toBe(403);
+    });
+  });
+
+  describe("PUT /reservations/:id", () => {
+    it("TI-051 — doit rejeter si non connecté", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1")
+        .send({ nouveau_creneau_id: 2 });
+      expect(reponse.status).toBe(401);
+    });
+
+    it("TI-052 — doit rejeter si nouveau_creneau_id manquant", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({});
+      expect(reponse.status).toBe(400);
+      expect(reponse.body.error).toBeDefined();
+    });
+
+    it("TI-053 — doit rejeter si un coach tente de modifier une réservation", async () => {
+      const reponse = await request(app)
+        .put("/reservations/1")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ nouveau_creneau_id: 2 });
+      expect(reponse.status).toBe(403);
+    });
+
+    it("TI-054 — doit rejeter si la réservation est introuvable", async () => {
+      const reponse = await request(app)
+        .put("/reservations/999999")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ nouveau_creneau_id: 2 });
+      expect(reponse.status).toBe(404);
+    });
+
+    it("TI-055 — doit modifier une réservation avec succès (nouveau créneau)", async () => {
+      const dateInitiale = new Date();
+      dateInitiale.setFullYear(dateInitiale.getFullYear() + 9);
+      dateInitiale.setDate(dateInitiale.getDate() + (Date.now() % 3650));
+      const dateInitialeStr = dateInitiale.toISOString().split("T")[0];
+
+      const dateNouvelle = new Date(dateInitiale);
+      dateNouvelle.setDate(dateNouvelle.getDate() + 1);
+      const dateNouvelleStr = dateNouvelle.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date: dateInitialeStr, periode: "matin" });
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date: dateNouvelleStr, periode: "matin" });
+
+      const creneauxInitiaux = await request(app).get(
+        `/coaches/1/creneaux?date=${dateInitialeStr}`,
+      );
+      const creneauInitial = creneauxInitiaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+
+      const creneauxNouveaux = await request(app).get(
+        `/coaches/1/creneaux?date=${dateNouvelleStr}`,
+      );
+      const nouveauCreneau = creneauxNouveaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauInitial.id });
+
+      const reservationId = reservation.body.reservation.id;
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}`)
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ nouveau_creneau_id: nouveauCreneau.id });
+
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.reservation.creneau_id).toBe(nouveauCreneau.id);
+      expect(reponse.body.reservation.statut).toBe("en_attente");
+    });
+
+    it("TI-056 — doit rejeter si un sportif tente de modifier la réservation d'un autre (IDOR)", async () => {
+      const dateFuture = new Date();
+      dateFuture.setFullYear(dateFuture.getFullYear() + 10);
+      dateFuture.setDate(dateFuture.getDate() + (Date.now() % 3650));
+      const date = dateFuture.toISOString().split("T")[0];
+
+      await request(app)
+        .post("/coaches/1/creneaux")
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date, periode: "apres_midi" });
+
+      const creneaux = await request(app).get(
+        `/coaches/1/creneaux?date=${date}`,
+      );
+      const disponible = creneaux.body.creneaux.find(
+        (c) => c.statut === "disponible",
+      );
+      const creneauId = disponible.id;
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+
+      const emailAutre = `autre.modif.${Date.now()}@test.fr`;
+      await request(app).post("/auth/register").send({
+        nom: "Autre",
+        prenom: "Sportif",
+        email: emailAutre,
+        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+        role: "sportif",
+      });
+      const loginAutre = await request(app).post("/auth/login").send({
+        email: emailAutre,
+        mot_de_passe: process.env.SEED_PASSWORD_SPORTIF,
+      });
+      const tokenAutre = loginAutre.body.accessToken;
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservation.body.reservation.id}`)
+        .set("Authorization", `Bearer ${tokenAutre}`)
+        .send({ nouveau_creneau_id: creneauId });
 
       expect(reponse.status).toBe(403);
     });
