@@ -14,6 +14,9 @@ function Dashboard() {
   const [afficherHistorique, setAfficherHistorique] = useState(false);
   const [planningCoach, setPlanningCoach] = useState(null);
   const [statistiquesCoach, setStatistiquesCoach] = useState(null);
+  const [nouvelleDate, setNouvelleDate] = useState("");
+  const [nouvellePeriode, setNouvellePeriode] = useState("matin");
+  const [messageCreneau, setMessageCreneau] = useState(null); // { type: "succes" | "erreur", texte }
   const { utilisateur } = useAuth();
   const naviguer = useNavigate();
 
@@ -85,6 +88,27 @@ function Dashboard() {
       chargerStatistiquesCoach();
     } catch (erreur) {
       console.error("Erreur lors de la réponse à la réservation :", erreur);
+    }
+  };
+
+  const ajouterCreneau = async (e) => {
+    e.preventDefault();
+    setMessageCreneau(null);
+    try {
+      // appel API : POST /coaches/:id/creneaux (id du profil coach, renvoyé par le planning)
+      await api.post(`/coaches/${planningCoach.id}/creneaux`, {
+        date: nouvelleDate,
+        periode: nouvellePeriode,
+      });
+      setMessageCreneau({ type: "succes", texte: "Créneau ajouté à votre planning" });
+      chargerPlanningCoach(); // recharge le planning et les stats avec le nouveau créneau
+      chargerStatistiquesCoach();
+    } catch (erreur) {
+      setMessageCreneau({
+        type: "erreur",
+        texte:
+          erreur.response?.data?.error || "Impossible d'ajouter ce créneau",
+      });
     }
   };
 
@@ -345,6 +369,51 @@ function Dashboard() {
                   <div className="libelle-stat">Disponibles</div>
                 </div>
               </div>
+            )}
+
+            {/* Ajout d'un créneau */}
+            <h3 className="sous-titre-section">Ajouter un créneau</h3>
+            <form className="formulaire-creneau" onSubmit={ajouterCreneau}>
+              <div className="champ-creneau">
+                <label className="etiquette-creneau">Date</label>
+                <input
+                  type="date"
+                  value={nouvelleDate}
+                  onChange={(e) => setNouvelleDate(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="saisie-creneau"
+                  required
+                />
+              </div>
+              <div className="champ-creneau">
+                <label className="etiquette-creneau">Période</label>
+                <select
+                  value={nouvellePeriode}
+                  onChange={(e) => setNouvellePeriode(e.target.value)}
+                  className="saisie-creneau"
+                >
+                  <option value="matin">Matin (8h00 - 12h00)</option>
+                  <option value="apres_midi">Après-midi (14h00 - 18h00)</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="bouton-ajouter-creneau"
+                disabled={!planningCoach}
+              >
+                Ajouter
+              </button>
+            </form>
+            {messageCreneau && (
+              <p
+                className={
+                  messageCreneau.type === "succes"
+                    ? "message-creneau-succes"
+                    : "message-creneau-erreur"
+                }
+              >
+                {messageCreneau.texte}
+              </p>
             )}
 
             {/* Planning */}
