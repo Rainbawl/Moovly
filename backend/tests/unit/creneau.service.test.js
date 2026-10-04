@@ -16,6 +16,9 @@ import * as depotCreneau from "../../src/repositories/creneau.repository.js";
 import * as depotCoach from "../../src/repositories/coach.repository.js";
 import * as serviceCreneau from "../../src/services/creneau.service.js";
 
+// Utilisateur connecté propriétaire du profil coach (coach.utilisateur_id = 10)
+const COACH_CONNECTE = { id: 10, role: "coach" };
+
 describe("Creneau Service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -33,6 +36,7 @@ describe("Creneau Service", () => {
   it("TU-012 — obtenirCreneauxCoach : doit retourner les créneaux avec horaires", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "valide",
     });
     depotCreneau.trouverCreneauxParCoachEtDate.mockResolvedValue([
@@ -62,17 +66,19 @@ describe("Creneau Service", () => {
   it("TU-014 — creerCreneau : doit rejeter si coach non validé", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "en_attente",
     });
 
     await expect(
-      serviceCreneau.creerCreneau(1, "2026-08-10", "matin"),
+      serviceCreneau.creerCreneau(1, "2026-08-10", "matin", COACH_CONNECTE),
     ).rejects.toThrow("Votre compte coach n'est pas encore validé");
   });
 
   it("TU-015 — creerCreneau : doit créer un créneau matin avec succès", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "valide",
     });
     depotCreneau.creerCreneau.mockResolvedValue({
@@ -82,7 +88,12 @@ describe("Creneau Service", () => {
       statut: "disponible",
     });
 
-    const creneau = await serviceCreneau.creerCreneau(1, "2026-08-10", "matin");
+    const creneau = await serviceCreneau.creerCreneau(
+      1,
+      "2026-08-10",
+      "matin",
+      COACH_CONNECTE,
+    );
 
     expect(creneau.periode).toBe("matin");
     expect(creneau.horaire).toBe("8h00 - 12h00");
@@ -92,6 +103,7 @@ describe("Creneau Service", () => {
   it("TU-016 — creerCreneau : doit rejeter un doublon (même date + période)", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "valide",
     });
     const erreurDoublon = new Error("Unique constraint failed");
@@ -99,18 +111,19 @@ describe("Creneau Service", () => {
     depotCreneau.creerCreneau.mockRejectedValue(erreurDoublon);
 
     await expect(
-      serviceCreneau.creerCreneau(1, "2026-08-10", "matin"),
+      serviceCreneau.creerCreneau(1, "2026-08-10", "matin", COACH_CONNECTE),
     ).rejects.toThrow("Un créneau existe déjà");
   });
   it("TU-017b — creerCreneau : doit rejeter si coach non validé", async () => {
     // Simule un coach qui existe mais n'est pas encore validé par l'admin
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "en_attente", // ← pas encore validé
     });
 
     await expect(
-      serviceCreneau.creerCreneau(1, "2026-08-25", "matin"),
+      serviceCreneau.creerCreneau(1, "2026-08-25", "matin", COACH_CONNECTE),
     ).rejects.toThrow(
       "Votre compte coach n'est pas encore validé par un admin",
     );
@@ -120,6 +133,7 @@ describe("Creneau Service", () => {
     // Simule un coach validé
     depotCoach.trouverCoachParId.mockResolvedValue({
       id: 1,
+      utilisateur_id: 10,
       statut_validation: "valide",
     });
 
@@ -130,7 +144,7 @@ describe("Creneau Service", () => {
 
     // On s'attend à ce que l'erreur soit relancée telle quelle
     await expect(
-      serviceCreneau.creerCreneau(1, "2026-08-25", "matin"),
+      serviceCreneau.creerCreneau(1, "2026-08-25", "matin", COACH_CONNECTE),
     ).rejects.toThrow("Erreur inattendue");
   });
   it("TU-017d — creerCreneau : doit rejeter si coach introuvable", async () => {
@@ -140,5 +154,39 @@ describe("Creneau Service", () => {
     await expect(
       serviceCreneau.creerCreneau(999, "2026-08-25", "matin"),
     ).rejects.toThrow("Coach introuvable");
+  });
+
+  it("TU-017e — creerCreneau : doit rejeter un coach qui crée un créneau pour un autre coach", async () => {
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 10,
+      statut_validation: "valide",
+    });
+
+    await expect(
+      serviceCreneau.creerCreneau(1, "2026-08-25", "matin", { id: 99, role: "coach" }),
+    ).rejects.toMatchObject({ status: 403 });
+    expect(depotCreneau.creerCreneau).not.toHaveBeenCalled();
+  });
+
+  it("TU-017f — creerCreneau : doit autoriser l'admin à créer un créneau pour un coach", async () => {
+    depotCoach.trouverCoachParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 10,
+      statut_validation: "valide",
+    });
+    depotCreneau.creerCreneau.mockResolvedValue({
+      id: 2,
+      date: "2026-08-25",
+      periode: "matin",
+      statut: "disponible",
+    });
+
+    const creneau = await serviceCreneau.creerCreneau(1, "2026-08-25", "matin", {
+      id: 3,
+      role: "admin",
+    });
+
+    expect(creneau.id).toBe(2);
   });
 });

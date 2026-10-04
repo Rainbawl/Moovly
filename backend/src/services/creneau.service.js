@@ -27,7 +27,8 @@ export const obtenirCreneauxCoach = async (coachId, date) => {
 };
 
 // Crée un nouveau créneau (réservé aux coachs validés)
-export const creerCreneau = async (coachId, date, periode) => {
+// utilisateur = req.user (contenu du JWT : { id, role })
+export const creerCreneau = async (coachId, date, periode, utilisateur) => {
   // Vérifie que la période est valide
   const periodesValides = ["matin", "apres_midi"];
   if (!periodesValides.includes(periode)) {
@@ -41,6 +42,14 @@ export const creerCreneau = async (coachId, date, periode) => {
   if (!coach) {
     const erreur = new Error("Coach introuvable");
     erreur.status = 404;
+    throw erreur;
+  }
+  // Un coach ne peut créer des créneaux que sur son propre profil (l'admin peut pour tous)
+  if (utilisateur?.role !== "admin" && coach.utilisateur_id !== utilisateur?.id) {
+    const erreur = new Error(
+      "Vous ne pouvez créer des créneaux que pour votre propre profil",
+    );
+    erreur.status = 403;
     throw erreur;
   }
   if (coach.statut_validation !== "valide") {

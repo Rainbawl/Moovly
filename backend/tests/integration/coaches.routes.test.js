@@ -125,6 +125,18 @@ describe("Coaches Routes — Tests d'intégration", () => {
       expect(reponse.status).toBe(401);
       expect(reponse.body.error).toBe("Token invalide ou expiré");
     });
+
+    it("TI-053 — doit rejeter un coach qui crée un créneau pour un autre coach (IDOR)", async () => {
+      // Camille (coach 1) tente de créer un créneau sur le profil d'un autre coach validé
+      const coachs = await request(app).get("/coaches");
+      const autreCoach = coachs.body.coachs.find((c) => c.id !== 1);
+
+      const reponse = await request(app)
+        .post(`/coaches/${autreCoach.id}/creneaux`)
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ date: "2027-03-15", periode: "matin" });
+      expect(reponse.status).toBe(403);
+    });
   });
 
   it("TI-020 — doit rejeter si date ou période manquante", async () => {
