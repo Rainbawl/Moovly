@@ -29,7 +29,7 @@ function Register() {
         ...(role === "coach" && {
           presentation,
           diplome,
-          tarif_Horaire: tarifHoraire,
+          tarif_horaire: tarifHoraire,
         }),
       });
       // Si succès on redirige vers login
