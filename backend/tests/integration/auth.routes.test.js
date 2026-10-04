@@ -88,6 +88,22 @@ describe("Auth Routes — Tests d'intégration", () => {
       expect(reponse.status).toBe(401);
       expect(reponse.body.error).toBe("Identifiants invalides");
     });
+
+    it("TI-052 — doit bloquer un coach en attente de validation", async () => {
+      const email = `coach.attente.${Date.now()}@test.fr`;
+      await request(app).post("/auth/register").send({
+        nom: "Attente",
+        prenom: "Coach",
+        email,
+        mot_de_passe: MOT_DE_PASSE_TEST,
+        role: "coach",
+      });
+      const reponse = await request(app)
+        .post("/auth/login")
+        .send({ email, mot_de_passe: MOT_DE_PASSE_TEST });
+      expect(reponse.status).toBe(403);
+      expect(reponse.body.accessToken).toBeUndefined();
+    });
   });
 
   // groupe de tests — santé du serveur

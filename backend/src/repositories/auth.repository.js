@@ -6,8 +6,12 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 // Cherche un utilisateur par son email
+// Inclut le statut de validation du profil coach (null pour les autres rôles)
 export const findUserByEmail = async (email) => {
-  return prisma.utilisateur.findUnique({ where: { email } });
+  return prisma.utilisateur.findUnique({
+    where: { email },
+    include: { coach: { select: { statut_validation: true } } },
+  });
 };
 
 // Cherche un utilisateur par son id (utilisé pour le refresh token)

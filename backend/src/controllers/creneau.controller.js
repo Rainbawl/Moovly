@@ -39,7 +39,12 @@ export const creerCreneau = async (requete, reponse, suite) => {
       });
     }
 
-    const creneau = await serviceCreneau.creerCreneau(id, date, periode);
+    const creneau = await serviceCreneau.creerCreneau(
+      id,
+      date,
+      periode,
+      requete.user,
+    );
 
     reponse.status(201).json({
       message: "Créneau créé avec succès",

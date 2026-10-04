@@ -87,6 +87,17 @@ export const login = async (email, password) => {
     throw error;
   }
 
+  // Un coach ne peut se connecter qu'une fois son compte validé par un admin
+  if (user.role === "coach" && user.coach?.statut_validation !== "valide") {
+    const error = new Error(
+      user.coach?.statut_validation === "rejete"
+        ? "Votre compte coach a été refusé par un administrateur"
+        : "Votre compte coach est en attente de validation par un administrateur",
+    );
+    error.status = 403;
+    throw error;
+  }
+
   // Génère les deux tokens
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);

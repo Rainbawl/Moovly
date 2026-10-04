@@ -28,7 +28,12 @@ function Login() {
     } catch (err) {
       console.error("[Login] Echec de connexion :", err);
       //Si erreur, on affiche alors le message
-      setErreur("Email ou mot de passe incorrect");
+      // 403 = coach pas encore validé (ou refusé) : on affiche le message du backend
+      if (err.response?.status === 403) {
+        setErreur(err.response.data.error);
+      } else {
+        setErreur("Email ou mot de passe incorrect");
+      }
     }
   };
   return (

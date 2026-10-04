@@ -157,4 +157,52 @@ describe("Auth Service", () => {
     expect(resultat.accessToken).toBeDefined();
     expect(resultat.user.email).toBe("jean@test.fr");
   });
+
+  it("TU-011 — login : doit bloquer un coach en attente de validation", async () => {
+    const hash = await authService.hashPassword("password123");
+    authRepository.findUserByEmail.mockResolvedValue({
+      id: 2,
+      email: "coach@test.fr",
+      mot_de_passe: hash,
+      role: "coach",
+      coach: { statut_validation: "en_attente" },
+    });
+
+    await expect(
+      authService.login("coach@test.fr", "password123"),
+    ).rejects.toMatchObject({
+      status: 403,
+      message: "Votre compte coach est en attente de validation par un administrateur",
+    });
+  });
+
+  it("TU-012 — login : doit bloquer un coach refusé", async () => {
+    const hash = await authService.hashPassword("password123");
+    authRepository.findUserByEmail.mockResolvedValue({
+      id: 2,
+      email: "coach@test.fr",
+      mot_de_passe: hash,
+      role: "coach",
+      coach: { statut_validation: "rejete" },
+    });
+
+    await expect(
+      authService.login("coach@test.fr", "password123"),
+    ).rejects.toMatchObject({ status: 403 });
+  });
+
+  it("TU-013 — login : doit autoriser un coach validé", async () => {
+    const hash = await authService.hashPassword("password123");
+    authRepository.findUserByEmail.mockResolvedValue({
+      id: 2,
+      email: "coach@test.fr",
+      mot_de_passe: hash,
+      role: "coach",
+      coach: { statut_validation: "valide" },
+    });
+
+    const resultat = await authService.login("coach@test.fr", "password123");
+
+    expect(resultat.accessToken).toBeDefined();
+  });
 });
