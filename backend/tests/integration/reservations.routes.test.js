@@ -358,6 +358,24 @@ describe("Reservations Routes — Tests d'intégration", () => {
           mot_de_passe: process.env.SEED_PASSWORD_COACH,
           role: "coach",
         });
+
+      // Un coach doit être validé par un admin avant de pouvoir se connecter
+      const loginAdmin = await request(app).post("/auth/login").send({
+        email: "admin@moovly.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+      });
+      const tokenAdmin = loginAdmin.body.accessToken;
+      const coachsEnAttente = await request(app)
+        .get("/admin/coaches")
+        .set("Authorization", `Bearer ${tokenAdmin}`);
+      const autreCoach = coachsEnAttente.body.coachs.find(
+        (c) => c.email === emailAutreCoach,
+      );
+      await request(app)
+        .put(`/admin/coaches/${autreCoach.id}/valider`)
+        .set("Authorization", `Bearer ${tokenAdmin}`)
+        .send({ est_valide: true });
+
       const loginAutreCoach = await request(app).post("/auth/login").send({
         email: emailAutreCoach,
         mot_de_passe: process.env.SEED_PASSWORD_COACH,
