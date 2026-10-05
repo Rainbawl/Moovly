@@ -450,51 +450,80 @@ describe("Reservations Routes — Tests d'intégration", () => {
     });
 
     it("TI-055 — doit modifier une réservation avec succès (nouveau créneau)", async () => {
-      const dateInitiale = new Date();
-      dateInitiale.setFullYear(dateInitiale.getFullYear() + 9);
-      dateInitiale.setDate(dateInitiale.getDate() + (Date.now() % 3650));
-      const dateInitialeStr = dateInitiale.toISOString().split("T")[0];
+      // Les deux dates dont on a besoin : l'ancien créneau et le nouveau créneau
+      let dateAncienCreneau;
+      let dateNouveauCreneau;
 
-      const dateNouvelle = new Date(dateInitiale);
-      dateNouvelle.setDate(dateNouvelle.getDate() + 1);
-      const dateNouvelleStr = dateNouvelle.toISOString().split("T")[0];
+      // La base garde les créneaux des lancements précédents.
+      // On essaie donc plusieurs dates jusqu'à en trouver deux consécutives qui sont libres.
+      for (let numeroEssai = 0; numeroEssai < 50; numeroEssai++) {
+        // Date de départ : dans 9 ans + un nombre de jours qui change à chaque essai
+        const jourAncien = new Date();
+        jourAncien.setFullYear(jourAncien.getFullYear() + 9);
+        jourAncien.setDate(
+          jourAncien.getDate() + ((Date.now() + numeroEssai * 2) % 3650),
+        );
 
-      await request(app)
-        .post("/coaches/1/creneaux")
-        .set("Authorization", `Bearer ${tokenCoach}`)
-        .send({ date: dateInitialeStr, periode: "matin" });
+        // Le lendemain
+        const jourNouveau = new Date(jourAncien);
+        jourNouveau.setDate(jourNouveau.getDate() + 1);
 
-      await request(app)
-        .post("/coaches/1/creneaux")
-        .set("Authorization", `Bearer ${tokenCoach}`)
-        .send({ date: dateNouvelleStr, periode: "matin" });
+        // Format "AAAA-MM-JJ" attendu par l'API
+        const texteDateAncienne = jourAncien.toISOString().split("T")[0];
+        const texteDateNouvelle = jourNouveau.toISOString().split("T")[0];
 
-      const creneauxInitiaux = await request(app).get(
-        `/coaches/1/creneaux?date=${dateInitialeStr}`,
+        // Le coach crée un créneau le matin pour chacune des deux dates
+        const reponseCreationAncien = await request(app)
+          .post("/coaches/1/creneaux")
+          .set("Authorization", `Bearer ${tokenCoach}`)
+          .send({ date: texteDateAncienne, periode: "matin" });
+        const reponseCreationNouveau = await request(app)
+          .post("/coaches/1/creneaux")
+          .set("Authorization", `Bearer ${tokenCoach}`)
+          .send({ date: texteDateNouvelle, periode: "matin" });
+
+        // 201 = créé : si les deux créneaux sont créés, on garde ces dates et on sort de la boucle
+        if (
+          reponseCreationAncien.status === 201 &&
+          reponseCreationNouveau.status === 201
+        ) {
+          dateAncienCreneau = texteDateAncienne;
+          dateNouveauCreneau = texteDateNouvelle;
+          break;
+        }
+        // Sinon une des dates était déjà prise : on recommence avec d'autres dates
+      }
+
+      // On récupère les créneaux disponibles à chacune des deux dates
+      const reponseCreneauxAncien = await request(app).get(
+        `/coaches/1/creneaux?date=${dateAncienCreneau}`,
       );
-      const creneauInitial = creneauxInitiaux.body.creneaux.find(
-        (c) => c.statut === "disponible",
+      const ancienCreneau = reponseCreneauxAncien.body.creneaux.find(
+        (creneau) => creneau.statut === "disponible",
       );
 
-      const creneauxNouveaux = await request(app).get(
-        `/coaches/1/creneaux?date=${dateNouvelleStr}`,
+      const reponseCreneauxNouveau = await request(app).get(
+        `/coaches/1/creneaux?date=${dateNouveauCreneau}`,
       );
-      const nouveauCreneau = creneauxNouveaux.body.creneaux.find(
-        (c) => c.statut === "disponible",
+      const nouveauCreneau = reponseCreneauxNouveau.body.creneaux.find(
+        (creneau) => creneau.statut === "disponible",
       );
 
-      const reservation = await request(app)
+      // Le sportif réserve l'ancien créneau
+      const reponseReservation = await request(app)
         .post("/reservations")
         .set("Authorization", `Bearer ${tokenSportif}`)
-        .send({ creneau_id: creneauInitial.id });
+        .send({ creneau_id: ancienCreneau.id });
 
-      const reservationId = reservation.body.reservation.id;
+      const identifiantReservation = reponseReservation.body.reservation.id;
 
+      // Puis il modifie sa réservation pour passer sur le nouveau créneau
       const reponse = await request(app)
-        .put(`/reservations/${reservationId}`)
+        .put(`/reservations/${identifiantReservation}`)
         .set("Authorization", `Bearer ${tokenSportif}`)
         .send({ nouveau_creneau_id: nouveauCreneau.id });
 
+      // Résultat attendu : 200, la réservation pointe vers le nouveau créneau, statut en attente
       expect(reponse.status).toBe(200);
       expect(reponse.body.reservation.creneau_id).toBe(nouveauCreneau.id);
       expect(reponse.body.reservation.statut).toBe("en_attente");

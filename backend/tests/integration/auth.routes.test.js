@@ -50,6 +50,20 @@ describe("Auth Routes — Tests d'intégration", () => {
         .send({ email: "incomplet@test.fr" });
       expect(reponse.status).toBe(500);
     });
+
+    // protection contre l'élévation de privilèges : "admin" ne s'obtient jamais via l'API
+    it("TI-003b — doit refuser une inscription avec le rôle admin", async () => {
+      const reponse = await request(app)
+        .post("/auth/register")
+        .send({
+          nom: "Pirate",
+          prenom: "Integration",
+          email: `pirate.${Date.now()}@test.fr`,
+          mot_de_passe: MOT_DE_PASSE_TEST,
+          role: "admin",
+        });
+      expect(reponse.status).toBe(400);
+    });
   });
 
   // groupe de tests — connexion
@@ -89,7 +103,7 @@ describe("Auth Routes — Tests d'intégration", () => {
       expect(reponse.body.error).toBe("Identifiants invalides");
     });
 
-    it("TI-052 — doit bloquer un coach en attente de validation", async () => {
+    it("TI-006b — doit bloquer un coach en attente de validation", async () => {
       const email = `coach.attente.${Date.now()}@test.fr`;
       await request(app).post("/auth/register").send({
         nom: "Attente",
