@@ -36,8 +36,20 @@ export const generateRefreshToken = (user) => {
   );
 };
 
+// Rôles autorisés à l'inscription publique
+// "admin" n'existe que via la base (seed) : jamais créé via l'API
+const ROLES_INSCRIPTION = ["sportif", "coach"];
+
 // Inscription d'un nouvel utilisateur
 export const register = async (data) => {
+  // Refuse tout rôle non autorisé (ex. "admin" envoyé à la main)
+  // Protège contre l'élévation de privilèges
+  if (!ROLES_INSCRIPTION.includes(data.role)) {
+    const error = new Error("Rôle invalide");
+    error.status = 400;
+    throw error;
+  }
+
   // Vérifie si l'email est déjà utilisé
   const existingUser = await authRepository.findUserByEmail(data.email);
   if (existingUser) {

@@ -120,6 +120,22 @@ describe("Auth Service", () => {
     });
   });
 
+  it("TU-007b — register : doit rejeter le rôle admin (élévation de privilèges)", async () => {
+    // Un pirate tente de s'inscrire directement en admin
+    await expect(
+      authService.register({
+        nom: "Pirate",
+        prenom: "Test",
+        email: "pirate@test.fr",
+        mot_de_passe: "pass123",
+        role: "admin",
+      }),
+    ).rejects.toMatchObject({ status: 400 });
+
+    // Aucun compte ne doit avoir été créé en base
+    expect(authRepository.createUser).not.toHaveBeenCalled();
+  });
+
   //  login
   it("TU-008 — login : doit rejeter un email inexistant", async () => {
     authRepository.findUserByEmail.mockResolvedValue(null);
@@ -172,7 +188,8 @@ describe("Auth Service", () => {
       authService.login("coach@test.fr", "password123"),
     ).rejects.toMatchObject({
       status: 403,
-      message: "Votre compte coach est en attente de validation par un administrateur",
+      message:
+        "Votre compte coach est en attente de validation par un administrateur",
     });
   });
 
