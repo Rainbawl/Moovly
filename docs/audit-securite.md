@@ -1,91 +1,91 @@
 # Rapport d'audit de sécurité — Moovly
 
-_Ce rapport est écrit pour être compris par une personne qui découvre le projet, sans connaissances techniques préalables._
+_Ce rapport est écrit pour être compris par une personne qui découvre le projet, sans connaissances techniques préalables. Moovly est un projet individuel : « je » désigne la personne qui l'a conçu, développé et audité de bout en bout._
 
-## 1. C'est quoi un audit de sécurité, et pourquoi on en fait un ?
+## 1. C'est quoi un audit de sécurité, et pourquoi j'en fais un ?
 
-Notre projet utilise des centaines de petits bouts de code écrits par d'autres personnes (des "dépendances" ou "librairies") — par exemple pour gérer les mots de passe, envoyer des emails, ou construire les pages web. Ces bouts de code sont parfois mis à jour parce qu'on y découvre des failles de sécurité (des façons de les détourner pour faire du mal).
+Mon projet utilise des centaines de petits bouts de code écrits par d'autres personnes (des « dépendances » ou « librairies »), par exemple pour gérer les mots de passe ou construire les pages web. Ces bouts de code sont parfois mis à jour parce qu'on y découvre des failles de sécurité (des façons de les détourner pour faire du mal).
 
-Un **audit de sécurité**, c'est simplement : on demande à un outil automatique (`npm audit`) de vérifier, parmi tous les bouts de code qu'on utilise, lesquels ont une faille connue et publiée. Ensuite, pour chaque faille trouvée, on décide : on la corrige, ou on explique pourquoi elle ne nous concerne pas vraiment.
+Un **audit de sécurité**, c'est simplement : je demande à un outil automatique (`npm audit`) de vérifier, parmi tous les bouts de code que j'utilise, lesquels ont une faille connue et publiée. Ensuite, pour chaque faille trouvée, je décide : je la corrige, ou j'explique pourquoi elle ne concerne pas vraiment mon projet.
 
-## 2. Ce qu'on a trouvé
+## 2. Ce que j'ai trouvé
 
-On a passé cet outil sur les deux parties du projet : la partie "backend" (le serveur, qui gère les données) et la partie "frontend" (ce que l'utilisateur voit dans son navigateur).
+J'ai passé cet outil sur les deux parties du projet : la partie « backend » (le serveur, qui gère les données) et la partie « frontend » (ce que l'utilisateur voit dans son navigateur).
 
 **Côté serveur (backend)** : 8 failles trouvées, dont 6 considérées comme sérieuses.
 **Côté navigateur (frontend)** : 2 failles sérieuses trouvées, sur un seul outil (`react-router`, qui gère la navigation entre les pages).
 
-## 3. Ce qu'on a corrigé
+## 3. Ce que j'ai corrigé
 
-Pour la grande majorité de ces failles (5 sur 6 côté serveur, et celle du frontend), la correction est simple : il existe une nouvelle version du bout de code concerné qui n'a plus le problème, et l'installer ne casse rien dans notre projet. On a donc simplement mis à jour ces librairies.
+Pour la grande majorité de ces failles (5 sur 6 côté serveur, et celle du frontend), la correction est simple : il existe une nouvelle version du bout de code concerné qui n'a plus le problème, et l'installer ne casse rien dans mon projet. J'ai donc simplement mis à jour ces librairies.
 
 Concrètement, ça concernait des outils qui servent à : valider des adresses web, valider des formulaires, envoyer des emails, et gérer la navigation entre les pages. Aucun de ces correctifs n'a changé le comportement de l'application.
 
-## 4. La faille qu'on n'a PAS corrigée — et pourquoi c'est un choix assumé, pas un oubli
+## 4. La faille que je n'ai PAS corrigée — et pourquoi c'est un choix assumé, pas un oubli
 
 Une des failles trouvées concerne un outil appelé `mysql2`. Ça sert à se connecter à un type de base de données appelé MySQL.
 
-**Sauf que notre projet n'utilise pas MySQL.** On utilise PostgreSQL, un autre type de base de données. Cet outil `mysql2` est installé "par précaution" par Prisma (l'outil qu'on utilise pour parler à notre base de données), au cas où un projet en aurait besoin — mais notre code ne s'en sert jamais.
+**Sauf que mon projet n'utilise pas MySQL.** J'utilise PostgreSQL, un autre type de base de données. Cet outil `mysql2` est installé « par précaution » par Prisma (l'outil que j'utilise pour parler à ma base de données), au cas où un projet en aurait besoin — mais mon code ne s'en sert jamais.
 
-Autrement dit : la faille existe dans un outil présent sur l'étagère, mais qu'on n'utilise jamais dans la cuisine. Le risque réel pour notre application est donc nul.
+Autrement dit : la faille existe dans un outil présent sur l'étagère, mais que je n'utilise jamais dans la cuisine. Le risque réel pour mon application est donc nul.
 
-La corriger quand même obligerait à revenir à une version beaucoup plus ancienne de Prisma, ce qui casserait potentiellement d'autres parties du projet — pour supprimer un risque qui n'existe pas chez nous. On a donc choisi de ne pas le faire, et on le note ici clairement plutôt que de le cacher : c'est ce qu'on appelle une **dette technique consciente**. Si un jour on utilise MySQL, ou qu'on met à jour Prisma pour d'autres raisons, on revérifiera ce point.
+La corriger quand même obligerait à revenir à une version beaucoup plus ancienne de Prisma, ce qui casserait potentiellement d'autres parties du projet. J'ai donc choisi de ne pas le faire, et je le note ici clairement plutôt que de le cacher : c'est une **dette technique consciente**. Si un jour j'utilise MySQL, ou que je mets à jour Prisma pour d'autres raisons, je revérifierai ce point.
 
-## 5. Comment on protège les mots de passe et les connexions des utilisateurs
+## 5. Comment je protège les mots de passe et les connexions des utilisateurs
 
-Au-delà des outils externes, on a vérifié notre propre code pour deux problèmes classiques et bien connus en sécurité :
+Au-delà des outils externes, j'ai vérifié mon propre code pour deux problèmes classiques et bien connus en sécurité :
 
-- **Les mots de passe ne sont jamais stockés "en clair".** Quand quelqu'un s'inscrit, son mot de passe est transformé par un calcul à sens unique (impossible à inverser) avant d'être enregistré. Même quelqu'un qui accéderait à notre base de données ne verrait jamais le vrai mot de passe des utilisateurs.
-- **On ne donne pas d'indice à quelqu'un qui essaierait de deviner des comptes existants.** Si on tape un mauvais email OU un bon email avec un mauvais mot de passe, le message d'erreur est exactement le même (le serveur répond « Identifiants invalides », et le site affiche « Email ou mot de passe incorrect »). Si on avait affiché des messages différents ("cet email n'existe pas" vs "mot de passe incorrect"), une personne malveillante aurait pu s'en servir pour deviner quels emails sont inscrits chez nous.
-- **Les "clés d'accès" (tokens) qu'on donne à un utilisateur connecté expirent vite** (15 minutes pour l'accès courant). Même si une de ces clés était volée, elle ne serait utilisable que peu de temps.
+- **Les mots de passe ne sont jamais stockés « en clair ».** Quand quelqu'un s'inscrit, son mot de passe est transformé par un calcul à sens unique (impossible à inverser) avant d'être enregistré. Même quelqu'un qui accéderait à la base de données ne verrait jamais le vrai mot de passe des utilisateurs.
+- **Le site ne donne pas d'indice à quelqu'un qui essaierait de deviner des comptes existants.** Si on tape un mauvais email OU un bon email avec un mauvais mot de passe, le message d'erreur est exactement le même (le serveur répond « Identifiants invalides », et le site affiche « Email ou mot de passe incorrect »). Si le site affichait des messages différents (« cet email n'existe pas » ou « mot de passe incorrect »), une personne malveillante pourrait s'en servir pour deviner quels emails sont inscrits sur Moovly.
+- **Les « clés d'accès » (tokens) données à un utilisateur connecté expirent vite** (15 minutes pour l'accès courant). Même si une de ces clés était volée, elle ne serait utilisable que peu de temps.
 
 ## 6. Où sont rangés les mots de passe et clés secrètes du projet lui-même
 
-Le projet a lui-même besoin de quelques secrets pour fonctionner (une clé pour fabriquer les tokens de connexion, par exemple). Ces secrets ne sont **jamais écrits dans le code** ni publiés sur GitHub — ils sont rangés à part, dans un fichier local jamais partagé, et dans un coffre-fort intégré à GitHub pour les tests automatiques.
+Le projet a lui-même besoin de quelques secrets pour fonctionner (une clé pour fabriquer les tokens de connexion, par exemple). Ces secrets ne sont **jamais écrits dans le code** ni publiés sur GitHub : je les range à part, dans un fichier local jamais partagé, et dans un coffre-fort intégré à GitHub pour les tests automatiques.
 
 ## 7. Accès au dépôt du projet
 
-- Le dépôt est **public** — choix fait volontairement pour permettre l'application gratuite de la protection de branche (lint + tests bloquants) sur GitHub, cette fonctionnalité n'étant pas disponible gratuitement sur un dépôt privé. Aucune donnée sensible n'est exposée par ce choix : les secrets (JWT, mots de passe) ne sont jamais commités, uniquement gérés via `.env` (local) et GitHub Secrets (CI). Seule la propriétaire du dépôt (moi) dispose des droits d'écriture directs ; toute contribution externe devrait passer par une pull request.
+- Le dépôt est **public**. C'est un choix volontaire : sur GitHub, la protection de branche (lint + tests bloquants avant toute fusion) n'est gratuite que sur un dépôt public. Aucune donnée sensible n'est exposée par ce choix : les secrets (JWT, mots de passe) ne sont jamais commités, uniquement gérés via `.env` (en local) et GitHub Secrets (pour la CI). Je suis la seule personne à disposer des droits d'écriture directs ; toute contribution externe devrait passer par une pull request.
 
-## 8. En résumé
+## 8. En résumé (premier audit)
 
-| Question simple                           | Réponse                                                    |
-| ----------------------------------------- | ---------------------------------------------------------- |
-| A-t-on vérifié les outils qu'on utilise ? | Oui, avec `npm audit`                                      |
-| Combien de failles trouvées ?             | 8 côté serveur, 2 côté navigateur                          |
-| Combien corrigées ?                       | 6 sur 8                                                    |
-| Pourquoi une n'a pas été corrigée ?       | Elle concerne un outil (MySQL) qu'on n'utilise pas du tout |
-| Les mots de passe sont-ils protégés ?     | Oui, jamais stockés en clair                               |
-| Les secrets du projet sont-ils exposés ?  | Non, jamais dans le code ni sur GitHub                     |
+| Question simple                              | Réponse                                                     |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| Ai-je vérifié les outils que j'utilise ?     | Oui, avec `npm audit`                                       |
+| Combien de failles trouvées ?                | 8 côté serveur, 2 côté navigateur                           |
+| Combien corrigées ?                          | 6 sur 8                                                     |
+| Pourquoi une n'a pas été corrigée ?          | Elle concerne un outil (MySQL) que je n'utilise pas du tout |
+| Les mots de passe sont-ils protégés ?        | Oui, jamais stockés en clair                                |
+| Les secrets du projet sont-ils exposés ?     | Non, jamais dans le code ni sur GitHub                      |
 
 ## 9. Nouvel audit du 9 octobre 2026
 
-Un audit n'est valable qu'au moment où on le fait : de nouvelles failles sont publiées chaque semaine. On a donc relancé `npm audit` avant la soutenance.
+Un audit n'est valable qu'au moment où on le fait : de nouvelles failles sont publiées chaque semaine. J'ai donc relancé `npm audit` avant la soutenance.
 
-| Partie | Failles | Gravité |
-| ------ | ------- | ------- |
-| Serveur (backend) | 13 | 1 critique, 10 élevées, 2 modérées |
-| Navigateur (frontend) | 2 | 2 élevées |
+| Partie                | Failles | Gravité                            |
+| --------------------- | ------- | ---------------------------------- |
+| Serveur (backend)     | 13      | 1 critique, 10 élevées, 2 modérées |
+| Navigateur (frontend) | 2       | 2 élevées                          |
 
-**Ce qui peut être corrigé simplement** (une mise à jour sans changement cassant, `npm audit fix`) :
+**Ce que je pouvais corriger simplement** (une mise à jour sans changement cassant, `npm audit fix`) :
 
-- côté serveur : `proxy-addr` (la faille critique, utilisée par Express), `nodemailer`, `brace-expansion`, `fast-uri`, `ip-address`, `source-map-js` ;
-- côté navigateur : `brace-expansion` et `source-map-js` (outils de construction du site, absents de la version livrée aux utilisateurs).
+- côté serveur : `proxy-addr` (la faille critique, utilisée par Express), `brace-expansion`, `fast-uri`, `ip-address`, `source-map-js` ;
+- côté navigateur : `brace-expansion` et `source-map-js` (des outils de construction du site, absents de la version livrée aux utilisateurs).
 
 **Ce qui demanderait un changement cassant :**
 
-- `prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2` : la correction proposée est de revenir à Prisma 6. Même arbitrage qu'en section 4 : `mysql2` n'est pas utilisé, et revenir en arrière casserait le projet ;
-- `nodemon`, `chokidar`, `braces` : `nodemon` ne sert qu'en développement (redémarrage automatique du serveur), il n'est pas présent en production.
+- `prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2` : la correction proposée est de revenir à Prisma 6. C'est le même arbitrage qu'en section 4 : `mysql2` n'est pas utilisé, et revenir en arrière casserait le projet ;
+- `nodemon`, `chokidar`, `braces` : `nodemon` ne sert qu'en développement (il redémarre le serveur automatiquement quand je modifie le code), il n'est pas présent en production.
 
-**Ce qui a été fait (9 octobre 2026) :**
+**Ce que j'ai fait :**
 
 - `npm audit fix` côté serveur et côté navigateur : la faille critique (`proxy-addr`) et les failles modérées sont corrigées ;
-- `nodemailer` a été **retiré** : le projet ne l'utilisait nulle part, et sa correction demandait une nouvelle version majeure ;
-- les 141 tests, le lint et la construction du site passent toujours.
+- j'ai **retiré** `nodemailer` (l'outil d'envoi d'emails) : mon code ne l'utilisait nulle part, et le corriger demandait de passer à une nouvelle version majeure. Un outil inutile, c'est une faille possible en plus pour rien ;
+- j'ai vérifié que les 141 tests, le lint et la construction du site passent toujours.
 
-| Partie | Avant | Après |
-| ------ | ----- | ----- |
-| Serveur (backend) | 13 (1 critique, 10 élevées, 2 modérées) | 7 élevées |
-| Navigateur (frontend) | 2 élevées | **0** |
+| Partie                | Avant                                   | Après      |
+| --------------------- | --------------------------------------- | ---------- |
+| Serveur (backend)     | 13 (1 critique, 10 élevées, 2 modérées) | 7 élevées  |
+| Navigateur (frontend) | 2 élevées                               | **0**      |
 
-Les 7 restantes viennent toutes de Prisma (`prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2`, `chokidar`) ou de `nodemon`, qui ne sert qu'en développement. Leur seule correction proposée est de revenir à d'anciennes versions (Prisma 6, nodemon 1), ce qui casserait le projet : c'est une **dette technique consciente**, à réévaluer à chaque nouvelle version de Prisma.
+Les 7 restantes viennent toutes de Prisma (`prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2`, `chokidar`) ou de `nodemon`, qui ne sert qu'en développement. Leur seule correction proposée est de revenir à d'anciennes versions (Prisma 6, nodemon 1), ce qui casserait le projet. C'est donc, là aussi, une **dette technique consciente**, que je réévaluerai à chaque nouvelle version de Prisma.
