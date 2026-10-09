@@ -12,10 +12,12 @@ vi.mock("../../src/repositories/reservation.repository.js", () => ({
   trouverReservationsParUtilisateur: vi.fn(),
   trouverReservationParId: vi.fn(),
   annulerReservation: vi.fn(),
+  remplacerReservation: vi.fn(),
   changerStatutReservation: vi.fn(),
 }));
 
 import * as depotReservation from "../../src/repositories/reservation.repository.js";
+import * as depotCreneau from "../../src/repositories/creneau.repository.js";
 import * as serviceReservation from "../../src/services/reservation.service.js";
 
 describe("Reservation Service", () => {
@@ -278,19 +280,17 @@ describe("Reservation Service", () => {
     ).rejects.toThrow("Cette réservation est déjà annulée");
   });
 
-  it("TU-051 — modifierReservation : doit libérer l'ancien créneau et créer la nouvelle réservation", async () => {
+  it("TU-051 — modifierReservation : doit remplacer la réservation par un créneau du même coach", async () => {
     depotReservation.trouverReservationParId.mockResolvedValue({
       id: 1,
       utilisateur_id: 1,
       statut: "en_attente",
+      creneau: { coach_id: 3 },
     });
 
-    depotReservation.annulerReservation.mockResolvedValue({
-      id: 1,
-      statut: "annulee",
-    });
+    depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 5, coach_id: 3 });
 
-    depotReservation.creerReservation.mockResolvedValue({
+    depotReservation.remplacerReservation.mockResolvedValue({
       id: 2,
       utilisateur_id: 1,
       creneau_id: 5,
@@ -303,9 +303,44 @@ describe("Reservation Service", () => {
       5,
     );
 
-    expect(depotReservation.annulerReservation).toHaveBeenCalledWith(1);
-    expect(depotReservation.creerReservation).toHaveBeenCalledWith(1, 5);
+    expect(depotReservation.remplacerReservation).toHaveBeenCalledWith(1, 1, 5);
     expect(nouvelleReservation.creneau_id).toBe(5);
     expect(nouvelleReservation.id).toBe(2);
+  });
+
+  it("TU-052 — modifierReservation : doit rejeter un créneau d'un autre coach (pas de contournement des 24h)", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "en_attente",
+      creneau: { coach_id: 3 },
+    });
+
+    depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 8, coach_id: 4 }); // autre coach
+
+    await expect(
+      serviceReservation.modifierReservation(1, 1, 8),
+    ).rejects.toMatchObject({
+      status: 400,
+      message:
+        "Pour changer de coach, annulez cette réservation puis réservez le nouveau créneau",
+    });
+    expect(depotReservation.remplacerReservation).not.toHaveBeenCalled();
+  });
+
+  it("TU-053 — modifierReservation : doit rejeter si le nouveau créneau est introuvable", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "en_attente",
+      creneau: { coach_id: 3 },
+    });
+
+    depotCreneau.trouverCreneauParId.mockResolvedValue(null);
+
+    await expect(
+      serviceReservation.modifierReservation(1, 1, 999),
+    ).rejects.toMatchObject({ status: 404, message: "Créneau introuvable" });
+    expect(depotReservation.remplacerReservation).not.toHaveBeenCalled();
   });
 });
