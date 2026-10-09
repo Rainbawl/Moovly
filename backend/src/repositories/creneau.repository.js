@@ -18,6 +18,13 @@ export const trouverCreneauxParCoachEtDate = async (coachId, date) => {
   });
 };
 
+// Récupère un créneau par son identifiant
+export const trouverCreneauParId = async (identifiant) => {
+  return prisma.creneau.findUnique({
+    where: { id: parseInt(identifiant) },
+  });
+};
+
 // Crée un nouveau créneau pour un coach
 export const creerCreneau = async (coachId, date, periode) => {
   return prisma.creneau.create({

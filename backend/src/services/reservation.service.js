@@ -1,4 +1,5 @@
 import * as depotReservation from "../repositories/reservation.repository.js";
+import * as depotCreneau from "../repositories/creneau.repository.js";
 
 // Crée une réservation pour un sportif
 export const creerReservation = async (utilisateurId, creneauId) => {
@@ -86,7 +87,8 @@ export const annulerReservation = async (reservationId, utilisateurId) => {
 };
 
 // Modifie une réservation en la remplaçant par une nouvelle sur un autre créneau
-// Pas de règle des 24h ici — modifier un horaire n'est pas abandonner le coach
+// du MÊME coach. Pas de règle des 24h ici : changer d'horaire chez le même coach
+// n'est pas l'abandonner. Changer de coach passe par une annulation (règle des 24h).
 export const modifierReservation = async (
   reservationId,
   utilisateurId,
@@ -113,16 +115,30 @@ export const modifierReservation = async (
     throw erreur;
   }
 
-  // Libère l'ancien créneau SANS passer par annulerReservation (donc sans règle des 24h)
-  await depotReservation.annulerReservation(reservationId);
+  const nouveauCreneau = await depotCreneau.trouverCreneauParId(nouveauCreneauId);
 
-  // Réserve le nouveau créneau (avec le verrou anti-double-réservation habituel)
-  const nouvelleReservation = await creerReservation(
+  if (!nouveauCreneau) {
+    const erreur = new Error("Créneau introuvable");
+    erreur.status = 404;
+    throw erreur;
+  }
+
+  // Le nouveau créneau doit appartenir au même coach : sinon le sportif
+  // abandonnerait son coach sans passer par la règle des 24h
+  if (nouveauCreneau.coach_id !== reservation.creneau.coach_id) {
+    const erreur = new Error(
+      "Pour changer de coach, annulez cette réservation puis réservez le nouveau créneau",
+    );
+    erreur.status = 400;
+    throw erreur;
+  }
+
+  // Réserve le nouveau créneau puis libère l'ancien, dans une seule transaction
+  return depotReservation.remplacerReservation(
+    reservationId,
     utilisateurId,
     nouveauCreneauId,
   );
-
-  return nouvelleReservation;
 };
 
 // Le coach accepte ou refuse une réservation en attente

@@ -574,5 +574,96 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
       expect(reponse.status).toBe(403);
     });
+
+    // Crée un créneau disponible pour un coach, sur une date libre (la base garde
+    // les créneaux des lancements précédents, on essaie donc plusieurs dates)
+    const creerCreneauDisponible = async (token, coachId, anneesDecalage) => {
+      for (let numeroEssai = 0; numeroEssai < 50; numeroEssai++) {
+        const jour = new Date();
+        jour.setFullYear(jour.getFullYear() + anneesDecalage);
+        jour.setDate(jour.getDate() + ((Date.now() + numeroEssai * 7) % 3650));
+
+        const reponseCreation = await request(app)
+          .post(`/coaches/${coachId}/creneaux`)
+          .set("Authorization", `Bearer ${token}`)
+          .send({ date: jour.toISOString().split("T")[0], periode: "apres_midi" });
+
+        if (reponseCreation.status === 201) {
+          return reponseCreation.body.creneau.id;
+        }
+      }
+      throw new Error("Aucune date libre trouvée pour créer un créneau");
+    };
+
+    // Retrouve une réservation dans l'historique du sportif connecté
+    const trouverMaReservation = async (reservationId) => {
+      const reponse = await request(app)
+        .get("/reservations/mine")
+        .set("Authorization", `Bearer ${tokenSportif}`);
+      return reponse.body.reservations.find(
+        (reservation) => reservation.id === reservationId,
+      );
+    };
+
+    it("TI-057 — doit rejeter une modification vers le créneau d'un autre coach et conserver la réservation", async () => {
+      // Le sportif réserve un créneau du coach 1
+      const ancienCreneauId = await creerCreneauDisponible(tokenCoach, 1, 11);
+      const reponseReservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: ancienCreneauId });
+      const reservationId = reponseReservation.body.reservation.id;
+
+      // Un créneau d'un autre coach (créé par l'admin, autorisé pour tous les coachs)
+      const loginAdmin = await request(app).post("/auth/login").send({
+        email: "admin@moovly.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+      });
+      const tokenAdmin = loginAdmin.body.accessToken;
+      const listeCoachs = await request(app).get("/coaches");
+      const autreCoach = listeCoachs.body.coachs.find((coach) => coach.id !== 1);
+      const creneauAutreCoachId = await creerCreneauDisponible(
+        tokenAdmin,
+        autreCoach.id,
+        11,
+      );
+
+      // Changer de coach par « modifier » contournerait la règle des 24h : refusé
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}`)
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ nouveau_creneau_id: creneauAutreCoachId });
+
+      expect(reponse.status).toBe(400);
+      const reservation = await trouverMaReservation(reservationId);
+      expect(reservation.statut).toBe("en_attente");
+    });
+
+    it("TI-058 — doit conserver la réservation d'origine si le nouveau créneau est déjà pris", async () => {
+      const ancienCreneauId = await creerCreneauDisponible(tokenCoach, 1, 12);
+      const creneauPrisId = await creerCreneauDisponible(tokenCoach, 1, 12);
+
+      const reponseReservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: ancienCreneauId });
+      const reservationId = reponseReservation.body.reservation.id;
+
+      // Le second créneau est réservé : il n'est plus disponible
+      await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauPrisId });
+
+      const reponse = await request(app)
+        .put(`/reservations/${reservationId}`)
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ nouveau_creneau_id: creneauPrisId });
+
+      // Tout ou rien : la modification échoue et l'ancienne réservation n'est pas annulée
+      expect(reponse.status).toBe(409);
+      const reservation = await trouverMaReservation(reservationId);
+      expect(reservation.statut).toBe("en_attente");
+    });
   });
 });
