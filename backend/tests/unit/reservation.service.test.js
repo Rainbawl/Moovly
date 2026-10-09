@@ -74,6 +74,53 @@ describe("Reservation Service", () => {
     expect(reservations).toHaveLength(0);
   });
 
+  // ── statutAffiche (séance terminée) ───────────────────────────
+  const creneauMatin = { date: new Date("2026-10-12"), periode: "matin" }; // séance de 8h à 12h
+
+  it("TU-054 — statutAffiche : une réservation confirmée dont la séance est finie devient terminee", () => {
+    const apresLaSeance = new Date(2026, 9, 12, 12, 30); // 12/10/2026 à 12h30
+    expect(
+      serviceReservation.statutAffiche({ statut: "confirmee" }, creneauMatin, apresLaSeance),
+    ).toBe("terminee");
+  });
+
+  it("TU-055 — statutAffiche : une réservation confirmée dont la séance n'est pas finie reste confirmee", () => {
+    const pendantLaSeance = new Date(2026, 9, 12, 11, 30); // 12/10/2026 à 11h30
+    expect(
+      serviceReservation.statutAffiche({ statut: "confirmee" }, creneauMatin, pendantLaSeance),
+    ).toBe("confirmee");
+  });
+
+  it("TU-056 — statutAffiche : les autres statuts ne changent pas, même après la séance", () => {
+    const apresLaSeance = new Date(2026, 9, 13);
+    for (const statut of ["en_attente", "annulee", "refusee"]) {
+      expect(
+        serviceReservation.statutAffiche({ statut }, creneauMatin, apresLaSeance),
+      ).toBe(statut);
+    }
+  });
+
+  it("TU-057 — obtenirMesReservations : une séance confirmée passée est renvoyée terminee", async () => {
+    depotReservation.trouverReservationsParUtilisateur.mockResolvedValue([
+      {
+        id: 1,
+        statut: "confirmee",
+        date_reservation: new Date("2026-01-01"),
+        date_annulation: null,
+        creneau: {
+          id: 1,
+          date: new Date("2026-01-05"),
+          periode: "apres_midi",
+          coach: { id: 1, utilisateur: { nom: "Lebrun", prenom: "Thomas" } },
+        },
+      },
+    ]);
+
+    const reservations = await serviceReservation.obtenirMesReservations(1);
+
+    expect(reservations[0].statut).toBe("terminee");
+  });
+
   // ── annulerReservation ────────────────────────────────────────
   it("TU-020 — annulerReservation : doit rejeter si réservation introuvable", async () => {
     depotReservation.trouverReservationParId.mockResolvedValue(null);

@@ -98,6 +98,33 @@ describe("Dashboard Service", () => {
     expect(planning.creneaux[0].horaire).toBe("14h00 - 18h00");
   });
 
+  // Teste qu'une séance confirmée déjà passée apparaît terminée dans le planning
+  it("TU-058 — obtenirPlanningCoach : une réservation confirmée passée est renvoyée terminee", async () => {
+    depotDashboard.trouverPlanningCoach.mockResolvedValue({
+      id: 1,
+      est_valide: true,
+      creneaux: [
+        {
+          id: 1,
+          date: new Date("2026-01-05"), // séance passée
+          periode: "matin",
+          statut: "reserve",
+          reservations: [
+            {
+              id: 1,
+              statut: "confirmee",
+              utilisateur: { nom: "Mané", prenom: "Bocar", email: "bocar@test.fr" },
+            },
+          ],
+        },
+      ],
+    });
+
+    const planning = await serviceDashboard.obtenirPlanningCoach(1);
+
+    expect(planning.creneaux[0].reservations[0].statut).toBe("terminee");
+  });
+
   //  obtenir Statistiques Coach
 
   // Teste le cas où le coach n'a pas de profil
