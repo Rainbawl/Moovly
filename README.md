@@ -4,7 +4,18 @@ Application de réservation de coachs sportifs — Projet CDA Niveau 6
 
 ## 📋 Description
 
-Moovly est une plateforme qui met en relation sportifs et coachs certifiés. Les sportifs peuvent trouver un coach selon leur discipline, consulter ses créneaux disponibles et réserver une séance en quelques clics.
+Moovly est une plateforme qui met en relation sportifs et coachs certifiés. Les sportifs peuvent trouver un coach selon leur discipline et leur ville, consulter ses créneaux disponibles et réserver une séance en quelques clics, sans risque de double réservation.
+
+## ✨ Fonctionnalités (V1)
+
+| Rôle    | Ce qu'il peut faire                                                                                                         |
+| ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Visiteur | Consulter les coachs (filtres sport et ville), voir un profil coach, s'inscrire, se connecter                              |
+| Sportif | Réserver un créneau, modifier sa réservation (chez le même coach), l'annuler (jusqu'à 24 h avant), consulter son historique |
+| Coach   | Publier ses créneaux (matin / après-midi), accepter ou refuser une demande, consulter son planning et ses statistiques      |
+| Admin   | Valider ou rejeter un coach, créer un sport, consulter les statistiques globales                                            |
+
+Un coach ne peut pas se connecter tant que son compte n'a pas été validé par un administrateur.
 
 ## 🛠️ Stack technique
 
@@ -24,9 +35,15 @@ Moovly est une plateforme qui met en relation sportifs et coachs certifiés. Les
 
 **Tests**
 
-- Vitest
-- Supertest
-- 88 tests — 95,18 % de couverture
+- Vitest + Supertest
+- 141 tests backend : 70 unitaires + 71 d'intégration (API + vraie base PostgreSQL)
+- Couverture : 100 % des fonctions, 97,19 % des lignes (99,5 % des lignes de la logique métier)
+- 1 parcours End to End Playwright (9 scènes), tenu pour l'instant hors du dépôt (voir [bilan technique](./docs/bilan-technique.md))
+
+**Intégration continue**
+
+- GitHub Actions : lint + tests (backend, avec un service PostgreSQL) et lint + build (frontend) à chaque pull request
+- Branche `main` protégée : fusion impossible si la CI échoue
 
 ## 🏗️ Architecture
 
@@ -52,7 +69,7 @@ cd Moovly
 ### 2. Lancer la base de données
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3. Configurer le backend
@@ -110,6 +127,36 @@ cd backend
 npm run test:coverage
 ```
 
+Le rapport de couverture détaillé est généré dans `backend/coverage/index.html`.
+
+⚠️ Les tests d'intégration écrivent dans la base configurée par `DATABASE_URL` : en local, ils ajoutent des comptes de test (`…<horodatage>@test.fr`) dans la base de développement. Voir [Exploitation](./docs/Exploitation.md) pour la nettoyer avant une démo.
+
+## 🔌 Routes de l'API
+
+| Méthode | Route                          | Accès              | Rôle                                         |
+| ------- | ------------------------------ | ------------------ | -------------------------------------------- |
+| POST    | `/auth/register`               | Public             | Inscription (sportif ou coach)               |
+| POST    | `/auth/login`                  | Public             | Connexion (access token + cookie refresh)    |
+| POST    | `/auth/refresh`                | Cookie refresh     | Nouvel access token                          |
+| POST    | `/auth/logout`                 | Connecté           | Déconnexion                                  |
+| GET     | `/coaches`                     | Public             | Liste des coachs validés (`?sport=&ville=`)  |
+| GET     | `/coaches/:id`                 | Public             | Profil d'un coach                            |
+| GET     | `/coaches/:id/creneaux`        | Public             | Créneaux d'un coach (`?date=`)               |
+| POST    | `/coaches/:id/creneaux`        | Coach, admin       | Publier un créneau                           |
+| GET     | `/reservations/mine`           | Sportif, admin     | Historique de mes réservations               |
+| POST    | `/reservations`                | Sportif            | Réserver un créneau                          |
+| PUT     | `/reservations/:id`            | Sportif            | Changer de créneau chez le même coach        |
+| DELETE  | `/reservations/:id`            | Sportif, admin     | Annuler (refusé à moins de 24 h)             |
+| PUT     | `/reservations/:id/repondre`   | Coach              | Accepter ou refuser une demande              |
+| GET     | `/dashboard/coach`             | Coach              | Planning du coach                            |
+| GET     | `/dashboard/coach/stats`       | Coach              | Statistiques du coach                        |
+| GET     | `/admin/coaches`               | Admin              | Coachs en attente de validation              |
+| PUT     | `/admin/coaches/:id/valider`   | Admin              | Valider ou rejeter un coach                  |
+| GET     | `/admin/sports`                | Admin              | Liste des sports                             |
+| POST    | `/admin/sports`                | Admin              | Créer un sport                               |
+| GET     | `/admin/stats`                 | Admin              | Statistiques globales                        |
+| GET     | `/health`                      | Public             | État de l'API et de la base                  |
+
 ## 👤 Comptes de test
 
 | Rôle    | Email              | Description                                           |
@@ -124,8 +171,9 @@ _(mots de passe définis dans le `.env` local, non versionnés)_
 
 ```
 Moovly/
+├── .github/workflows/    → intégration continue (GitHub Actions)
 ├── backend/
-│   ├── prisma/           → schéma et migrations BDD
+│   ├── prisma/           → schéma, migrations et seed
 │   ├── src/
 │   │   ├── controllers/  → reçoivent les requêtes
 │   │   ├── services/     → logique métier
@@ -140,18 +188,19 @@ Moovly/
 │       ├── pages/        → pages de l'application
 │       ├── context/      → gestion de l'authentification
 │       └── services/     → appels API
-├── docs/
-│   ├── guide-utilisateur.md  → parcours détaillé par rôle
-│   ├── securite.md            → mesures de sécurité mises en place
-│   └── exploitation.md        → variables d'env, /health, diagnostic
+├── docs/                 → documentation (voir ci-dessous)
 └── docker-compose.yml
 ```
 
 ## 📖 Documentation
 
 - [Guide d'utilisation](./docs/Guide_utilisateur.md) — parcours détaillé par rôle (sportif, coach, admin)
-- [Sécurité](./docs/securite.md) — mesures de sécurité mises en place
-- [Exploitation](./docs/Exploitation.md) — variables d'environnement, endpoint `/health`, procédures de diagnostic
+- [Sécurité](./docs/securite.md) — mesures de sécurité mises en place et limites connues
+- [Rapport d'audit de sécurité](./docs/audit-securite.md) — résultats de `npm audit` et arbitrages
+- [Exploitation](./docs/Exploitation.md) — variables d'environnement, endpoint `/health`, diagnostic, nettoyage de la base
+- [Runbook](./docs/runbook.md) — démarrer, vérifier, dépanner
+- [Scénario de démo](./docs/scenario-demo.md) — déroulé de la démonstration
+- [Bilan technique](./docs/bilan-technique.md) — inventaire, dette consciente, corrections
 
 ## 📄 Licence
 
