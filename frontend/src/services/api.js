@@ -31,8 +31,15 @@ api.interceptors.response.use(
   (reponse) => reponse, // car si tout va bien on ne touche à rien
   async (erreur) => {
     const requeteOriginale = erreur.config;
+    // Un mauvais mot de passe renvoie aussi 401 : ce n'est pas un token expiré,
+    // on laisse la page afficher son message d'erreur au lieu de tenter un refresh
+    const routeAuthentification = requeteOriginale?.url?.startsWith("/auth/");
     // Si l'erreur est un 401 ET qu'on n'a pas déjà essayé de rafraîchir pour cette requête
-    if (erreur.response?.status === 401 && !requeteOriginale.retry) {
+    if (
+      erreur.response?.status === 401 &&
+      !requeteOriginale.retry &&
+      !routeAuthentification
+    ) {
       requeteOriginale.retry = true; // marque qu'on a déjà tenté, pour éviter une boucle infinie
       try {
         // Appelle la route refresh (le cookie refreshToken part automatiquement)
