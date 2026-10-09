@@ -122,9 +122,9 @@
       rgba(2, 24, 59, 0.35) 40%,
       rgba(2, 24, 59, 0.05) 100%
     ),
-    url("/imagecoach.png") right center/cover no-repeat;
+    url("/imageaccueil.png") right center/cover no-repeat;
   padding: 70px 30px;
-  min-height: 950px;
+  min-height: 200dvh;
   display: flex;
   align-items: center;
 }
