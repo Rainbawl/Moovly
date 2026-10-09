@@ -75,8 +75,9 @@ function Register() {
 
             <div className="groupe-champs">
               <div>
-                <label className="etiquette">Prénom</label>
+                <label className="etiquette" htmlFor="prenom">Prénom</label>
                 <input
+                  id="prenom"
                   type="text"
                   value={prenom}
                   onChange={(e) => setPrenom(e.target.value)}
@@ -85,8 +86,9 @@ function Register() {
                 />
               </div>
               <div>
-                <label className="etiquette">Nom</label>
+                <label className="etiquette" htmlFor="nom">Nom</label>
                 <input
+                  id="nom"
                   type="text"
                   value={nom}
                   onChange={(e) => setNom(e.target.value)}
@@ -96,8 +98,9 @@ function Register() {
               </div>
             </div>
 
-            <label className="etiquette">Email</label>
+            <label className="etiquette" htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -105,8 +108,9 @@ function Register() {
               required
             />
 
-            <label className="etiquette">Mot de passe</label>
+            <label className="etiquette" htmlFor="mot-de-passe">Mot de passe</label>
             <input
+              id="mot-de-passe"
               type="password"
               value={motDePasse}
               onChange={(e) => setMotDePasse(e.target.value)}
@@ -115,8 +119,9 @@ function Register() {
             />
             {role === "coach" && (
               <>
-                <label className="etiquette">Diplôme / Certification</label>
+                <label className="etiquette" htmlFor="diplome">Diplôme / Certification</label>
                 <input
+                  id="diplome"
                   type="text"
                   value={diplome}
                   onChange={(e) => setDiplome(e.target.value)}
@@ -124,8 +129,9 @@ function Register() {
                   placeholder="Ex : BPJEPS Activités de la forme"
                 />
 
-                <label className="etiquette">Présentation</label>
+                <label className="etiquette" htmlFor="presentation">Présentation</label>
                 <textarea
+                  id="presentation"
                   value={presentation}
                   onChange={(e) => setPresentation(e.target.value)}
                   className="champ-formulaire"
@@ -133,8 +139,9 @@ function Register() {
                   rows={3}
                 />
 
-                <label className="etiquette">Tarif horaire (€)</label>
+                <label className="etiquette" htmlFor="tarif-horaire">Tarif horaire (€)</label>
                 <input
+                  id="tarif-horaire"
                   type="number"
                   value={tarifHoraire}
                   onChange={(e) => setTarifHoraire(e.target.value)}
