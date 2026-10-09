@@ -45,14 +45,14 @@ function Login() {
       <div className="login-contenu">
         <div className="formulaire-login">
           <img src="/Moovly.png" alt="Moovly" className="logo-image-carte" />
-          <h2>Bon retour</h2>
           <p>Connectez-vous à votre espace</p>
 
           {erreur && <p className="message-erreur">{erreur}</p>}
 
           <form onSubmit={gererConnexion}>
-            <label className="etiquette">Email</label>
+            <label className="etiquette" htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               placeholder="vous@email.fr"
               value={email}
@@ -60,8 +60,9 @@ function Login() {
               className="champ-formulaire"
             />
 
-            <label className="etiquette">Mot de passe</label>
+            <label className="etiquette" htmlFor="mot-de-passe">Mot de passe</label>
             <input
+              id="mot-de-passe"
               type="password"
               placeholder="••••••••"
               value={motDePasse}

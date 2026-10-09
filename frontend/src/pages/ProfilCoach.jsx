@@ -138,8 +138,9 @@ function ProfilCoach() {
                   : "Créneaux disponibles"}
               </h2>
               <div className="selecteur-date">
-                <label className="etiquette">Choisir une date</label>
+                <label className="etiquette" htmlFor="date-creneau">Choisir une date</label>
                 <input
+                  id="date-creneau"
                   type="date"
                   value={dateSelectionnee}
                   onChange={(e) => setDateSelectionnee(e.target.value)}

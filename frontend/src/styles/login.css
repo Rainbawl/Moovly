@@ -97,7 +97,7 @@
 
 .page-login .formulaire-login p {
   font-size: 13px;
-  color: #a9c1df;
+  color: #5a6b85;
   text-align: center;
   margin-bottom: 24px;
 }
@@ -107,7 +107,7 @@
   display: block;
   font-size: 11px;
   font-weight: 700;
-  color: #a9c1df;
+  color: #5a6b85;
   margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -157,12 +157,12 @@
 .page-login .lien-inscription {
   text-align: center;
   font-size: 13px;
-  color: #a9c1df;
+  color: #5a6b85;
   margin-top: 20px;
 }
 
 .page-login .lien {
-  color: #08e0ff;
+  color: #0077a8;
   font-weight: 700;
   cursor: pointer;
 }

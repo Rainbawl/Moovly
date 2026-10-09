@@ -85,19 +85,19 @@ function Accueil() {
         <div className="features-grid">
           <div className="feature">
             <div className="feature-texte">
-              <h3>Coachs certifiés</h3>
+              <h2>Coachs certifiés</h2>
               <p>Professionnels validés par notre équipe</p>
             </div>
           </div>
           <div className="feature">
             <div className="feature-texte">
-              <h3>Réservation simple</h3>
+              <h2>Réservation simple</h2>
               <p>Créneau matin ou après-midi</p>
             </div>
           </div>
           <div className="feature">
             <div className="feature-texte">
-              <h3>Résultats garantis</h3>
+              <h2>Résultats garantis</h2>
               <p>Suivi personnalisé et progressif</p>
             </div>
           </div>
