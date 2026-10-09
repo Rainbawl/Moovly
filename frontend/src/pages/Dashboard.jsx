@@ -36,8 +36,11 @@ function Dashboard() {
     try {
       await api.delete(`/reservations/${reservationId}`);
       chargerReservations(); //recharge la liste apres annultation
-    } catch {
-      setErreur("Impossible d'annuler cette réservation");
+    } catch (err) {
+      // Affiche le message du serveur (ex. règle des 24 h) quand il y en a un
+      setErreur(
+        err.response?.data?.error || "Impossible d'annuler cette réservation",
+      );
     }
   };
 
