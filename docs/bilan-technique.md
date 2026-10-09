@@ -94,5 +94,5 @@ Si tout était à refaire seule, sans accompagnement, ce qui resterait le plus d
 | Les tests d'intégration écrivent dans la base de développement | Elle se remplit de comptes de test : nettoyage manuel avant chaque démo ([procédure](./Exploitation.md#nettoyer-la-base-de-développement-avant-une-démo)) ; amélioration prévue : base de test séparée en local |
 | Le test End to End est hors du dépôt et hors de la CI | Il ne protège pas automatiquement contre les régressions ; à intégrer au dépôt puis à la CI |
 | Test TI-034 lent (planning d'un coach de près de 400 créneaux) | Peut dépasser le délai de 5 secondes quand toute la suite tourne |
-| Nouvel audit `npm audit` (9 octobre) : 13 vulnérabilités backend, 2 frontend | Voir le [rapport d'audit](./audit-securite.md#9-nouvel-audit-du-9-octobre-2026) |
+| Audit `npm audit` du 9 octobre : 7 vulnérabilités élevées restantes côté backend (Prisma, nodemon), 0 côté frontend, après correction de la faille critique | Voir le [rapport d'audit](./audit-securite.md#9-nouvel-audit-du-9-octobre-2026) |
 | Pas de limitation des tentatives de connexion, access token dans le `localStorage` | Voir les [limites connues](./securite.md#limites-connues-dette-consciente) |

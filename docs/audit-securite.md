@@ -77,4 +77,15 @@ Un audit n'est valable qu'au moment où on le fait : de nouvelles failles sont p
 - `prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2` : la correction proposée est de revenir à Prisma 6. Même arbitrage qu'en section 4 : `mysql2` n'est pas utilisé, et revenir en arrière casserait le projet ;
 - `nodemon`, `chokidar`, `braces` : `nodemon` ne sert qu'en développement (redémarrage automatique du serveur), il n'est pas présent en production.
 
-**Décision :** appliquer `npm audit fix` sur une branche dédiée, relancer les tests et la CI, puis mettre à jour ce rapport avec le résultat.
+**Ce qui a été fait (9 octobre 2026) :**
+
+- `npm audit fix` côté serveur et côté navigateur : la faille critique (`proxy-addr`) et les failles modérées sont corrigées ;
+- `nodemailer` a été **retiré** : le projet ne l'utilisait nulle part, et sa correction demandait une nouvelle version majeure ;
+- les 141 tests, le lint et la construction du site passent toujours.
+
+| Partie | Avant | Après |
+| ------ | ----- | ----- |
+| Serveur (backend) | 13 (1 critique, 10 élevées, 2 modérées) | 7 élevées |
+| Navigateur (frontend) | 2 élevées | **0** |
+
+Les 7 restantes viennent toutes de Prisma (`prisma`, `@prisma/config`, `deepmerge-ts`, `mysql2`, `chokidar`) ou de `nodemon`, qui ne sert qu'en développement. Leur seule correction proposée est de revenir à d'anciennes versions (Prisma 6, nodemon 1), ce qui casserait le projet : c'est une **dette technique consciente**, à réévaluer à chaque nouvelle version de Prisma.
