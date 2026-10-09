@@ -28,7 +28,7 @@ describe("Dashboard Routes — Tests d'intégration", () => {
     const loginAdmin = await request(app)
       .post("/auth/login")
       .send({
-        email: "admin@moovly.fr",
+        email: "afif-adm@moovly.fr",
         mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
       });
     tokenAdmin = loginAdmin.body.accessToken;

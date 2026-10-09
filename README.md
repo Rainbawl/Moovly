@@ -112,11 +112,11 @@ npm run test:coverage
 
 ## 👤 Comptes de test
 
-| Rôle    | Email           | Description                                           |
-| ------- | --------------- | ----------------------------------------------------- |
-| Sportif | bocar@test.fr   | Peut réserver des créneaux                            |
-| Coach   | camille@test.fr | Compte déjà validé, peut créer des créneaux           |
-| Admin   | admin@moovly.fr | Peut valider les coachs et consulter les statistiques |
+| Rôle    | Email              | Description                                           |
+| ------- | ------------------ | ----------------------------------------------------- |
+| Sportif | bocar@test.fr      | Peut réserver des créneaux                            |
+| Coach   | camille@test.fr    | Compte déjà validé, peut créer des créneaux           |
+| Admin   | afif-adm@moovly.fr | Peut valider les coachs et consulter les statistiques |
 
 _(mots de passe définis dans le `.env` local, non versionnés)_
 

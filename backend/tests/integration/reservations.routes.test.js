@@ -361,7 +361,7 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
       // Un coach doit être validé par un admin avant de pouvoir se connecter
       const loginAdmin = await request(app).post("/auth/login").send({
-        email: "admin@moovly.fr",
+        email: "afif-adm@moovly.fr",
         mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
       });
       const tokenAdmin = loginAdmin.body.accessToken;
@@ -616,7 +616,7 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
       // Un créneau d'un autre coach (créé par l'admin, autorisé pour tous les coachs)
       const loginAdmin = await request(app).post("/auth/login").send({
-        email: "admin@moovly.fr",
+        email: "afif-adm@moovly.fr",
         mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
       });
       const tokenAdmin = loginAdmin.body.accessToken;
