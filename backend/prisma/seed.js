@@ -49,15 +49,15 @@ async function main() {
   console.log("✅ Coach créé :", camille.email);
 
   const admin = await prisma.utilisateur.upsert({
-    where: { email: "admin@moovly.fr" },
+    where: { email: "afif-adm@moovly.fr" },
     update: {
       mot_de_passe: hashAdmin,
       ville: "Créteil",
     },
     create: {
-      nom: "admin",
+      nom: "adm",
       prenom: "afif",
-      email: "admin@moovly.fr",
+      email: "afif-adm@moovly.fr",
       mot_de_passe: hashAdmin,
       role: "admin",
       ville: "Créteil",

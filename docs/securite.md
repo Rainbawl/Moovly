@@ -38,7 +38,7 @@
 
 Si vous découvrez une vulnérabilité de sécurité, merci de la signaler à :
 
-**Email :** admin@moovly.fr
+**Email :** afif-adm@moovly.fr
 
 Merci de ne pas créer d'issue publique pour les problèmes de sécurité.
 
