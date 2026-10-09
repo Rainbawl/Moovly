@@ -1,4 +1,5 @@
 import * as depotDashboard from "../repositories/dashboard.repository.js";
+import { statutAffiche } from "./reservation.service.js";
 
 // Récupère le planning complet du coach connecté
 export const obtenirPlanningCoach = async (utilisateurId) => {
@@ -19,7 +20,7 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     statut: creneau.statut,
     reservations: creneau.reservations.map((reservation) => ({
       id: reservation.id,
-      statut: reservation.statut,
+      statut: statutAffiche(reservation, creneau),
       sportif: {
         nom: reservation.utilisateur.nom,
         prenom: reservation.utilisateur.prenom,

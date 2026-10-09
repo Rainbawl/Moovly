@@ -10,6 +10,18 @@ export const creerReservation = async (utilisateurId, creneauId) => {
   return reservation;
 };
 
+// Statut affiché d'une réservation : une réservation confirmée dont la séance est finie
+// (12h pour le matin, 18h pour l'après-midi) devient "terminee".
+// Le statut est calculé à la lecture : rien n'est réécrit en base.
+export const statutAffiche = (reservation, creneau, maintenant = new Date()) => {
+  if (reservation.statut !== "confirmee") return reservation.statut;
+
+  const finSeance = new Date(creneau.date);
+  finSeance.setHours(creneau.periode === "matin" ? 12 : 18, 0, 0, 0);
+
+  return finSeance <= maintenant ? "terminee" : "confirmee";
+};
+
 // Récupère l'historique des réservations d'un sportif
 export const obtenirMesReservations = async (utilisateurId) => {
   const reservations =
@@ -18,7 +30,7 @@ export const obtenirMesReservations = async (utilisateurId) => {
   // Formate les données pour le frontend
   return reservations.map((reservation) => ({
     id: reservation.id,
-    statut: reservation.statut,
+    statut: statutAffiche(reservation, reservation.creneau),
     date_reservation: reservation.date_reservation,
     date_annulation: reservation.date_annulation,
     creneau: {
