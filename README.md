@@ -36,7 +36,7 @@ Un coach ne peut pas se connecter tant que son compte n'a pas été validé par 
 **Tests**
 
 - Vitest + Supertest
-- 153 tests backend : 79 unitaires + 74 d'intégration (API + vraie base PostgreSQL)
+- 155 tests backend : 81 unitaires + 74 d'intégration (API + vraie base PostgreSQL)
 - Couverture : 100 % des fonctions, 97,32 % des lignes (99,6 % des lignes de la logique métier)
 - 1 parcours End to End Playwright (9 scènes), tenu pour l'instant hors du dépôt (voir [bilan technique](./docs/bilan-technique.md))
 

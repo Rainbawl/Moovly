@@ -11,14 +11,19 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     throw erreur;
   }
 
-  // Formate les créneaux avec les réservations associées
+  // Formate les créneaux avec les réservations associées.
+  // Seules les réservations en cours (en attente ou confirmées) sont gardées :
+  // une réservation refusée ou annulée a libéré le créneau, afficher le nom
+  // du sportif sous un créneau « disponible » induirait le coach en erreur.
   const creneaux = coach.creneaux.map((creneau) => ({
     id: creneau.id,
     date: creneau.date,
     periode: creneau.periode,
     horaire: creneau.periode === "matin" ? "8h00 - 12h00" : "14h00 - 18h00",
     statut: creneau.statut,
-    reservations: creneau.reservations.map((reservation) => ({
+    reservations: creneau.reservations
+      .filter((reservation) => ["en_attente", "confirmee"].includes(reservation.statut))
+      .map((reservation) => ({
       id: reservation.id,
       statut: statutAffiche(reservation, creneau),
       sportif: {
@@ -29,6 +34,17 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     })),
   }));
 
+  // Un créneau passé n'est gardé que s'il a eu une séance confirmée (affichée
+  // « terminee ») : un créneau passé jamais réservé, ou une demande restée sans
+  // réponse, ne sert plus à rien et allongeait inutilement le planning.
+  const debutDuJour = new Date();
+  debutDuJour.setHours(0, 0, 0, 0);
+  const creneauxAffiches = creneaux.filter(
+    (creneau) =>
+      new Date(creneau.date) >= debutDuJour ||
+      creneau.reservations.some((r) => ["confirmee", "terminee"].includes(r.statut)),
+  );
+
   // Ordre d'affichage : d'abord les créneaux avec une demande à traiter,
   // puis les créneaux réservés, et les créneaux encore disponibles à la fin.
   // Dans chaque groupe : par date, le matin avant l'après-midi.
@@ -37,7 +53,7 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     if (creneau.statut === "disponible") return 2;
     return 1;
   };
-  creneaux.sort(
+  creneauxAffiches.sort(
     (a, b) =>
       priorite(a) - priorite(b) ||
       new Date(a.date) - new Date(b.date) ||
@@ -50,7 +66,7 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     presentation: coach.presentation,
     tarif_horaire: coach.tarif_horaire,
     note_moyenne: coach.note_moyenne,
-    creneaux,
+    creneaux: creneauxAffiches,
   };
 };
 

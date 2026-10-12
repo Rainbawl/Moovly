@@ -167,8 +167,9 @@
   cursor: pointer;
 }
 
+/* Survol foncé : la carte de connexion est blanche (un lien blanc y disparaissait) */
 .page-login .lien:hover {
-  color: white;
+  color: #0a1628;
 }
 
 /*  Message erreur  */

@@ -45,7 +45,7 @@ describe("Dashboard Service", () => {
       creneaux: [
         {
           id: 1,
-          date: new Date("2026-08-25"),
+          date: new Date("2030-08-26"),
           periode: "matin",
           statut: "disponible",
           reservations: [
@@ -85,7 +85,7 @@ describe("Dashboard Service", () => {
       creneaux: [
         {
           id: 2,
-          date: new Date("2026-08-25"),
+          date: new Date("2030-08-26"),
           periode: "apres_midi",
           statut: "disponible",
           reservations: [],
@@ -144,6 +144,53 @@ describe("Dashboard Service", () => {
 
     // 4 et 3 : demandes (matin avant après-midi) · 2 : réservé · 1 et 5 : disponibles
     expect(planning.creneaux.map((c) => c.id)).toEqual([4, 3, 2, 1, 5]);
+  });
+
+  // Teste qu'une réservation refusée ou annulée n'apparaît plus sous un créneau libéré
+  it("TU-068 — obtenirPlanningCoach : les réservations refusées et annulées ne sont pas affichées", async () => {
+    const sportif = { nom: "Mané", prenom: "Bocar", email: "bocar@test.fr" };
+    depotDashboard.trouverPlanningCoach.mockResolvedValue({
+      id: 1,
+      creneaux: [
+        {
+          id: 1,
+          date: new Date("2047-10-21"),
+          periode: "matin",
+          statut: "disponible",
+          reservations: [
+            { id: 10, statut: "refusee", utilisateur: sportif },
+            { id: 11, statut: "annulee", utilisateur: sportif },
+            { id: 12, statut: "en_attente", utilisateur: sportif },
+          ],
+        },
+      ],
+    });
+
+    const planning = await serviceDashboard.obtenirPlanningCoach(1);
+
+    expect(planning.creneaux[0].reservations.map((r) => r.id)).toEqual([12]);
+  });
+
+  // Teste que les créneaux passés sans séance confirmée sont masqués
+  it("TU-069 — obtenirPlanningCoach : un créneau passé n'est gardé que s'il a eu une séance confirmée", async () => {
+    const sportif = { nom: "Mané", prenom: "Bocar", email: "bocar@test.fr" };
+    const hier = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const demain = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    depotDashboard.trouverPlanningCoach.mockResolvedValue({
+      id: 1,
+      creneaux: [
+        { id: 1, date: hier, periode: "matin", statut: "disponible", reservations: [] }, // jamais réservé
+        { id: 2, date: hier, periode: "apres_midi", statut: "en_attente", reservations: [{ id: 20, statut: "en_attente", utilisateur: sportif }] }, // demande sans réponse
+        { id: 3, date: new Date("2026-01-05"), periode: "matin", statut: "reserve", reservations: [{ id: 30, statut: "confirmee", utilisateur: sportif }] }, // séance faite
+        { id: 4, date: demain, periode: "matin", statut: "disponible", reservations: [] }, // à venir
+      ],
+    });
+
+    const planning = await serviceDashboard.obtenirPlanningCoach(1);
+
+    // 3 : séance passée affichée « terminee » · 4 : créneau à venir · 1 et 2 masqués
+    expect(planning.creneaux.map((c) => c.id)).toEqual([3, 4]);
+    expect(planning.creneaux[0].reservations[0].statut).toBe("terminee");
   });
 
   //  obtenir Statistiques Coach

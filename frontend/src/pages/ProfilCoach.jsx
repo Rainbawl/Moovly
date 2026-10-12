@@ -62,7 +62,7 @@ function ProfilCoach() {
         // 3. si succès
         // La réservation est « en attente » : c'est le coach qui la confirmera
         setMessageSucces(
-          "Demande de réservation envoyée ! Elle est en attente de la réponse du coach.",
+          "Votre réservation est en attente de validation par le coach. Vous pouvez en suivre l'avancement depuis votre tableau de bord.",
         );
       }
       chargerCoach(); // recharge les créneaux pour refléter le changement
