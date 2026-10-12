@@ -79,16 +79,20 @@ describe("Coaches Routes — Tests d'intégration", () => {
 
   describe("POST /coaches/:id/creneaux", () => {
     it("TI-014 — doit créer un créneau après-midi pour le coach", async () => {
-      const dateFuture = new Date();
-      dateFuture.setFullYear(dateFuture.getFullYear() + 1);
-      dateFuture.setMonth(Math.floor(Math.random() * 12));
-      dateFuture.setDate(Math.floor(Math.random() * 28) + 1);
-      const date = dateFuture.toISOString().split("T")[0];
-
-      const reponse = await request(app)
-        .post("/coaches/1/creneaux")
-        .set("Authorization", `Bearer ${tokenCoach}`)
-        .send({ date, periode: "apres_midi" });
+      // La base garde les créneaux des lancements précédents : une date tirée au
+      // hasard pouvait déjà être prise (« Un créneau existe déjà »). On essaie
+      // donc plusieurs dates jusqu'à en trouver une libre.
+      let reponse;
+      for (let essai = 0; essai < 50; essai++) {
+        const jour = new Date();
+        jour.setFullYear(jour.getFullYear() + 15);
+        jour.setDate(jour.getDate() + ((Date.now() + essai * 7) % 3650));
+        reponse = await request(app)
+          .post("/coaches/1/creneaux")
+          .set("Authorization", `Bearer ${tokenCoach}`)
+          .send({ date: jour.toISOString().split("T")[0], periode: "apres_midi" });
+        if (reponse.status !== 409) break;
+      }
 
       expect(reponse.status).toBe(201);
       expect(reponse.body.creneau.periode).toBe("apres_midi");
