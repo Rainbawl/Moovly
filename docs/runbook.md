@@ -25,7 +25,7 @@ Variables d'environnement nécessaires : créer `backend/.env` en suivant le mod
 | 2   | La connexion à la base fonctionne | Vérifié automatiquement par l'endpoint de health-check ci-dessus                                   | `db: "connected"` dans la réponse                           |
 | 3   | Le frontend charge correctement   | Ouvrir `http://localhost:5173`                                                                     | La page d'accueil affiche la liste des coachs sans erreur   |
 | 4   | L'authentification fonctionne     | Se connecter avec un compte de test (voir seed)                                                    | Redirection réussie vers le tableau de bord                 |
-| 5   | Les tests automatisés passent     | `npm run test` dans `backend/`                                                                     | Tous les tests passent (141 tests actuellement)             |
+| 5   | Les tests automatisés passent     | `npm run test` dans `backend/`                                                                     | Tous les tests passent (153 tests actuellement)             |
 | 6   | La CI est verte                   | Consulter l'onglet Actions du dépôt GitHub                                                         | Les deux jobs (backend, frontend) affichent une coche verte |
 
 ## 3. Où je regarde si ça casse ?

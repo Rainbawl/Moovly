@@ -68,39 +68,59 @@ export const annulerReservation = async (reservationId, utilisateurId) => {
     throw erreur;
   }
 
+  verifierStatutModifiable(reservation, "annulée");
+  verifierDelaiAvantSeance(reservation.creneau, "d'annuler");
+
+  return depotReservation.annulerReservation(reservationId);
+};
+
+// Seules les réservations en attente ou confirmées peuvent être annulées ou modifiées.
+// Une réservation refusée a déjà libéré son créneau : l'annuler remettrait le créneau
+// « disponible » alors qu'un autre sportif l'a peut-être réservé entre-temps.
+const verifierStatutModifiable = (reservation, action) => {
   if (reservation.statut === "annulee") {
     const erreur = new Error("Cette réservation est déjà annulée");
     erreur.status = 400;
     throw erreur;
   }
 
-  // Règle des 24h — on vérifie la date du créneau
-  const dateCreneau = new Date(reservation.creneau.date);
-  // Ajuste l'heure selon la période — matin = 8h, après-midi = 14h
-  dateCreneau.setHours(
-    reservation.creneau.periode === "matin" ? 8 : 14,
-    0,
-    0,
-    0,
-  );
-
-  const maintenant = new Date();
-  const differenceHeures = (dateCreneau - maintenant) / (1000 * 60 * 60);
-
-  //Cas 1 : La séance est dans moins de 24h => la séance n'est pas encore passée, mais elle arrive dans moins de 24h"
-  if (differenceHeures >= 0 && differenceHeures < 24) {
+  if (!["en_attente", "confirmee"].includes(reservation.statut)) {
     const erreur = new Error(
-      "Impossible d'annuler moins de 24h avant la séance",
+      `Seule une réservation en attente ou confirmée peut être ${action}`,
     );
     erreur.status = 400;
     throw erreur;
   }
-  return depotReservation.annulerReservation(reservationId);
+};
+
+// Règle des 24h : on ne peut ni annuler ni déplacer une séance qui commence
+// dans moins de 24h (le coach ne perd pas son créneau à la dernière minute),
+// ni une séance déjà passée. Début de séance : 8h le matin, 14h l'après-midi.
+const verifierDelaiAvantSeance = (creneau, action) => {
+  const debutSeance = new Date(creneau.date);
+  debutSeance.setHours(creneau.periode === "matin" ? 8 : 14, 0, 0, 0);
+
+  const heuresRestantes = (debutSeance - new Date()) / (1000 * 60 * 60);
+
+  if (heuresRestantes < 0) {
+    const erreur = new Error(`Impossible ${action} une séance déjà passée`);
+    erreur.status = 400;
+    throw erreur;
+  }
+
+  if (heuresRestantes < 24) {
+    const erreur = new Error(
+      `Impossible ${action} moins de 24h avant la séance`,
+    );
+    erreur.status = 400;
+    throw erreur;
+  }
 };
 
 // Modifie une réservation en la remplaçant par une nouvelle sur un autre créneau
-// du MÊME coach. Pas de règle des 24h ici : changer d'horaire chez le même coach
-// n'est pas l'abandonner. Changer de coach passe par une annulation (règle des 24h).
+// du MÊME coach. La règle des 24h s'applique à la séance d'origine : la déplacer
+// à la dernière minute revient à l'annuler. Le nouveau créneau, lui, peut être
+// proche (comme pour une réservation normale). Changer de coach passe par une annulation.
 export const modifierReservation = async (
   reservationId,
   utilisateurId,
@@ -121,11 +141,8 @@ export const modifierReservation = async (
     throw erreur;
   }
 
-  if (reservation.statut === "annulee") {
-    const erreur = new Error("Cette réservation est déjà annulée");
-    erreur.status = 400;
-    throw erreur;
-  }
+  verifierStatutModifiable(reservation, "modifiée");
+  verifierDelaiAvantSeance(reservation.creneau, "de modifier");
 
   const nouveauCreneau = await depotCreneau.trouverCreneauParId(nouveauCreneauId);
 

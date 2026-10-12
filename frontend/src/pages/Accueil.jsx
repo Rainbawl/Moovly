@@ -1,7 +1,7 @@
 // Page d'accueil Moovly
 // Affiche le hero, les features et la grille de coachs dynamique depuis le backend
 import Navbar from "../components/Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/accueil.css";
@@ -13,40 +13,43 @@ function Accueil() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
   const naviguer = useNavigate();
+  // Numéro de la dernière recherche lancée : seule sa réponse est affichée
+  const derniereRecherche = useRef(0);
 
-  // Construit l'URL avec les filtres actifs (sport et/ou ville)
-  const chargerCoachs = async (sport = filtreSport, ville = filtreVille) => {
-    try {
-      setChargement(true);
-      setErreur("");
-      const parametres = new URLSearchParams();
-      if (sport) parametres.append("sport", sport);
-      if (ville) parametres.append("ville", ville);
-      const requete = parametres.toString();
-      const reponse = await api.get(`/coaches${requete ? `?${requete}` : ""}`);
-      setCoachs(reponse.data.coachs);
-    } catch {
-      setErreur("Impossible de charger les coachs");
-    } finally {
-      setChargement(false);
-    }
-  };
-
+  // Recharge les coachs quand un filtre change, 300 ms après la dernière frappe.
+  // Sans ce délai et ce numéro, une réponse lente d'une ancienne recherche
+  // pouvait arriver en dernier et remplacer le bon résultat.
   useEffect(() => {
-    chargerCoachs();
-  }, []);
+    const numero = ++derniereRecherche.current;
 
-  const gererRechercheSport = (e) => {
-    const valeur = e.target.value;
-    setFiltreSport(valeur);
-    chargerCoachs(valeur, filtreVille);
-  };
+    const chargerCoachs = async () => {
+      try {
+        setChargement(true);
+        setErreur("");
+        const parametres = new URLSearchParams();
+        if (filtreSport.trim()) parametres.append("sport", filtreSport.trim());
+        if (filtreVille.trim()) parametres.append("ville", filtreVille.trim());
+        const requete = parametres.toString();
+        const reponse = await api.get(
+          `/coaches${requete ? `?${requete}` : ""}`,
+        );
+        if (numero === derniereRecherche.current) setCoachs(reponse.data.coachs);
+      } catch {
+        if (numero === derniereRecherche.current) {
+          setErreur("Impossible de charger les coachs");
+        }
+      } finally {
+        if (numero === derniereRecherche.current) setChargement(false);
+      }
+    };
 
-  const gererRechercheVille = (e) => {
-    const valeur = e.target.value;
-    setFiltreVille(valeur);
-    chargerCoachs(filtreSport, valeur);
-  };
+    const minuterie = setTimeout(chargerCoachs, 300);
+    return () => clearTimeout(minuterie);
+  }, [filtreSport, filtreVille]);
+
+  const gererRechercheSport = (e) => setFiltreSport(e.target.value);
+
+  const gererRechercheVille = (e) => setFiltreVille(e.target.value);
 
   return (
     <div className="page-accueil">

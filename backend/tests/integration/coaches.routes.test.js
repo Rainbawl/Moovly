@@ -35,6 +35,16 @@ describe("Coaches Routes — Tests d'intégration", () => {
       expect(reponse.status).toBe(200);
       expect(Array.isArray(reponse.body.coachs)).toBe(true);
     });
+
+    it("TI-061 — doit filtrer par ville sans tenir compte des accents, majuscules et espaces", async () => {
+      // Camille (seed) habite à Lyon : « LYÔN » avec espaces doit la trouver
+      const reponse = await request(app).get(
+        `/coaches?ville=${encodeURIComponent("  LYÔN ")}`,
+      );
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.coachs.length).toBeGreaterThan(0);
+      expect(reponse.body.coachs.every((c) => c.ville === "Lyon")).toBe(true);
+    });
   });
 
   describe("GET /coaches/:id", () => {
@@ -127,10 +137,34 @@ describe("Coaches Routes — Tests d'intégration", () => {
     });
 
     it("TI-053 — doit rejeter un coach qui crée un créneau pour un autre coach (IDOR)", async () => {
-      // Camille (coach 1) tente de créer un créneau sur le profil d'un autre coach validé
-      const coachs = await request(app).get("/coaches");
-      const autreCoach = coachs.body.coachs.find((c) => c.id !== 1);
+      // Le test crée lui-même l'autre coach : il ne dépend plus des données
+      // laissées par les autres fichiers de tests (qui tournent en parallèle)
+      const emailAutreCoach = `idor.coach.${Date.now()}@test.fr`;
+      await request(app).post("/auth/register").send({
+        nom: `IdorCoach${Date.now()}`,
+        prenom: "Test",
+        email: emailAutreCoach,
+        mot_de_passe: process.env.SEED_PASSWORD_COACH,
+        role: "coach",
+      });
 
+      const loginAdmin = await request(app).post("/auth/login").send({
+        email: "afif-adm@moovly.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+      });
+      const tokenAdmin = loginAdmin.body.accessToken;
+      const coachsEnAttente = await request(app)
+        .get("/admin/coaches")
+        .set("Authorization", `Bearer ${tokenAdmin}`);
+      const autreCoach = coachsEnAttente.body.coachs.find(
+        (c) => c.email === emailAutreCoach,
+      );
+      await request(app)
+        .put(`/admin/coaches/${autreCoach.id}/valider`)
+        .set("Authorization", `Bearer ${tokenAdmin}`)
+        .send({ est_valide: true });
+
+      // Camille (coach 1) tente de créer un créneau sur le profil de cet autre coach
       const reponse = await request(app)
         .post(`/coaches/${autreCoach.id}/creneaux`)
         .set("Authorization", `Bearer ${tokenCoach}`)

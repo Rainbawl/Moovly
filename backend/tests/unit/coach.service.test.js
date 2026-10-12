@@ -47,6 +47,61 @@ describe("Coach Service", () => {
     expect(coachs[0].sports).toContain("Tennis");
   });
 
+  // Deux coachs de test pour les filtres sport et ville
+  const coachsDeTest = [
+    {
+      id: 1,
+      utilisateur: { nom: "Lebrun", prenom: "Thomas", ville: "Créteil" },
+      sports: [{ sport: { nom: "Running" } }],
+    },
+    {
+      id: 2,
+      utilisateur: { nom: "Petit", prenom: "Flavie", ville: "Bordeaux" },
+      sports: [{ sport: { nom: "Natation" } }, { sport: { nom: "Yoga" } }],
+    },
+  ];
+
+  it("TU-065 — obtenirTousLesCoachs : le filtre ignore les accents, les majuscules et les espaces", async () => {
+    depotCoach.trouverTousLesCoachs.mockResolvedValue(coachsDeTest);
+
+    const parVille = await serviceCoach.obtenirTousLesCoachs({ ville: "  CRETEIL " });
+    const parSport = await serviceCoach.obtenirTousLesCoachs({ sport: "yOGa" });
+
+    expect(parVille.map((c) => c.id)).toEqual([1]);
+    expect(parSport.map((c) => c.id)).toEqual([2]);
+  });
+
+  it("TU-066 — obtenirTousLesCoachs : sport et ville se combinent, un filtre vide ne filtre rien", async () => {
+    depotCoach.trouverTousLesCoachs.mockResolvedValue(coachsDeTest);
+
+    const combine = await serviceCoach.obtenirTousLesCoachs({ sport: "running", ville: "bordeaux" });
+    const sansFiltre = await serviceCoach.obtenirTousLesCoachs({ sport: "", ville: "   " });
+
+    expect(combine).toHaveLength(0);
+    expect(sansFiltre).toHaveLength(2);
+  });
+
+  it("TU-067 — obtenirTousLesCoachs : le filtre cherche le début du mot, pas une lettre au milieu", async () => {
+    depotCoach.trouverTousLesCoachs.mockResolvedValue([
+      ...coachsDeTest,
+      {
+        id: 3,
+        utilisateur: { nom: "Robert", prenom: "Guillaume", ville: "Saint-Étienne" },
+        sports: [{ sport: { nom: "Football" } }],
+      },
+    ]);
+
+    // « l » est dans « Football » mais aucun sport ne commence par « l »
+    const sportL = await serviceCoach.obtenirTousLesCoachs({ sport: "l" });
+    // « b » : Bordeaux commence par b ; « etienne » : un mot de « Saint-Étienne »
+    const villeB = await serviceCoach.obtenirTousLesCoachs({ ville: "b" });
+    const villeEtienne = await serviceCoach.obtenirTousLesCoachs({ ville: "etienne" });
+
+    expect(sportL).toHaveLength(0);
+    expect(villeB.map((c) => c.id)).toEqual([2]);
+    expect(villeEtienne.map((c) => c.id)).toEqual([3]);
+  });
+
   // ── obtenirCoachParId ─────────────────────────────────────────
   it("TU-027 — obtenirCoachParId : doit retourner 404 si coach introuvable", async () => {
     depotCoach.trouverCoachParId.mockResolvedValue(null);

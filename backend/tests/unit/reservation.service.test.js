@@ -332,7 +332,7 @@ describe("Reservation Service", () => {
       id: 1,
       utilisateur_id: 1,
       statut: "en_attente",
-      creneau: { coach_id: 3 },
+      creneau: { coach_id: 3, date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
     });
 
     depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 5, coach_id: 3 });
@@ -360,7 +360,7 @@ describe("Reservation Service", () => {
       id: 1,
       utilisateur_id: 1,
       statut: "en_attente",
-      creneau: { coach_id: 3 },
+      creneau: { coach_id: 3, date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
     });
 
     depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 8, coach_id: 4 }); // autre coach
@@ -380,7 +380,7 @@ describe("Reservation Service", () => {
       id: 1,
       utilisateur_id: 1,
       statut: "en_attente",
-      creneau: { coach_id: 3 },
+      creneau: { coach_id: 3, date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
     });
 
     depotCreneau.trouverCreneauParId.mockResolvedValue(null);
@@ -389,5 +389,91 @@ describe("Reservation Service", () => {
       serviceReservation.modifierReservation(1, 1, 999),
     ).rejects.toMatchObject({ status: 404, message: "Créneau introuvable" });
     expect(depotReservation.remplacerReservation).not.toHaveBeenCalled();
+  });
+
+  // ── Statut et règle des 24h (annulation et modification) ──────
+  // Prochaine séance du matin (8h) qui commence dans moins de 24h
+  const seanceDansMoinsDe24h = () => {
+    const maintenant = new Date();
+    const date = new Date(maintenant);
+    date.setHours(8, 0, 0, 0);
+    if (date <= maintenant) date.setDate(date.getDate() + 1);
+    return { coach_id: 3, date, periode: "matin" };
+  };
+
+  it("TU-059 — annulerReservation : doit rejeter une réservation refusée", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "refusee",
+      creneau: { date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
+    });
+
+    await expect(serviceReservation.annulerReservation(1, 1)).rejects.toMatchObject({
+      status: 400,
+      message: "Seule une réservation en attente ou confirmée peut être annulée",
+    });
+    expect(depotReservation.annulerReservation).not.toHaveBeenCalled();
+  });
+
+  it("TU-060 — annulerReservation : doit rejeter une séance déjà passée", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "confirmee",
+      creneau: { date: new Date(Date.now() - 72 * 60 * 60 * 1000), periode: "matin" },
+    });
+
+    await expect(serviceReservation.annulerReservation(1, 1)).rejects.toMatchObject({
+      status: 400,
+      message: "Impossible d'annuler une séance déjà passée",
+    });
+    expect(depotReservation.annulerReservation).not.toHaveBeenCalled();
+  });
+
+  it("TU-061 — modifierReservation : doit rejeter si la séance d'origine est dans moins de 24h", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "en_attente",
+      creneau: seanceDansMoinsDe24h(),
+    });
+    depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 5, coach_id: 3 });
+
+    await expect(serviceReservation.modifierReservation(1, 1, 5)).rejects.toMatchObject({
+      status: 400,
+      message: "Impossible de modifier moins de 24h avant la séance",
+    });
+    expect(depotReservation.remplacerReservation).not.toHaveBeenCalled();
+  });
+
+  it("TU-062 — modifierReservation : doit rejeter une réservation refusée", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "refusee",
+      creneau: { coach_id: 3, date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
+    });
+
+    await expect(serviceReservation.modifierReservation(1, 1, 5)).rejects.toMatchObject({
+      status: 400,
+      message: "Seule une réservation en attente ou confirmée peut être modifiée",
+    });
+    expect(depotReservation.remplacerReservation).not.toHaveBeenCalled();
+  });
+
+  it("TU-063 — modifierReservation : le nouveau créneau peut être proche (seule la séance d'origine compte)", async () => {
+    depotReservation.trouverReservationParId.mockResolvedValue({
+      id: 1,
+      utilisateur_id: 1,
+      statut: "confirmee",
+      creneau: { coach_id: 3, date: new Date(Date.now() + 72 * 60 * 60 * 1000) },
+    });
+    depotCreneau.trouverCreneauParId.mockResolvedValue({ id: 5, ...seanceDansMoinsDe24h() });
+    depotReservation.remplacerReservation.mockResolvedValue({ id: 2, creneau_id: 5 });
+
+    const nouvelleReservation = await serviceReservation.modifierReservation(1, 1, 5);
+
+    expect(nouvelleReservation.creneau_id).toBe(5);
   });
 });

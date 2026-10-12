@@ -11,7 +11,7 @@ Moovly est une plateforme qui met en relation sportifs et coachs certifiés. Les
 | Rôle    | Ce qu'il peut faire                                                                                                         |
 | ------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Visiteur | Consulter les coachs (filtres sport et ville), voir un profil coach, s'inscrire, se connecter                              |
-| Sportif | Réserver un créneau, modifier sa réservation (chez le même coach), l'annuler (jusqu'à 24 h avant), consulter son historique |
+| Sportif | Réserver un créneau, modifier sa réservation (chez le même coach) ou l'annuler jusqu'à 24 h avant la séance, consulter son historique |
 | Coach   | Publier ses créneaux (matin / après-midi), accepter ou refuser une demande, consulter son planning et ses statistiques      |
 | Admin   | Valider ou rejeter un coach, créer un sport, consulter les statistiques globales                                            |
 
@@ -36,8 +36,8 @@ Un coach ne peut pas se connecter tant que son compte n'a pas été validé par 
 **Tests**
 
 - Vitest + Supertest
-- 141 tests backend : 70 unitaires + 71 d'intégration (API + vraie base PostgreSQL)
-- Couverture : 100 % des fonctions, 97,19 % des lignes (99,5 % des lignes de la logique métier)
+- 153 tests backend : 79 unitaires + 74 d'intégration (API + vraie base PostgreSQL)
+- Couverture : 100 % des fonctions, 97,32 % des lignes (99,6 % des lignes de la logique métier)
 - 1 parcours End to End Playwright (9 scènes), tenu pour l'instant hors du dépôt (voir [bilan technique](./docs/bilan-technique.md))
 
 **Intégration continue**

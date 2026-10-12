@@ -241,6 +241,54 @@ describe("Reservations Routes — Tests d'intégration", () => {
 
       expect(reponse.status).toBe(403);
     });
+
+    it("TI-059 — doit rejeter l'annulation par un admin (rôle non autorisé)", async () => {
+      const loginAdmin = await request(app).post("/auth/login").send({
+        email: "afif-adm@moovly.fr",
+        mot_de_passe: process.env.SEED_PASSWORD_ADMIN,
+      });
+
+      const reponse = await request(app)
+        .delete("/reservations/1")
+        .set("Authorization", `Bearer ${loginAdmin.body.accessToken}`);
+
+      expect(reponse.status).toBe(403);
+    });
+
+    it("TI-060 — doit rejeter l'annulation d'une réservation refusée", async () => {
+      // Créneau libre loin dans le futur (la base garde les créneaux des lancements précédents)
+      let creneauId;
+      for (let essai = 0; essai < 50 && !creneauId; essai++) {
+        const jour = new Date();
+        jour.setFullYear(jour.getFullYear() + 13);
+        jour.setDate(jour.getDate() + ((Date.now() + essai * 7) % 3650));
+        const creation = await request(app)
+          .post("/coaches/1/creneaux")
+          .set("Authorization", `Bearer ${tokenCoach}`)
+          .send({ date: jour.toISOString().split("T")[0], periode: "matin" });
+        if (creation.status === 201) creneauId = creation.body.creneau.id;
+      }
+
+      const reservation = await request(app)
+        .post("/reservations")
+        .set("Authorization", `Bearer ${tokenSportif}`)
+        .send({ creneau_id: creneauId });
+      const reservationId = reservation.body.reservation.id;
+
+      await request(app)
+        .put(`/reservations/${reservationId}/repondre`)
+        .set("Authorization", `Bearer ${tokenCoach}`)
+        .send({ accepter: false });
+
+      const reponse = await request(app)
+        .delete(`/reservations/${reservationId}`)
+        .set("Authorization", `Bearer ${tokenSportif}`);
+
+      expect(reponse.status).toBe(400);
+      expect(reponse.body.error).toBe(
+        "Seule une réservation en attente ou confirmée peut être annulée",
+      );
+    });
   });
 
   describe("PUT /reservations/:id/repondre", () => {

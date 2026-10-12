@@ -19,13 +19,13 @@ Ce guide décrit le parcours de chaque rôle une fois l'application lancée (voi
 4. Choisir une date — les créneaux du coach s'affichent (matin 8h–12h, après-midi 14h–18h)
 5. Cliquer sur **« Réserver »** sur un créneau disponible (un créneau déjà pris n'a pas de bouton « Réserver »)
 6. Si le sportif n'est pas connecté, le clic renvoie vers la page de connexion
-7. Un message de confirmation s'affiche ; la réservation apparaît dans le tableau de bord avec le statut **en attente**, jusqu'à la réponse du coach
+7. Un message indique que la demande est envoyée ; la réservation apparaît dans le tableau de bord avec le statut **en attente**, jusqu'à la réponse du coach
 
 ### Modifier une réservation
 
 1. Depuis le tableau de bord, cliquer sur **« Modifier »**
 2. Choisir un nouveau créneau **chez le même coach** puis cliquer sur **« Réserver »**
-3. La modification n'est pas soumise à la règle des 24 h : on change d'horaire sans quitter le coach
+3. Comme l'annulation, la modification est impossible moins de 24 h avant la séance réservée : la déplacer à la dernière minute reviendrait à l'annuler. Le nouveau créneau, lui, peut être proche (par exemple le lendemain)
 4. Pour changer de coach, il faut **annuler** la réservation puis réserver chez l'autre coach (la règle des 24 h s'applique alors)
 5. Si le nouveau créneau vient d'être pris, la modification est refusée et **l'ancienne réservation est conservée**
 

@@ -125,6 +125,27 @@ describe("Dashboard Service", () => {
     expect(planning.creneaux[0].reservations[0].statut).toBe("terminee");
   });
 
+  // Teste l'ordre : demandes à traiter d'abord, créneaux disponibles à la fin
+  it("TU-064 — obtenirPlanningCoach : les demandes en attente d'abord, les créneaux disponibles à la fin", async () => {
+    const sportif = { nom: "Mané", prenom: "Bocar", email: "bocar@test.fr" };
+    depotDashboard.trouverPlanningCoach.mockResolvedValue({
+      id: 1,
+      creneaux: [
+        // Ordre du repository : par date
+        { id: 1, date: new Date("2030-03-01"), periode: "matin", statut: "disponible", reservations: [] },
+        { id: 2, date: new Date("2030-03-02"), periode: "matin", statut: "reserve", reservations: [{ id: 10, statut: "confirmee", utilisateur: sportif }] },
+        { id: 3, date: new Date("2030-03-03"), periode: "apres_midi", statut: "en_attente", reservations: [{ id: 11, statut: "en_attente", utilisateur: sportif }] },
+        { id: 4, date: new Date("2030-03-03"), periode: "matin", statut: "en_attente", reservations: [{ id: 12, statut: "en_attente", utilisateur: sportif }] },
+        { id: 5, date: new Date("2030-03-04"), periode: "matin", statut: "disponible", reservations: [] },
+      ],
+    });
+
+    const planning = await serviceDashboard.obtenirPlanningCoach(1);
+
+    // 4 et 3 : demandes (matin avant après-midi) · 2 : réservé · 1 et 5 : disponibles
+    expect(planning.creneaux.map((c) => c.id)).toEqual([4, 3, 2, 1, 5]);
+  });
+
   //  obtenir Statistiques Coach
 
   // Teste le cas où le coach n'a pas de profil

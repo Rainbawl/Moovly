@@ -29,11 +29,11 @@ routeur.put(
   controleurReservation.modifierReservation,
 );
 
-// DELETE /reservations/:id : Annuler une réservation (protégée)
+// DELETE /reservations/:id : Annuler une réservation (protégée — sportif propriétaire uniquement)
 routeur.delete(
   "/:id",
   verifyToken,
-  verifyRole("sportif", "admin"),
+  verifyRole("sportif"),
   controleurReservation.annulerReservation,
 );
 
