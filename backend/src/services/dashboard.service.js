@@ -29,6 +29,21 @@ export const obtenirPlanningCoach = async (utilisateurId) => {
     })),
   }));
 
+  // Ordre d'affichage : d'abord les créneaux avec une demande à traiter,
+  // puis les créneaux réservés, et les créneaux encore disponibles à la fin.
+  // Dans chaque groupe : par date, le matin avant l'après-midi.
+  const priorite = (creneau) => {
+    if (creneau.reservations.some((r) => r.statut === "en_attente")) return 0;
+    if (creneau.statut === "disponible") return 2;
+    return 1;
+  };
+  creneaux.sort(
+    (a, b) =>
+      priorite(a) - priorite(b) ||
+      new Date(a.date) - new Date(b.date) ||
+      (a.periode === "matin" ? 0 : 1) - (b.periode === "matin" ? 0 : 1),
+  );
+
   return {
     id: coach.id,
     statut_validation: coach.est_valide,
