@@ -123,10 +123,12 @@
       rgba(2, 24, 59, 0.05) 100%
     ),
     url("/imageaccueil.png") right center/cover no-repeat;
-  padding: 70px 30px;
+  /* Le titre est placé dans le premier écran (et non au milieu de l'image,
+     qui fait deux écrans de haut) : on le voit dès l'arrivée sur la page */
+  padding: 22dvh 30px 70px;
   min-height: 200dvh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .hero-content {
