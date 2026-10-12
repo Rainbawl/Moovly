@@ -60,7 +60,10 @@ function ProfilCoach() {
         // 2. appel API
         await api.post("/reservations", { creneau_id: creneauId });
         // 3. si succès
-        setMessageSucces("Réservation confirmée !");
+        // La réservation est « en attente » : c'est le coach qui la confirmera
+        setMessageSucces(
+          "Demande de réservation envoyée ! Elle est en attente de la réponse du coach.",
+        );
       }
       chargerCoach(); // recharge les créneaux pour refléter le changement
     } catch (err) {
