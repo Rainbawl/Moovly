@@ -29,8 +29,10 @@ La troisième barrière protège contre l'**IDOR** (changer un identifiant dans 
 ### Règles métier protégées côté serveur
 
 - **Pas de double réservation** — la réservation se fait dans une transaction avec `SELECT … FOR UPDATE` sur la ligne du créneau (ADR-05) ; un créneau dont le statut n'est plus `disponible` est refusé (409)
-- **Règle des 24 h** — une annulation à moins de 24 h de la séance est refusée (400)
+- **Règle des 24 h** — une annulation ou une modification à moins de 24 h de la séance est refusée (400), comme pour une séance déjà passée
+- **Statut** — seules les réservations en attente ou confirmées peuvent être annulées ou modifiées (400 sinon)
 - **Modification** — limitée aux créneaux du même coach (400 sinon), et réalisée en une seule transaction : si le nouveau créneau est pris, l'ancienne réservation est conservée
+- **Annulation** — réservée au sportif propriétaire de la réservation (rôle `sportif`, puis contrôle de propriété)
 - Ces règles sont vérifiées dans le backend : masquer un bouton dans l'interface n'est jamais considéré comme une protection
 
 ### Protection des données

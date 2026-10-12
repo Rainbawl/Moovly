@@ -8,7 +8,7 @@ _Ce bilan a été rédigé à la fin de l'Arc 3 (septembre 2026). La [section 7]
 
 | Élément                          | Détail                                                                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| CI GitHub Actions                | Fonctionnelle — lint + tests backend + build frontend, bloquante à chaque Pull Request (88 tests à la fin de l'Arc 3, 141 en octobre) |
+| CI GitHub Actions                | Fonctionnelle — lint + tests backend + build frontend, bloquante à chaque Pull Request (88 tests à la fin de l'Arc 3, 153 au 12 octobre) |
 | Protection de branche sur `main` | Active — fusion impossible si la CI échoue                                                                                            |
 | Corrections ciblées S13          | 3 corrections réelles identifiées et corrigées (détail section 3)                                                                     |
 | ADR                              | 6 décisions documentées, vérifiées une à une contre le code réel                                                                      |
@@ -71,7 +71,7 @@ Si tout était à refaire seule, sans accompagnement, ce qui resterait le plus d
 
 | Élément                    | Valeur                                                                                            |
 | -------------------------- | ------------------------------------------------------------------------------------------------- |
-| Tests backend              | 141 (70 unitaires, 71 d'intégration)                                                              |
+| Tests backend              | 153 (79 unitaires, 74 d'intégration)                                                              |
 | Couverture                 | 100 % des fonctions, 97,19 % des lignes, 99,5 % des lignes des services                           |
 | Test End to End            | 1 parcours Playwright en 9 scènes, 37 vérifications (voir [scénario de démo](./scenario-demo.md)) |
 | Accessibilité (Lighthouse) | 100 sur les 4 pages publiques, en mobile et en desktop (84 à 97 avant corrections)                |
@@ -86,6 +86,10 @@ Si tout était à refaire seule, sans accompagnement, ce qui resterait le plus d
 | 3   | Une annulation refusée affichait un message générique au lieu de la règle des 24 h                                                                                                                                                              | Le tableau de bord affiche le message du serveur                                                                                                                                     |
 | 4   | Audit Lighthouse : champs sans étiquette, contraste insuffisant sur la carte blanche, ordre des titres, pas de meta description                                                                                                                 | Étiquettes reliées, couleurs corrigées, `h2`, `lang="fr"`, meta description, `robots.txt`                                                                                            |
 | 5   | Le statut `terminee` existait dans le schéma mais n'était jamais attribué : une séance passée restait « confirmée »                                                                                                                             | Statut calculé à la lecture (`statutAffiche`) : une réservation confirmée dont la séance est finie est renvoyée `terminee`, pour le sportif et pour le coach ; tests TU-054 à TU-058 |
+| 6   | Une réservation refusée pouvait encore être annulée : le créneau, déjà réservé par un autre sportif, repassait « disponible ». Une séance passée pouvait aussi être annulée, et une séance du lendemain déplacée sans délai | Annulation et modification réservées aux réservations en attente ou confirmées ; règle des 24 h appliquée aussi à la modification (sur la séance d'origine) ; séance passée refusée ; tests TU-059 à TU-063, TI-060 |
+| 7   | Filtres de l'accueil : « lyon » avec un espace, ou « Creteil » sans accent, ne trouvaient rien ; pendant la frappe, une réponse lente pouvait remplacer le bon résultat | Comparaison sur le début des mots, sans accents, majuscules ni espaces (service) : « l » trouve Lyon et Lille, mais plus « Football » ; seule la dernière recherche est affichée, 300 ms après la frappe ; tests TU-065 à TU-067, TI-061 |
+| 8   | Planning du coach : les demandes à traiter étaient mélangées aux créneaux libres, triés par date | Demandes en attente d'abord, puis créneaux réservés, créneaux disponibles à la fin ; test TU-064 |
+| 9   | Après une réservation, le message « Réservation confirmée ! » s'affichait alors que la réservation est en attente ; la route d'annulation acceptait le rôle admin, que le service refusait ensuite | Message « Demande de réservation envoyée… en attente de la réponse du coach » ; annulation réservée au rôle sportif (TI-059) |
 
 ### Dette restante
 
