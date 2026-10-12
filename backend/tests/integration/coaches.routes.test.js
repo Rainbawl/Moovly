@@ -35,6 +35,16 @@ describe("Coaches Routes — Tests d'intégration", () => {
       expect(reponse.status).toBe(200);
       expect(Array.isArray(reponse.body.coachs)).toBe(true);
     });
+
+    it("TI-061 — doit filtrer par ville sans tenir compte des accents, majuscules et espaces", async () => {
+      // Camille (seed) habite à Lyon : « LYÔN » avec espaces doit la trouver
+      const reponse = await request(app).get(
+        `/coaches?ville=${encodeURIComponent("  LYÔN ")}`,
+      );
+      expect(reponse.status).toBe(200);
+      expect(reponse.body.coachs.length).toBeGreaterThan(0);
+      expect(reponse.body.coachs.every((c) => c.ville === "Lyon")).toBe(true);
+    });
   });
 
   describe("GET /coaches/:id", () => {

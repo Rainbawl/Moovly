@@ -5,25 +5,11 @@ import { PrismaClient } from "../../generated/prisma/client.ts";
 const adaptateur = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: adaptateur });
 
-// Récupère tous les coachs validés avec filtres optionnels sport/ville
-export const trouverTousLesCoachs = async ({ sport, ville } = {}) => {
+// Récupère tous les coachs validés (les filtres sport/ville sont appliqués par le service)
+export const trouverTousLesCoachs = async () => {
   return prisma.coach.findMany({
     where: {
       statut_validation: "valide",
-      ...(sport && {
-        sports: {
-          some: {
-            sport: {
-              nom: { contains: sport, mode: "insensitive" },
-            },
-          },
-        },
-      }),
-      ...(ville && {
-        utilisateur: {
-          ville: { contains: ville, mode: "insensitive" },
-        },
-      }),
     },
     include: {
       utilisateur: {
